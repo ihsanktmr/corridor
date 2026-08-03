@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Corridor — visual identity</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --void:#14120F;
+    --concrete:#1E1B16;
+    --concrete-raised:#28241D;
+    --line:#332E24;
+    --paper:#F6F3EC;
+    --mist:#A39C8E;
+    --gold:#C9A35C;
+    --gold-bright:#E0BC7C;
+    --success:#8FA876;
+    --warning:#C98A4B;
+    --error:#B5695A;
+    --r-sm:8px;
+    --r-md:14px;
+    --r-lg:24px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--void);
+    color:var(--paper);
+    font-family:'Inter',sans-serif;
+    padding:72px 24px 120px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:900px;margin:0 auto;}
+  .eyebrow{
+    font-size:12px;letter-spacing:0.14em;text-transform:uppercase;
+    color:var(--mist);margin:0 0 12px;display:flex;align-items:center;gap:8px;
+  }
+  .eyebrow::before{content:"";width:14px;height:1px;background:var(--gold);display:inline-block;}
+  h1.display{
+    font-family:'Bricolage Grotesque',sans-serif;font-weight:600;
+    font-size:clamp(40px,7vw,68px);letter-spacing:-0.02em;margin:0 0 20px;line-height:1.02;
+  }
+  .lede{
+    font-family:'Bricolage Grotesque',sans-serif;font-weight:400;font-style:italic;
+    font-size:clamp(19px,2.6vw,25px);color:var(--paper);max-width:560px;margin:0 0 14px;line-height:1.35;
+  }
+  .caption{font-size:13px;color:var(--mist);margin:0;}
+  .mark{display:block;margin-bottom:28px;}
+  section{margin-top:88px;}
+  .section-body{margin-top:28px;}
+  p.note{font-size:14px;line-height:1.7;color:var(--mist);max-width:640px;margin:0 0 8px;}
+  hr.rule{border:none;border-top:1px solid var(--line);margin:88px 0 0;}
+
+  /* positioning options */
+  .options{display:flex;flex-direction:column;gap:0;border-top:1px solid var(--line);}
+  .option{display:flex;gap:20px;align-items:baseline;padding:16px 0;border-bottom:1px solid var(--line);}
+  .option .tag{font-size:11px;color:var(--mist);width:96px;flex-shrink:0;letter-spacing:0.04em;}
+  .option.primary .tag{color:var(--gold);}
+  .option p{margin:0;font-size:16px;}
+  .option.primary p{color:var(--paper);font-weight:500;}
+  .option:not(.primary) p{color:var(--mist);}
+
+  /* palette */
+  .palette-group{margin-bottom:32px;}
+  .palette-group .label{font-size:12px;color:var(--mist);margin:0 0 12px;}
+  .swatch-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px;}
+  .swatch{border:1px solid var(--line);border-radius:var(--r-md);overflow:hidden;}
+  .swatch .fill{height:84px;}
+  .swatch .meta{padding:11px 13px;background:var(--concrete);}
+  .swatch .name{font-size:13px;font-weight:500;margin:0 0 2px;}
+  .swatch .hex{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--mist);margin:0 0 6px;}
+  .swatch .use{font-size:11.5px;color:var(--mist);margin:0;line-height:1.4;}
+
+  /* type specimen */
+  .type-row{display:flex;align-items:baseline;gap:28px;padding:22px 0;border-bottom:1px solid var(--line);flex-wrap:wrap;}
+  .type-row:first-child{border-top:1px solid var(--line);}
+  .type-row .role{font-size:12px;color:var(--mist);width:150px;flex-shrink:0;}
+  .type-row .sample{flex:1;min-width:220px;}
+  .display-sample{font-family:'Bricolage Grotesque',sans-serif;font-weight:600;font-size:34px;letter-spacing:-0.01em;}
+  .body-sample{font-family:'Inter',sans-serif;font-size:15.5px;line-height:1.6;color:var(--paper);max-width:480px;}
+  .mono-sample{font-family:'IBM Plex Mono',monospace;font-size:13.5px;color:var(--gold-bright);word-break:break-all;}
+  .num-sample{font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:22px;font-weight:600;}
+  .weights{display:flex;gap:18px;flex-wrap:wrap;}
+  .weights span{font-family:'Bricolage Grotesque',sans-serif;font-size:15px;color:var(--mist);}
+  .weights span b{color:var(--paper);font-weight:inherit;}
+
+  /* tokens */
+  .token-block{margin-bottom:36px;}
+  .token-label{font-size:12px;color:var(--mist);margin:0 0 14px;}
+  .spacing-row{display:flex;align-items:flex-end;gap:10px;}
+  .spacing-bar{background:var(--gold);border-radius:2px;}
+  .spacing-row .cell{display:flex;flex-direction:column;align-items:center;gap:8px;}
+  .spacing-row .cell span{font-size:11px;color:var(--mist);font-family:'IBM Plex Mono',monospace;}
+  .radius-row{display:flex;gap:16px;}
+  .radius-swatch{width:88px;height:88px;background:var(--concrete-raised);border:1px solid var(--line);display:flex;align-items:flex-end;justify-content:flex-start;padding:10px;}
+  .radius-swatch span{font-size:11px;color:var(--mist);font-family:'IBM Plex Mono',monospace;}
+  .elevation-row{display:flex;gap:16px;}
+  .elev-card{flex:1;height:120px;border-radius:var(--r-md);display:flex;align-items:flex-end;padding:14px;border:1px solid var(--line);}
+  .elev-card span{font-size:12px;color:var(--mist);}
+
+  /* motion */
+  .route-demo{position:relative;height:2px;background:var(--line);border-radius:1px;margin:24px 0 8px;max-width:420px;}
+  .route-demo .dot{position:absolute;top:50%;left:0;width:9px;height:9px;border-radius:50%;background:var(--gold-bright);transform:translate(-50%,-50%);}
+  @media (prefers-reduced-motion: no-preference){
+    .route-demo .dot{animation:travel 3.2s ease-in-out infinite;}
+  }
+  @keyframes travel{
+    0%{left:0%;}
+    50%{left:100%;}
+    100%{left:0%;}
+  }
+
+  /* applied preview */
+  .preview-card{
+    background:var(--concrete);border:1px solid var(--line);border-radius:var(--r-lg);
+    padding:26px;max-width:380px;
+  }
+  .preview-head{display:flex;align-items:center;gap:8px;margin-bottom:22px;}
+  .preview-head .mk{width:18px;height:18px;}
+  .preview-head span{font-family:'Bricolage Grotesque',sans-serif;font-weight:600;font-size:15px;}
+  .row-label{font-size:12px;color:var(--mist);margin:0 0 4px;}
+  .row-amount{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:18px;}
+  .row-amount .num{font-family:'Inter',sans-serif;font-variant-numeric:tabular-nums;font-size:24px;font-weight:600;}
+  .row-amount .cur{font-size:13px;color:var(--mist);}
+  .divider-mark{display:flex;align-items:center;gap:10px;margin:18px 0;}
+  .divider-mark .ln{flex:1;height:1px;background:var(--line);}
+  .divider-mark svg{width:16px;height:16px;flex-shrink:0;}
+  .hash-chip{
+    display:inline-flex;align-items:center;gap:6px;background:var(--concrete-raised);
+    border-radius:999px;padding:6px 12px;margin:14px 0 20px;
+  }
+  .hash-chip span{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--gold-bright);}
+  .btn{
+    width:100%;background:var(--gold);color:var(--void);font-family:'Inter',sans-serif;
+    font-weight:600;font-size:14.5px;border:none;border-radius:var(--r-md);
+    padding:14px 0;cursor:pointer;
+  }
+
+  @media (max-width:640px){
+    .type-row .role{width:100%;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="eyebrow">corridor — visual identity, phase 1</div>
+
+  <svg class="mark" width="72" height="72" viewBox="0 0 100 100" fill="none">
+    <line x1="30" y1="20" x2="30" y2="80" stroke="#C9A35C" stroke-width="4" stroke-linecap="round"/>
+    <line x1="66" y1="32" x2="66" y2="68" stroke="#C9A35C" stroke-width="4" stroke-linecap="round"/>
+    <line x1="30" y1="80" x2="66" y2="32" stroke="#E0BC7C" stroke-width="2.5" stroke-linecap="round"/>
+    <circle cx="66" cy="32" r="3.5" fill="#E0BC7C"/>
+  </svg>
+
+  <h1 class="display">corridor</h1>
+  <p class="lede">Your dollars, still dollars, on the other side.</p>
+  <p class="caption">USD → TRY · one corridor, built to prove the architecture</p>
+
+  <section>
+    <div class="eyebrow">positioning line — options</div>
+    <div class="section-body options">
+      <div class="option primary">
+        <div class="tag">recommended</div>
+        <p>Your dollars, still dollars, on the other side.</p>
+      </div>
+      <div class="option">
+        <div class="tag">alt 01</div>
+        <p>A corridor between currencies, not a leap of faith.</p>
+      </div>
+      <div class="option">
+        <div class="tag">alt 02</div>
+        <p>The route your money can trust, door to door.</p>
+      </div>
+    </div>
+    <p class="note" style="margin-top:20px;">The primary line names the actual value prop — value survives the crossing — instead of generic speed or borderless language every remittance app already uses. It reads as one plain sentence, no crypto jargon, which is the point: it should make sense to someone who has never touched a wallet.</p>
+  </section>
+
+  <section>
+    <div class="eyebrow">logo mark — direction</div>
+    <div class="section-body">
+      <p class="note">The mark is a one-point-perspective passage: a near wall and a far wall, joined by a single sightline. It reads as an abstract corridor and, at a glance, as a route on a map — a line from one point to another. This is a direction to react to, not a final lockup; production refinement (stroke weights, optical balance, a locked grid) comes once the direction is approved.</p>
+    </div>
+  </section>
+
+  <section>
+    <div class="eyebrow">color</div>
+    <div class="section-body">
+
+      <div class="palette-group">
+        <p class="label">surfaces — dark, warm-neutral, no pure black</p>
+        <div class="swatch-grid">
+          <div class="swatch"><div class="fill" style="background:var(--void);"></div><div class="meta"><p class="name">void</p><p class="hex">#14120F</p><p class="use">page background</p></div></div>
+          <div class="swatch"><div class="fill" style="background:var(--concrete);"></div><div class="meta"><p class="name">concrete</p><p class="hex">#1E1B16</p><p class="use">cards, raised surfaces</p></div></div>
+          <div class="swatch"><div class="fill" style="background:var(--concrete-raised);"></div><div class="meta"><p class="name">concrete raised</p><p class="hex">#28241D</p><p class="use">modals, sheets, chips</p></div></div>
+          <div class="swatch"><div class="fill" style="background:var(--line);"></div><div class="meta"><p class="name">line</p><p class="hex">#332E24</p><p class="use">hairline borders, dividers</p></div></div>
+        </div>
+      </div>
+
+      <div class="palette-group">
+        <p class="label">text</p>
+        <div class="swatch-grid">
+          <div class="swatch"><div class="fill" style="background:var(--paper);"></div><div class="meta"><p class="name">paper</p><p class="hex">#F6F3EC</p><p class="use">primary text — warm off-white, not pure white</p></div></div>
+          <div class="swatch"><div class="fill" style="background:var(--mist);"></div><div class="meta"><p class="name">mist</p><p class="hex">#A39C8E</p><p class="use">secondary / muted text</p></div></div>
+        </div>
+      </div>
+
+      <div class="palette-group">
+        <p class="label">signature accent — the one brand color, used sparingly</p>
+        <div class="swatch-grid">
+          <div class="swatch"><div class="fill" style="background:var(--gold);"></div><div class="meta"><p class="name">gold</p><p class="hex">#C9A35C</p><p class="use">mark, primary CTA, route lines</p></div></div>
+          <div class="swatch"><div class="fill" style="background:var(--gold-bright);"></div><div class="meta"><p class="name">gold bright</p><p class="hex">#E0BC7C</p><p class="use">hover / active states</p></div></div>
+        </div>
+      </div>
+
+      <div class="palette-group">
+        <p class="label">semantic — deliberately distinct from the brand gold</p>
+        <div class="swatch-grid">
+          <div class="swatch"><div class="fill" style="background:var(--success);"></div><div class="meta"><p class="name">success</p><p class="hex">#8FA876</p><p class="use">confirmed, verified, funds arrived</p></div></div>
+          <div class="swatch"><div class="fill" style="background:var(--warning);"></div><div class="meta"><p class="name">warning</p><p class="hex">#C98A4B</p><p class="use">rate movement, review needed</p></div></div>
+          <div class="swatch"><div class="fill" style="background:var(--error);"></div><div class="meta"><p class="name">error</p><p class="hex">#B5695A</p><p class="use">failed, blocked, rejected</p></div></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section>
+    <div class="eyebrow">typography</div>
+    <div class="section-body">
+      <div class="type-row">
+        <div class="role">display — headlines, amounts, wordmark</div>
+        <div class="sample">
+          <div class="display-sample">Bricolage Grotesque</div>
+          <div class="weights" style="margin-top:8px;"><span><b>400</b> regular</span><span style="font-weight:500;"><b>500</b> medium</span><span style="font-weight:600;"><b>600</b> semibold</span><span style="font-weight:700;"><b>700</b> bold</span></div>
+        </div>
+      </div>
+      <div class="type-row">
+        <div class="role">UI / body — everything functional</div>
+        <div class="sample body-sample">Inter. Set in 400 for body copy, 500–600 for labels and buttons. Chosen for restraint — it carries no personality of its own, so the display face and the gold accent stay the memorable parts of the system.</div>
+      </div>
+      <div class="type-row">
+        <div class="role">amounts — tabular figures</div>
+        <div class="sample num-sample">1,000.00 <span style="font-size:13px;color:var(--mist);font-weight:400;">USDC</span></div>
+      </div>
+      <div class="type-row">
+        <div class="role">mono — tx hashes, addresses</div>
+        <div class="sample mono-sample">0x8f2a...c19e4d — testnet transfer, verifiable proof artifact</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="eyebrow">design tokens</div>
+    <div class="section-body">
+
+      <div class="token-block">
+        <p class="token-label">spacing scale</p>
+        <div class="spacing-row">
+          <div class="cell"><div class="spacing-bar" style="width:4px;height:4px;"></div><span>4</span></div>
+          <div class="cell"><div class="spacing-bar" style="width:8px;height:8px;"></div><span>8</span></div>
+          <div class="cell"><div class="spacing-bar" style="width:12px;height:12px;"></div><span>12</span></div>
+          <div class="cell"><div class="spacing-bar" style="width:16px;height:16px;"></div><span>16</span></div>
+          <div class="cell"><div class="spacing-bar" style="width:24px;height:24px;"></div><span>24</span></div>
+          <div class="cell"><div class="spacing-bar" style="width:32px;height:32px;"></div><span>32</span></div>
+          <div class="cell"><div class="spacing-bar" style="width:48px;height:48px;"></div><span>48</span></div>
+          <div class="cell"><div class="spacing-bar" style="width:64px;height:64px;"></div><span>64</span></div>
+        </div>
+      </div>
+
+      <div class="token-block">
+        <p class="token-label">radius scale</p>
+        <div class="radius-row">
+          <div class="radius-swatch" style="border-radius:8px;"><span>sm · 8</span></div>
+          <div class="radius-swatch" style="border-radius:14px;"><span>md · 14</span></div>
+          <div class="radius-swatch" style="border-radius:24px;"><span>lg · 24</span></div>
+        </div>
+      </div>
+
+      <div class="token-block">
+        <p class="token-label">elevation — no drop shadows on dark. depth comes from surface luminance plus a hairline border, not shadow.</p>
+        <div class="elevation-row">
+          <div class="elev-card" style="background:var(--void);"><span>void</span></div>
+          <div class="elev-card" style="background:var(--concrete);"><span>concrete</span></div>
+          <div class="elev-card" style="background:var(--concrete-raised);"><span>concrete raised</span></div>
+        </div>
+      </div>
+
+      <div class="token-block">
+        <p class="token-label">motion signature — a step completing sends the gold dot traveling the route, the same line language as the mark. everywhere else, motion stays quiet: 200–250ms ease-out.</p>
+        <div class="route-demo"><div class="dot"></div></div>
+      </div>
+
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section>
+    <div class="eyebrow">applied — tokens in a real component</div>
+    <div class="section-body">
+      <div class="preview-card">
+        <div class="preview-head">
+          <svg class="mk" viewBox="0 0 100 100" fill="none"><line x1="30" y1="20" x2="30" y2="80" stroke="#C9A35C" stroke-width="6" stroke-linecap="round"/><line x1="66" y1="32" x2="66" y2="68" stroke="#C9A35C" stroke-width="6" stroke-linecap="round"/><line x1="30" y1="80" x2="66" y2="32" stroke="#E0BC7C" stroke-width="4" stroke-linecap="round"/></svg>
+          <span>corridor</span>
+        </div>
+        <p class="row-label">you send</p>
+        <div class="row-amount"><span class="num">$500.00</span><span class="cur">USD</span></div>
+        <div class="divider-mark">
+          <div class="ln"></div>
+          <svg viewBox="0 0 100 100" fill="none"><line x1="30" y1="20" x2="30" y2="80" stroke="#C9A35C" stroke-width="8" stroke-linecap="round"/><line x1="66" y1="32" x2="66" y2="68" stroke="#C9A35C" stroke-width="8" stroke-linecap="round"/><line x1="30" y1="80" x2="66" y2="32" stroke="#E0BC7C" stroke-width="5" stroke-linecap="round"/></svg>
+          <div class="ln"></div>
+        </div>
+        <p class="row-label">they receive</p>
+        <div class="row-amount"><span class="num">₺26,420</span><span class="cur">TRY</span></div>
+        <div class="hash-chip"><span>0x8f2a...c19e — testnet verified</span></div>
+        <button class="btn">Review transfer</button>
+      </div>
+      <p class="note" style="margin-top:20px;">This is the "you send / they receive" pattern every remittance app needs — shown here in Corridor's own language: warm dark surface, single gold accent, the mark doubling as the divider between the two currencies.</p>
+    </div>
+  </section>
+
+</div>
+</body>
+</html>

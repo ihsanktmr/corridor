@@ -1,0 +1,1972 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Corridor — UI/UX system &amp; screens</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   TOKENS — inherited verbatim from phase 1 (corridor-identity.html)
+   ============================================================ */
+:root{
+  --void:#14120F;
+  --concrete:#1E1B16;
+  --concrete-raised:#28241D;
+  --line:#332E24;
+  --paper:#F6F3EC;
+  --mist:#A39C8E;
+  --gold:#C9A35C;
+  --gold-bright:#E0BC7C;
+  --success:#8FA876;
+  --warning:#C98A4B;
+  --error:#B5695A;
+
+  --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:24px; --s6:32px; --s7:48px; --s8:64px;
+  --r-sm:8px; --r-md:14px; --r-lg:24px;
+
+  --ff-display:'Bricolage Grotesque',sans-serif;
+  --ff-ui:'Inter',sans-serif;
+  --ff-mono:'IBM Plex Mono',monospace;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--void);color:var(--paper);font-family:var(--ff-ui);
+  -webkit-font-smoothing:antialiased;
+}
+a{color:inherit;}
+
+/* ============================================================
+   DOC CHROME
+   ============================================================ */
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px 140px;}
+.eyebrow{
+  font-size:12px;letter-spacing:0.14em;text-transform:uppercase;
+  color:var(--mist);margin:0 0 12px;display:flex;align-items:center;gap:8px;
+}
+.eyebrow::before{content:"";width:14px;height:1px;background:var(--gold);display:inline-block;flex-shrink:0;}
+h1.display{
+  font-family:var(--ff-display);font-weight:600;
+  font-size:clamp(38px,6vw,60px);letter-spacing:-0.02em;margin:0 0 18px;line-height:1.03;
+}
+h2.sec{
+  font-family:var(--ff-display);font-weight:600;
+  font-size:clamp(26px,3.4vw,34px);letter-spacing:-0.015em;margin:0 0 14px;
+}
+.lede{
+  font-family:var(--ff-display);font-weight:400;font-style:italic;
+  font-size:clamp(18px,2.4vw,23px);color:var(--paper);max-width:600px;margin:0 0 14px;line-height:1.38;
+}
+p.note{font-size:14px;line-height:1.75;color:var(--mist);max-width:660px;margin:0 0 10px;}
+p.note b,p.note strong{color:var(--paper);font-weight:500;}
+p.note code{font-family:var(--ff-mono);font-size:12.5px;color:var(--gold-bright);}
+section.block{margin-top:110px;scroll-margin-top:70px;}
+hr.rule{border:none;border-top:1px solid var(--line);margin:0;}
+
+/* sticky nav */
+.topnav{
+  position:sticky;top:0;z-index:50;background:rgba(20,18,15,0.92);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--line);
+}
+.topnav .inner{
+  max-width:1180px;margin:0 auto;padding:11px 24px;
+  display:flex;align-items:center;gap:22px;overflow-x:auto;
+}
+.topnav .brand{display:flex;align-items:center;gap:8px;flex-shrink:0;margin-right:6px;}
+.topnav .brand svg{width:15px;height:15px;}
+.topnav .brand span{font-family:var(--ff-display);font-weight:600;font-size:14px;}
+.topnav a{
+  font-size:12.5px;color:var(--mist);text-decoration:none;white-space:nowrap;
+  padding:4px 0;border-bottom:1px solid transparent;transition:color .2s ease-out,border-color .2s ease-out;
+}
+.topnav a:hover{color:var(--paper);border-bottom-color:var(--gold);}
+
+/* hero */
+.hero{padding:64px 0 0;}
+.hero .mark{display:block;margin-bottom:26px;}
+.meta-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px;}
+.meta-chip{
+  font-size:11.5px;color:var(--mist);background:var(--concrete);
+  border:1px solid var(--line);border-radius:999px;padding:6px 12px;
+}
+.meta-chip b{color:var(--paper);font-weight:500;}
+
+/* rails legend */
+.legend{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin-top:28px;
+}
+.legend-item{
+  background:var(--concrete);border:1px solid var(--line);border-radius:var(--r-md);padding:16px 18px;
+}
+.legend-item .k{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.legend-item p{margin:0;font-size:12.5px;line-height:1.6;color:var(--mist);}
+
+.badge{
+  font-size:10px;letter-spacing:0.1em;text-transform:uppercase;font-weight:600;
+  border-radius:999px;padding:4px 9px;border:1px solid;white-space:nowrap;
+}
+.badge.real{color:var(--success);border-color:rgba(143,168,118,0.38);background:rgba(143,168,118,0.09);}
+.badge.mock{color:var(--warning);border-color:rgba(201,138,75,0.38);background:rgba(201,138,75,0.09);}
+.badge.hybrid{color:var(--gold);border-color:rgba(201,163,92,0.38);background:rgba(201,163,92,0.09);}
+
+/* flow map */
+.flowmap{
+  display:flex;align-items:stretch;gap:0;margin-top:32px;overflow-x:auto;padding-bottom:8px;
+}
+.stage{flex:1;min-width:148px;display:flex;align-items:stretch;}
+.stage-card{
+  flex:1;background:var(--concrete);border:1px solid var(--line);border-radius:var(--r-md);
+  padding:14px 14px 12px;display:flex;flex-direction:column;gap:9px;
+}
+.stage-card .st{
+  font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold);font-weight:600;
+}
+.stage-card .sc{display:flex;align-items:baseline;gap:8px;font-size:12.5px;color:var(--paper);}
+.stage-card .sc em{font-family:var(--ff-mono);font-style:normal;font-size:10.5px;color:var(--mist);}
+.connector{
+  display:flex;align-items:center;justify-content:center;width:26px;flex-shrink:0;color:var(--gold);
+}
+.connector svg{width:12px;height:12px;}
+.flow-tail{
+  margin-top:14px;display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--mist);
+}
+.flow-tail .dash{width:34px;border-top:1px dashed var(--line);}
+
+/* ============================================================
+   SCREEN LAYOUT — device left, annotation right
+   ============================================================ */
+.screen-row{
+  display:flex;gap:56px;align-items:flex-start;
+  padding:70px 0;border-bottom:1px solid var(--line);
+}
+.screen-row:first-of-type{padding-top:36px;}
+.anno{flex:1;min-width:280px;position:sticky;top:82px;}
+.anno .num{
+  font-family:var(--ff-mono);font-size:11px;color:var(--gold);letter-spacing:0.06em;margin:0 0 8px;
+}
+.anno h3{
+  font-family:var(--ff-display);font-weight:600;font-size:27px;letter-spacing:-0.015em;margin:0 0 12px;
+}
+.anno .purpose{font-size:15px;line-height:1.6;color:var(--paper);margin:0 0 18px;max-width:460px;}
+.anno ul{margin:0 0 18px;padding:0;list-style:none;max-width:480px;}
+.anno ul li{
+  font-size:13.5px;line-height:1.68;color:var(--mist);padding-left:16px;position:relative;margin-bottom:9px;
+}
+.anno ul li::before{
+  content:"";position:absolute;left:0;top:9px;width:5px;height:1px;background:var(--gold);
+}
+.anno ul li b{color:var(--paper);font-weight:500;}
+.anno ul li code{font-family:var(--ff-mono);font-size:12px;color:var(--gold-bright);}
+.states{
+  border-top:1px solid var(--line);padding-top:14px;margin-top:4px;max-width:480px;
+}
+.states .lbl{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--mist);margin:0 0 9px;}
+.states .pills{display:flex;flex-wrap:wrap;gap:6px;}
+.states .pills span{
+  font-size:11px;color:var(--mist);background:var(--concrete);border:1px solid var(--line);
+  border-radius:var(--r-sm);padding:4px 9px;
+}
+.arch{
+  background:var(--concrete);border:1px solid var(--line);border-left:2px solid var(--gold);
+  border-radius:0 var(--r-md) var(--r-md) 0;padding:14px 16px;margin:0 0 18px;max-width:480px;
+}
+.arch .lbl{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold);margin:0 0 7px;}
+.arch p{margin:0;font-size:13px;line-height:1.68;color:var(--mist);}
+.arch p b{color:var(--paper);font-weight:500;}
+
+/* ============================================================
+   DEVICE FRAME
+   ============================================================ */
+.device{
+  width:393px;height:852px;flex-shrink:0;
+  border-radius:48px;background:#080706;border:1px solid var(--line);
+  padding:6px;position:relative;
+}
+.device.sm{width:294px;height:639px;border-radius:36px;padding:5px;}
+.screen{
+  width:100%;height:100%;border-radius:42px;background:var(--void);
+  overflow:hidden;position:relative;display:flex;flex-direction:column;
+  font-size:15px;line-height:1.45;
+}
+.device.sm .screen{border-radius:31px;font-size:11.6px;}
+.device.sm .screen *{letter-spacing:normal;}
+
+/* status bar */
+.sb{
+  height:54px;flex-shrink:0;display:flex;align-items:center;justify-content:space-between;
+  padding:0 30px;position:relative;z-index:5;
+}
+.sb .time{font-size:15px;font-weight:600;letter-spacing:-0.01em;padding-top:8px;}
+.sb .icons{display:flex;align-items:center;gap:6px;padding-top:8px;}
+.sb .icons svg{height:11px;}
+.island{
+  position:absolute;top:11px;left:50%;transform:translateX(-50%);
+  width:118px;height:33px;border-radius:20px;background:#080706;z-index:6;
+}
+.device.sm .island{width:88px;height:25px;top:8px;}
+.device.sm .sb{height:42px;padding:0 22px;}
+.device.sm .sb .time{font-size:11.5px;}
+
+/* home indicator */
+.hi{
+  height:26px;flex-shrink:0;display:flex;align-items:center;justify-content:center;
+}
+.hi::after{content:"";width:134px;height:5px;border-radius:3px;background:var(--mist);opacity:0.5;}
+.device.sm .hi::after{width:100px;height:4px;}
+
+/* screen nav bar */
+.nav{
+  height:50px;flex-shrink:0;display:flex;align-items:center;justify-content:space-between;
+  padding:0 20px;gap:12px;
+}
+.nav .back{
+  width:34px;height:34px;border-radius:50%;background:var(--concrete);border:1px solid var(--line);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.nav .back svg{width:13px;height:13px;color:var(--paper);}
+.nav .title{font-size:14px;font-weight:500;flex:1;text-align:center;}
+.nav .spacer{width:34px;flex-shrink:0;}
+.nav .step{font-family:var(--ff-mono);font-size:11px;color:var(--mist);flex-shrink:0;}
+
+/* screen body */
+.sbody{flex:1;padding:0 20px;overflow:hidden;}
+.sbody.pad-top{padding-top:8px;}
+.dock{flex-shrink:0;padding:14px 20px 4px;}
+.dock.bordered{border-top:1px solid var(--line);padding-top:16px;}
+
+/* ============================================================
+   IN-SCREEN COMPONENTS
+   ============================================================ */
+.h-display{font-family:var(--ff-display);font-weight:600;font-size:26px;letter-spacing:-0.02em;line-height:1.15;margin:0 0 8px;}
+.h-title{font-family:var(--ff-display);font-weight:600;font-size:20px;letter-spacing:-0.015em;margin:0 0 6px;}
+.t-body{font-size:14px;line-height:1.55;color:var(--mist);margin:0;}
+.t-label{font-size:12.5px;color:var(--mist);margin:0 0 4px;}
+.t-micro{font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--mist);margin:0;}
+.t-mono{font-family:var(--ff-mono);font-size:12px;color:var(--gold-bright);}
+.num{font-variant-numeric:tabular-nums;font-weight:600;letter-spacing:-0.01em;}
+
+/* buttons */
+.btn{
+  width:100%;display:flex;align-items:center;justify-content:center;gap:8px;
+  font-family:var(--ff-ui);font-weight:600;font-size:15px;border:none;
+  border-radius:var(--r-md);padding:16px 0;cursor:pointer;line-height:1;
+}
+.btn.primary{background:var(--gold);color:var(--void);}
+.btn.secondary{background:transparent;color:var(--paper);border:1px solid var(--line);}
+.btn.ghost{background:transparent;color:var(--mist);font-weight:500;padding:13px 0;}
+.btn.disabled{background:var(--concrete-raised);color:var(--mist);}
+.btn.danger{background:transparent;color:var(--error);border:1px solid rgba(181,105,90,0.4);}
+.btn.sm{padding:11px 16px;font-size:13px;width:auto;}
+
+/* cards & rows */
+.card{background:var(--concrete);border:1px solid var(--line);border-radius:var(--r-lg);padding:20px;}
+.card.tight{padding:16px;border-radius:var(--r-md);}
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.row.top{align-items:flex-start;}
+.list-row{
+  display:flex;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid var(--line);
+}
+.list-row:last-child{border-bottom:none;}
+.list-row .lead{
+  width:38px;height:38px;border-radius:50%;background:var(--concrete-raised);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  font-size:11.5px;font-weight:600;color:var(--gold);letter-spacing:0.02em;
+}
+.list-row .mid{flex:1;min-width:0;}
+.list-row .mid .l1{font-size:14px;font-weight:500;margin:0 0 2px;}
+.list-row .mid .l2{font-size:11.5px;color:var(--mist);margin:0;}
+.list-row .end{text-align:right;flex-shrink:0;}
+.list-row .end .v{font-size:14px;font-variant-numeric:tabular-nums;font-weight:600;margin:0 0 2px;}
+.list-row .end .s{font-size:11px;color:var(--mist);margin:0;}
+
+/* selectable option */
+.opt{
+  display:flex;align-items:flex-start;gap:12px;padding:15px;border-radius:var(--r-md);
+  border:1px solid var(--line);background:var(--concrete);margin-bottom:10px;
+}
+.opt.sel{border-color:var(--gold);background:var(--concrete-raised);}
+.opt .radio{
+  width:18px;height:18px;border-radius:50%;border:1.5px solid var(--line);flex-shrink:0;margin-top:1px;
+  display:flex;align-items:center;justify-content:center;
+}
+.opt.sel .radio{border-color:var(--gold);}
+.opt.sel .radio::after{content:"";width:8px;height:8px;border-radius:50%;background:var(--gold);}
+.opt .txt{flex:1;min-width:0;}
+.opt .txt .o1{font-size:14px;font-weight:500;margin:0 0 3px;display:flex;align-items:center;gap:7px;}
+.opt .txt .o2{font-size:11.5px;color:var(--mist);margin:0;line-height:1.5;}
+.opt .cost{font-size:12.5px;font-weight:600;font-variant-numeric:tabular-nums;flex-shrink:0;}
+.opt .cost.free{color:var(--success);}
+
+/* pills */
+.pill{
+  display:inline-flex;align-items:center;gap:6px;font-size:10.5px;font-weight:600;
+  border-radius:999px;padding:4px 9px;letter-spacing:0.02em;white-space:nowrap;
+}
+.pill::before{content:"";width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0;}
+.pill.done{color:var(--success);background:rgba(143,168,118,0.11);}
+.pill.live{color:var(--gold-bright);background:rgba(224,188,124,0.11);}
+.pill.wait{color:var(--mist);background:rgba(163,156,142,0.10);}
+.pill.fail{color:var(--error);background:rgba(181,105,90,0.11);}
+
+/* chips */
+.chip{
+  display:inline-flex;align-items:center;gap:7px;background:var(--concrete-raised);
+  border-radius:999px;padding:7px 13px;border:1px solid var(--line);
+}
+.chip.plain{border-color:transparent;}
+.chip span{font-family:var(--ff-mono);font-size:11px;color:var(--gold-bright);}
+.chip svg{width:11px;height:11px;color:var(--mist);flex-shrink:0;}
+.chip.mock{background:rgba(201,138,75,0.08);border-color:rgba(201,138,75,0.32);}
+.chip.mock span{font-family:var(--ff-ui);font-size:10.5px;color:var(--warning);font-weight:500;}
+
+/* inline disclosure strip */
+.disclose{
+  display:flex;align-items:center;gap:8px;background:rgba(201,138,75,0.07);
+  border:1px solid rgba(201,138,75,0.26);border-radius:var(--r-sm);padding:9px 11px;
+}
+.disclose svg{width:13px;height:13px;color:var(--warning);flex-shrink:0;}
+.disclose p{margin:0;font-size:11px;line-height:1.45;color:var(--warning);}
+
+/* mark divider (from phase 1 applied preview) */
+.divmark{display:flex;align-items:center;gap:12px;margin:16px 0;}
+.divmark .ln{flex:1;height:1px;background:var(--line);}
+.divmark svg{width:17px;height:17px;flex-shrink:0;}
+
+/* amount block */
+.amt-hero{
+  font-family:var(--ff-display);font-weight:600;font-size:46px;letter-spacing:-0.03em;
+  line-height:1;margin:0;display:flex;align-items:baseline;gap:8px;
+}
+.amt-hero .cur{font-family:var(--ff-ui);font-size:15px;font-weight:500;color:var(--mist);letter-spacing:0;}
+.amt-hero .caret{width:2px;height:40px;background:var(--gold);display:inline-block;margin-left:2px;}
+.amt-sub{
+  font-family:var(--ff-display);font-weight:600;font-size:34px;letter-spacing:-0.025em;
+  line-height:1;margin:0;display:flex;align-items:baseline;gap:8px;color:var(--paper);
+}
+.amt-sub .cur{font-family:var(--ff-ui);font-size:14px;font-weight:500;color:var(--mist);letter-spacing:0;}
+
+/* rate strip */
+.rate-strip{
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  background:var(--concrete);border:1px solid var(--line);border-radius:var(--r-md);padding:12px 14px;
+}
+.rate-strip .rl{font-size:12.5px;font-variant-numeric:tabular-nums;margin:0;}
+.rate-strip .rl b{font-weight:600;}
+.rate-strip .lock{
+  font-family:var(--ff-mono);font-size:11px;color:var(--gold-bright);display:flex;align-items:center;gap:5px;
+}
+.rate-strip .lock svg{width:10px;height:10px;}
+.rate-strip.warn{border-color:rgba(201,138,75,0.4);}
+.rate-strip.warn .lock{color:var(--warning);}
+
+/* fee lines */
+.fee-line{
+  display:flex;justify-content:space-between;align-items:baseline;
+  font-size:12.5px;padding:7px 0;color:var(--mist);
+}
+.fee-line span:last-child{font-variant-numeric:tabular-nums;color:var(--paper);}
+.fee-line.total{
+  border-top:1px solid var(--line);margin-top:6px;padding-top:11px;font-size:14px;color:var(--paper);font-weight:500;
+}
+.fee-line.total span:last-child{font-weight:600;}
+
+/* country tokens */
+.ctok{
+  width:26px;height:26px;border-radius:50%;background:var(--concrete-raised);border:1px solid var(--line);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  font-family:var(--ff-mono);font-size:9.5px;color:var(--mist);letter-spacing:0.02em;
+}
+.ctok.on{border-color:var(--gold);color:var(--gold);}
+
+/* corridor strip */
+.corridor-strip{
+  display:flex;align-items:center;gap:10px;background:var(--concrete);
+  border:1px solid var(--line);border-radius:var(--r-md);padding:12px 14px;
+}
+.corridor-strip .track{flex:1;display:flex;align-items:center;gap:6px;}
+.corridor-strip .track .ln{flex:1;height:1px;background:var(--line);position:relative;}
+.corridor-strip .track .ln::after{
+  content:"";position:absolute;top:50%;left:0;width:6px;height:6px;border-radius:50%;
+  background:var(--gold-bright);transform:translate(-50%,-50%);
+}
+@media (prefers-reduced-motion:no-preference){
+  .corridor-strip .track .ln::after{animation:travel 3.4s ease-in-out infinite;}
+}
+@keyframes travel{0%{left:0;}50%{left:100%;}100%{left:0;}}
+
+/* route line — vertical */
+.route{position:relative;padding-left:30px;}
+.route .step{position:relative;padding-bottom:22px;}
+.route .step:last-child{padding-bottom:0;}
+.route .step::before{
+  content:"";position:absolute;left:-30px;top:14px;bottom:-8px;width:1px;background:var(--line);
+}
+.route .step:last-child::before{display:none;}
+.route .step.done::before{background:var(--gold);}
+.route .node{
+  position:absolute;left:-36px;top:3px;width:13px;height:13px;border-radius:50%;
+  background:var(--void);border:1.5px solid var(--line);
+  display:flex;align-items:center;justify-content:center;
+}
+.route .step.done .node{border-color:var(--gold);background:var(--gold);}
+.route .step.done .node svg{width:7px;height:7px;color:var(--void);}
+.route .step.live .node{border-color:var(--gold-bright);}
+.route .step.live .node::after{
+  content:"";width:6px;height:6px;border-radius:50%;background:var(--gold-bright);
+}
+@media (prefers-reduced-motion:no-preference){
+  .route .step.live .node::after{animation:pulse 1.8s ease-in-out infinite;}
+}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:1;}50%{transform:scale(0.62);opacity:0.55;}}
+.route .step.fail .node{border-color:var(--error);background:var(--error);}
+.route .r1{font-size:13.5px;font-weight:500;margin:0 0 3px;display:flex;align-items:center;gap:8px;}
+.route .step.wait .r1{color:var(--mist);font-weight:400;}
+.route .r2{font-size:11.5px;color:var(--mist);margin:0;line-height:1.5;}
+
+/* route — horizontal mini */
+.route-mini{display:flex;align-items:center;gap:0;}
+.route-mini .n{
+  width:9px;height:9px;border-radius:50%;border:1.5px solid var(--line);flex-shrink:0;background:var(--void);
+}
+.route-mini .n.on{background:var(--gold);border-color:var(--gold);}
+.route-mini .seg{flex:1;height:1px;background:var(--line);}
+.route-mini .seg.on{background:var(--gold);}
+.route-mini-labels{display:flex;margin-top:8px;}
+.route-mini-labels span{flex:1;font-size:9.5px;color:var(--mist);text-align:center;}
+.route-mini-labels span:first-child{text-align:left;}
+.route-mini-labels span:last-child{text-align:right;}
+
+/* inputs */
+.field{margin-bottom:14px;}
+.field .fl{font-size:11.5px;color:var(--mist);margin:0 0 7px;}
+.input{
+  width:100%;background:var(--concrete);border:1px solid var(--line);border-radius:var(--r-md);
+  padding:14px 15px;font-size:14.5px;color:var(--paper);font-family:var(--ff-ui);
+  display:flex;align-items:center;gap:10px;
+}
+.input.mono{font-family:var(--ff-mono);font-size:13px;letter-spacing:0.02em;}
+.input.focus{border-color:var(--gold);background:var(--concrete-raised);}
+.input.err{border-color:var(--error);}
+.input .ph{color:var(--mist);}
+.input .caret{width:1.5px;height:17px;background:var(--gold);display:inline-block;}
+.input .pre{color:var(--mist);flex-shrink:0;}
+.field .hint{font-size:11px;margin:7px 0 0;display:flex;align-items:center;gap:6px;color:var(--mist);}
+.field .hint svg{width:11px;height:11px;flex-shrink:0;}
+.field .hint.ok{color:var(--success);}
+.field .hint.bad{color:var(--error);}
+
+/* keypad */
+.keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;}
+.keypad .k{
+  height:52px;display:flex;align-items:center;justify-content:center;
+  font-size:23px;font-weight:500;font-variant-numeric:tabular-nums;letter-spacing:-0.01em;
+  border-radius:var(--r-sm);
+}
+.keypad .k.fn{color:var(--mist);}
+.keypad .k svg{width:19px;height:19px;}
+
+/* progress rail */
+.rail{display:flex;gap:5px;margin-bottom:18px;}
+.rail .seg{flex:1;height:3px;border-radius:2px;background:var(--line);}
+.rail .seg.on{background:var(--gold);}
+
+/* camera viewport */
+.viewport{
+  position:relative;border-radius:var(--r-lg);overflow:hidden;
+  background:linear-gradient(150deg,#1a1712 0%,#221e18 48%,#15130f 100%);
+  aspect-ratio:1.58/1;border:1px solid var(--line);
+}
+.viewport .guide{
+  position:absolute;inset:11% 8%;border-radius:var(--r-md);
+}
+.viewport .guide i{position:absolute;width:24px;height:24px;border:2px solid var(--gold);}
+.viewport .guide i:nth-child(1){top:0;left:0;border-right:none;border-bottom:none;border-radius:var(--r-sm) 0 0 0;}
+.viewport .guide i:nth-child(2){top:0;right:0;border-left:none;border-bottom:none;border-radius:0 var(--r-sm) 0 0;}
+.viewport .guide i:nth-child(3){bottom:0;left:0;border-right:none;border-top:none;border-radius:0 0 0 var(--r-sm);}
+.viewport .guide i:nth-child(4){bottom:0;right:0;border-left:none;border-top:none;border-radius:0 0 var(--r-sm) 0;}
+.viewport .idcard{
+  position:absolute;inset:16% 13%;border-radius:var(--r-sm);
+  background:rgba(246,243,236,0.045);border:1px solid rgba(246,243,236,0.11);
+}
+.viewport .idcard .ph{position:absolute;left:8%;top:20%;width:24%;height:56%;border-radius:4px;background:rgba(246,243,236,0.08);}
+.viewport .idcard .ln{position:absolute;right:8%;height:4px;border-radius:2px;background:rgba(246,243,236,0.09);}
+.shutter{
+  width:62px;height:62px;border-radius:50%;border:2px solid var(--line);
+  display:flex;align-items:center;justify-content:center;margin:0 auto;
+}
+.shutter::after{content:"";width:48px;height:48px;border-radius:50%;background:var(--gold);}
+
+/* slide to send */
+.slider{
+  position:relative;height:56px;border-radius:var(--r-md);background:var(--concrete-raised);
+  border:1px solid var(--line);display:flex;align-items:center;justify-content:center;overflow:hidden;
+}
+.slider .lbl{font-size:13.5px;font-weight:500;color:var(--mist);letter-spacing:0.01em;}
+.slider .knob{
+  position:absolute;left:4px;top:4px;bottom:4px;width:64px;border-radius:11px;background:var(--gold);
+  display:flex;align-items:center;justify-content:center;
+}
+.slider .knob svg{width:16px;height:16px;color:var(--void);}
+@media (prefers-reduced-motion:no-preference){
+  .slider .knob{animation:nudge 2.6s ease-in-out infinite;}
+}
+@keyframes nudge{0%,72%,100%{transform:translateX(0);}84%{transform:translateX(9px);}}
+
+/* success bloom */
+.bloom{
+  width:78px;height:78px;border-radius:50%;background:rgba(143,168,118,0.12);
+  border:1px solid rgba(143,168,118,0.34);display:flex;align-items:center;justify-content:center;
+}
+.bloom svg{width:32px;height:32px;color:var(--success);}
+.bloom.warn{background:rgba(201,138,75,0.12);border-color:rgba(201,138,75,0.34);}
+.bloom.warn svg{color:var(--warning);}
+.bloom.bad{background:rgba(181,105,90,0.12);border-color:rgba(181,105,90,0.34);}
+.bloom.bad svg{color:var(--error);}
+
+/* demo strip */
+.demo-strip{
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  padding:6px 0;border-bottom:1px solid var(--line);background:var(--concrete);
+}
+.demo-strip p{margin:0;font-size:10px;color:var(--mist);letter-spacing:0.04em;}
+.demo-strip .dot{width:5px;height:5px;border-radius:50%;background:var(--warning);}
+
+/* ============================================================
+   COMPONENT LIBRARY SECTION
+   ============================================================ */
+.lib-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:20px;margin-top:30px;}
+.lib-card{background:var(--concrete);border:1px solid var(--line);border-radius:var(--r-lg);padding:22px;}
+.lib-card .lc-title{font-size:12px;letter-spacing:0.1em;text-transform:uppercase;color:var(--gold);margin:0 0 5px;}
+.lib-card .lc-note{font-size:11.5px;color:var(--mist);margin:0 0 18px;line-height:1.55;}
+.lib-card .lc-body > *{margin-bottom:10px;}
+.lib-card .lc-body > *:last-child{margin-bottom:0;}
+.lib-sub{font-size:10.5px;color:var(--mist);margin:16px 0 8px;letter-spacing:0.06em;text-transform:uppercase;}
+.spec-table{width:100%;border-collapse:collapse;margin-top:24px;font-size:13px;}
+.spec-table th{
+  text-align:left;font-size:10.5px;letter-spacing:0.1em;text-transform:uppercase;color:var(--mist);
+  font-weight:500;padding:0 14px 11px 0;border-bottom:1px solid var(--line);
+}
+.spec-table td{padding:13px 14px 13px 0;border-bottom:1px solid var(--line);color:var(--mist);vertical-align:top;line-height:1.6;}
+.spec-table td:first-child{color:var(--paper);font-weight:500;white-space:nowrap;}
+.spec-table td code{font-family:var(--ff-mono);font-size:12px;color:var(--gold-bright);}
+.table-scroll{overflow-x:auto;}
+
+/* edge state trio */
+.trio{display:flex;gap:30px;flex-wrap:wrap;margin-top:32px;}
+.trio .unit{flex:1;min-width:294px;max-width:330px;}
+.trio .unit .cap{margin-top:16px;}
+.trio .unit .cap h4{font-family:var(--ff-display);font-weight:600;font-size:17px;margin:0 0 7px;}
+.trio .unit .cap p{font-size:12.5px;line-height:1.65;color:var(--mist);margin:0;}
+.trio .unit .cap p b{color:var(--paper);font-weight:500;}
+
+@media (max-width:1080px){
+  .screen-row{flex-direction:column;gap:36px;}
+  .anno{position:static;}
+  .device{margin:0 auto;}
+}
+@media (max-width:460px){
+  .device{transform:scale(0.84);transform-origin:top center;margin-bottom:-130px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     SVG SPRITE
+     ============================================================ -->
+<svg style="display:none" aria-hidden="true">
+  <symbol id="mark" viewBox="0 0 100 100">
+    <line x1="30" y1="20" x2="30" y2="80" stroke="#C9A35C" stroke-width="7" stroke-linecap="round"/>
+    <line x1="66" y1="32" x2="66" y2="68" stroke="#C9A35C" stroke-width="7" stroke-linecap="round"/>
+    <line x1="30" y1="80" x2="66" y2="32" stroke="#E0BC7C" stroke-width="4.5" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="mark-lg" viewBox="0 0 100 100">
+    <line x1="30" y1="20" x2="30" y2="80" stroke="#C9A35C" stroke-width="4" stroke-linecap="round"/>
+    <line x1="66" y1="32" x2="66" y2="68" stroke="#C9A35C" stroke-width="4" stroke-linecap="round"/>
+    <line x1="30" y1="80" x2="66" y2="32" stroke="#E0BC7C" stroke-width="2.5" stroke-linecap="round"/>
+    <circle cx="66" cy="32" r="3.5" fill="#E0BC7C"/>
+  </symbol>
+  <symbol id="chev-l" viewBox="0 0 24 24" fill="none"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="chev-r" viewBox="0 0 24 24" fill="none"><path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="chev-d" viewBox="0 0 24 24" fill="none"><path d="M5 9l7 7 7-7" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="check" viewBox="0 0 24 24" fill="none"><path d="M4 12.5l5.2 5.2L20 7" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="arrow-r" viewBox="0 0 24 24" fill="none"><path d="M4 12h15m0 0l-6-6m6 6l-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="lock" viewBox="0 0 24 24" fill="none"><rect x="4.5" y="10" width="15" height="10.5" rx="2.5" stroke="currentColor" stroke-width="2"/><path d="M8 10V7.5a4 4 0 018 0V10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="alert" viewBox="0 0 24 24" fill="none"><path d="M12 8v5m0 3.5v.2" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/></symbol>
+  <symbol id="ext" viewBox="0 0 24 24" fill="none"><path d="M14 5h5v5m0-5l-8 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M18.5 14.5v3a2 2 0 01-2 2h-10a2 2 0 01-2-2v-10a2 2 0 012-2h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="copy" viewBox="0 0 24 24" fill="none"><rect x="8.5" y="8.5" width="11" height="11" rx="2.5" stroke="currentColor" stroke-width="1.9"/><path d="M15.5 5.5h-8a2 2 0 00-2 2v8" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></symbol>
+  <symbol id="x" viewBox="0 0 24 24" fill="none"><path d="M6.5 6.5l11 11m0-11l-11 11" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></symbol>
+  <symbol id="del" viewBox="0 0 24 24" fill="none"><path d="M9 5h9a2 2 0 012 2v10a2 2 0 01-2 2H9L3 12l6-7z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M11.5 9.5l5 5m0-5l-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></symbol>
+  <symbol id="user" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8.5" r="3.6" stroke="currentColor" stroke-width="1.9"/><path d="M5 20c0-3.6 3.1-5.6 7-5.6s7 2 7 5.6" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></symbol>
+  <symbol id="share" viewBox="0 0 24 24" fill="none"><path d="M12 15.5V4m0 0L8 8m4-4l4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 14v4.5a2 2 0 002 2h10a2 2 0 002-2V14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="refresh" viewBox="0 0 24 24" fill="none"><path d="M20 12a8 8 0 11-2.6-5.9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M20 4v4.5h-4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="sb-signal" viewBox="0 0 20 12" fill="currentColor"><rect x="0" y="8" width="3" height="4" rx="1"/><rect x="5" y="5.5" width="3" height="6.5" rx="1"/><rect x="10" y="3" width="3" height="9" rx="1"/><rect x="15" y="0.5" width="3" height="11.5" rx="1"/></symbol>
+  <symbol id="sb-wifi" viewBox="0 0 16 12" fill="none"><path d="M1 4.2a10 10 0 0114 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M3.6 7a6.3 6.3 0 018.8 0" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="8" cy="10" r="1.4" fill="currentColor"/></symbol>
+  <symbol id="sb-batt" viewBox="0 0 26 12" fill="none"><rect x="0.7" y="0.7" width="21" height="10.6" rx="3" stroke="currentColor" stroke-width="1.2" opacity="0.5"/><rect x="2.4" y="2.4" width="16" height="7.2" rx="1.7" fill="currentColor"/><path d="M23.6 4.2v3.6a2 2 0 000-3.6z" fill="currentColor" opacity="0.5"/></symbol>
+</svg>
+
+<!-- ============================================================
+     STICKY NAV
+     ============================================================ -->
+<nav class="topnav">
+  <div class="inner">
+    <div class="brand"><svg><use href="#mark"/></svg><span>corridor</span></div>
+    <a href="#flow">Flow</a>
+    <a href="#screens">Screens</a>
+    <a href="#edge">Edge states</a>
+    <a href="#components">Components</a>
+    <a href="#motion">Motion</a>
+    <a href="#handoff">Handoff</a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <!-- ==========================================================
+       HERO
+       ========================================================== -->
+  <header class="hero">
+    <div class="eyebrow">corridor — UI/UX system &amp; screens, phase 2</div>
+    <svg class="mark" width="66" height="66"><use href="#mark-lg"/></svg>
+    <h1 class="display">One corridor,<br>eleven screens.</h1>
+    <p class="lede">Your dollars, still dollars, on the other side.</p>
+    <p class="note" style="margin-top:14px;">
+      A single flow, designed end to end: <b>on-ramp → KYC gate → USDC send → TRY payout</b>, on the
+      <b>USD → Turkey</b> corridor. Every token here comes from the phase 1 identity spec — this document
+      is that system doing actual work, including the parts where it has to say no.
+    </p>
+    <div class="meta-row">
+      <span class="meta-chip">corridor <b>USD → TRY</b></span>
+      <span class="meta-chip">asset <b>USDC</b></span>
+      <span class="meta-chip">chain <b>Base</b> · testnet <b>Base Sepolia</b></span>
+      <span class="meta-chip">wallet + auth <b>Privy</b></span>
+      <span class="meta-chip">fiat rails <b>Bridge</b></span>
+      <span class="meta-chip">frame <b>393 × 852</b></span>
+    </div>
+  </header>
+
+  <!-- ==========================================================
+       RAILS LEGEND
+       ========================================================== -->
+  <section class="block" id="rails" style="margin-top:72px;">
+    <div class="eyebrow">what's real, what isn't</div>
+    <h2 class="sec">The honesty rule</h2>
+    <p class="note">
+      Bridge is KYB-gated and genuinely not self-serve, so the fiat legs are simulated. That fact is
+      disclosed <b>on-screen</b>, not only in a README — a demo that hides its own seams is a demo you
+      can't trust the rest of. Each screen below carries the badge for the rail it sits on.
+    </p>
+    <div class="legend">
+      <div class="legend-item">
+        <div class="k"><span class="badge real">real</span></div>
+        <p>Privy embedded wallet + auth. One real Base Sepolia USDC transfer with a verifiable tx hash — the proof artifact.</p>
+      </div>
+      <div class="legend-item">
+        <div class="k"><span class="badge hybrid">hybrid</span></div>
+        <p>Real product flow, mocked provider. KYC is designed and sequenced for real; the vendor call returns a fixture.</p>
+      </div>
+      <div class="legend-item">
+        <div class="k"><span class="badge mock">simulated</span></div>
+        <p>Bridge on-ramp, off-ramp and TRY payout. Modelled against Bridge's real API shape and real settlement timing.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==========================================================
+       FLOW MAP
+       ========================================================== -->
+  <section class="block" id="flow">
+    <div class="eyebrow">flow map</div>
+    <h2 class="sec">Six stages, one direction</h2>
+    <p class="note">
+      No tabs, no dashboard, no side quests. The whole app is one corridor and the user is always
+      somewhere along it.
+    </p>
+    <div class="flowmap">
+      <div class="stage"><div class="stage-card">
+        <p class="st">onboard</p>
+        <p class="sc"><em>01</em> Welcome</p>
+        <p class="sc"><em>02</em> Home</p>
+      </div></div>
+      <div class="connector"><svg><use href="#arrow-r"/></svg></div>
+      <div class="stage"><div class="stage-card">
+        <p class="st">quote</p>
+        <p class="sc"><em>03</em> Amount</p>
+      </div></div>
+      <div class="connector"><svg><use href="#arrow-r"/></svg></div>
+      <div class="stage"><div class="stage-card">
+        <p class="st">fund</p>
+        <p class="sc"><em>04</em> Add USD</p>
+      </div></div>
+      <div class="connector"><svg><use href="#arrow-r"/></svg></div>
+      <div class="stage"><div class="stage-card">
+        <p class="st">verify</p>
+        <p class="sc"><em>05</em> KYC gate</p>
+        <p class="sc"><em>06</em> Capture</p>
+      </div></div>
+      <div class="connector"><svg><use href="#arrow-r"/></svg></div>
+      <div class="stage"><div class="stage-card">
+        <p class="st">send</p>
+        <p class="sc"><em>07</em> Recipient</p>
+        <p class="sc"><em>08</em> Review</p>
+      </div></div>
+      <div class="connector"><svg><use href="#arrow-r"/></svg></div>
+      <div class="stage"><div class="stage-card">
+        <p class="st">settle</p>
+        <p class="sc"><em>09</em> In flight</p>
+        <p class="sc"><em>10</em> Receipt</p>
+      </div></div>
+    </div>
+    <div class="flow-tail">
+      <span class="dash"></span>
+      <span><b style="color:var(--paper);font-weight:500;">11</b> &nbsp;Edge states branch off stages 2–6 — rate expiry, KYC rejection, payout return.</span>
+    </div>
+  </section>
+
+  <!-- ==========================================================
+       SCREENS
+       ========================================================== -->
+  <section class="block" id="screens">
+    <div class="eyebrow">screens</div>
+    <h2 class="sec">The flow, at fidelity</h2>
+    <p class="note" style="margin-bottom:8px;">
+      Rendered 1:1 at 393 × 852. Annotations carry the design decision and, where it matters, the
+      architectural one underneath it.
+    </p>
+
+    <!-- ------------------------------------------------------ 01 -->
+    <div class="screen-row">
+      <div class="device">
+        <div class="island"></div>
+        <div class="screen">
+          <div class="sb">
+            <span class="time">9:41</span>
+            <span class="icons"><svg width="18"><use href="#sb-signal"/></svg><svg width="15"><use href="#sb-wifi"/></svg><svg width="24"><use href="#sb-batt"/></svg></span>
+          </div>
+          <div class="sbody" style="display:flex;flex-direction:column;padding-top:64px;">
+            <svg width="44" height="44" style="margin-bottom:28px;"><use href="#mark-lg"/></svg>
+            <h1 style="font-family:var(--ff-display);font-weight:600;font-size:38px;letter-spacing:-0.03em;margin:0 0 14px;line-height:1;">corridor</h1>
+            <p style="font-family:var(--ff-display);font-style:italic;font-weight:400;font-size:19px;line-height:1.35;margin:0 0 auto;max-width:250px;color:var(--paper);">Your dollars, still dollars, on the other side.</p>
+
+            <div style="margin-bottom:16px;">
+              <div class="corridor-strip" style="margin-bottom:24px;">
+                <span class="ctok on">US</span>
+                <div class="track"><div class="ln"></div></div>
+                <span class="ctok on">TR</span>
+                <span style="font-size:11px;color:var(--mist);font-variant-numeric:tabular-nums;">1 USD = 52.84 ₺</span>
+              </div>
+              <div class="field" style="margin-bottom:12px;">
+                <div class="input focus"><span class="ph">you@email.com</span><span class="caret"></span></div>
+              </div>
+              <button class="btn primary">Continue</button>
+              <button class="btn ghost" style="margin-top:6px;">Use a passkey instead</button>
+            </div>
+          </div>
+          <div class="dock">
+            <p style="font-size:10.5px;color:var(--mist);text-align:center;margin:0;line-height:1.6;">
+              Wallet secured by Privy · no seed phrase, ever<br>
+              <span style="color:#7d776c;">Demo build · Base Sepolia · fiat rails simulated</span>
+            </p>
+          </div>
+          <div class="hi"></div>
+        </div>
+      </div>
+      <div class="anno">
+        <p class="num">01</p>
+        <h3>Welcome &amp; auth <span class="badge real" style="vertical-align:middle;margin-left:6px;">real</span></h3>
+        <p class="purpose">Get someone to a funded, non-custodial wallet without them ever learning they now have one.</p>
+        <ul>
+          <li><b>Email or passkey. Nothing else.</b> No seed phrase, no extension, no "connect wallet" — Privy provisions the embedded wallet on first login and shards the key across device, Privy, and recovery.</li>
+          <li><b>The word "wallet" never appears</b> above the fold. It's in the footnote, as reassurance, not as a concept the user has to learn before signing up.</li>
+          <li>The <b>positioning line is the hero</b>. A remittance sender's real fear is that value shrinks in transit; the line answers it in one sentence with no crypto vocabulary.</li>
+          <li>The live rate is on the <b>first</b> screen. Rate is the single number this audience shops on — making them sign up to see it is a conversion tax.</li>
+          <li>Demo disclosure sits in the footer of the very first screen, permanently.</li>
+        </ul>
+        <div class="arch">
+          <p class="lbl">architecture</p>
+          <p><b>Privy <code>useLoginWithEmail</code> → embedded wallet on first auth.</b> The wallet address is derived before the user reaches Home, so the balance query on 02 never races the wallet creation. Passkey is the fallback for returning users, not the primary — email survives device loss.</p>
+        </div>
+        <div class="states">
+          <p class="lbl">states</p>
+          <div class="pills"><span>idle</span><span>invalid email</span><span>OTP sent</span><span>verifying</span><span>passkey prompt</span><span>auth failed</span><span>returning user</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ------------------------------------------------------ 02 -->
+    <div class="screen-row">
+      <div class="device">
+        <div class="island"></div>
+        <div class="screen">
+          <div class="sb">
+            <span class="time">9:41</span>
+            <span class="icons"><svg width="18"><use href="#sb-signal"/></svg><svg width="15"><use href="#sb-wifi"/></svg><svg width="24"><use href="#sb-batt"/></svg></span>
+          </div>
+          <div class="demo-strip"><span class="dot"></span><p>Demo build · Base Sepolia · fiat rails simulated</p></div>
+          <div class="nav">
+            <div style="display:flex;align-items:center;gap:8px;">
+              <svg style="width:17px;height:17px;"><use href="#mark"/></svg>
+              <span style="font-family:var(--ff-display);font-weight:600;font-size:15px;">corridor</span>
+            </div>
+            <div class="back" style="background:transparent;"><svg style="width:15px;height:15px;color:var(--mist);"><use href="#user"/></svg></div>
+          </div>
+          <div class="sbody">
+            <div class="card" style="margin:8px 0 14px;">
+              <p class="t-micro" style="margin-bottom:12px;">your balance</p>
+              <p class="amt-hero" style="font-size:40px;">1,284.50 <span class="cur">USDC</span></p>
+              <p style="font-size:13px;color:var(--mist);margin:9px 0 16px;font-variant-numeric:tabular-nums;">≈ $1,284.50 — always 1:1</p>
+              <div class="chip plain" style="padding-left:0;">
+                <span style="color:var(--mist);">0x7A3f···0a9E</span>
+                <svg><use href="#copy"/></svg>
+                <span style="color:var(--mist);opacity:0.6;">·</span>
+                <span style="font-family:var(--ff-ui);font-size:10.5px;color:var(--mist);">Base</span>
+              </div>
+            </div>
+
+            <div class="corridor-strip" style="margin-bottom:14px;">
+              <span class="ctok on">US</span>
+              <div class="track"><div class="ln"></div></div>
+              <span class="ctok on">TR</span>
+              <div style="text-align:right;">
+                <p style="font-size:12px;font-variant-numeric:tabular-nums;margin:0;font-weight:500;">52.84 ₺</p>
+                <p style="font-size:10px;color:var(--success);margin:1px 0 0;">▲ 0.4% today</p>
+              </div>
+            </div>
+
+            <button class="btn primary" style="margin-bottom:20px;">Send to Turkey</button>
+
+            <div class="row" style="margin-bottom:2px;">
+              <p class="t-micro">activity</p>
+              <p style="font-size:11.5px;color:var(--mist);margin:0;">See all</p>
+            </div>
+            <div class="list-row">
+              <div class="lead">TR</div>
+              <div class="mid"><p class="l1">Elif Yıldız</p><p class="l2">Aug 3 · Garanti BBVA</p></div>
+              <div class="end"><p class="v">₺26,420</p><p class="s"><span class="pill live">in transit</span></p></div>
+            </div>
+            <div class="list-row">
+              <div class="lead">TR</div>
+              <div class="mid"><p class="l1">Elif Yıldız</p><p class="l2">Jul 19 · Garanti BBVA</p></div>
+              <div class="end"><p class="v">₺13,140</p><p class="s"><span class="pill done">delivered</span></p></div>
+            </div>
+            <div class="list-row">
+              <div class="lead">US</div>
+              <div class="mid"><p class="l1">Added funds</p><p class="l2">Jul 19 · Chase ···4417</p></div>
+              <div class="end"><p class="v">+250.00</p><p class="s">USDC</p></div>
+            </div>
+          </div>
+          <div class="hi"></div>
+        </div>
+      </div>
+      <div class="anno">
+        <p class="num">02</p>
+        <h3>Home <span class="badge real" style="vertical-align:middle;margin-left:6px;">real</span> <span class="badge mock" style="vertical-align:middle;">rate feed</span></h3>
+        <p class="purpose">One balance, one corridor, one action. Everything else is history.</p>
+        <ul>
+          <li><b>A single primary CTA.</b> Not "send / receive / swap / buy" — this app does one thing, and the home screen should be embarrassed to pretend otherwise.</li>
+          <li><b>"≈ $1,284.50 — always 1:1"</b> under the balance. The whole reason a remittance user tolerates a stablecoin is that it doesn't move. Say it where the number is.</li>
+          <li>The corridor strip carries the <b>live rate plus its direction</b>, so the user builds a mental model of the market before they're asked to commit to a number on 03.</li>
+          <li><b>Address is visible but demoted</b> — mist, mono, copyable. Present for the crypto-literate, invisible to everyone else.</li>
+          <li>Activity uses status pills, not icons. <code>in transit</code> is a first-class state here because the ACH leg means transfers genuinely live for days.</li>
+          <li>The demo strip is persistent chrome, not a dismissible toast.</li>
+        </ul>
+        <div class="arch">
+          <p class="lbl">architecture</p>
+          <p>Balance reads from chain via Privy's provider; activity is a merge of <b>on-chain transfers and off-chain Bridge transfer records</b>, keyed on a client-generated <code>transferId</code>. Those two sources settle at different speeds, so the list renders from the off-chain record and enriches with the hash when it lands — never the reverse, or rows would appear and vanish.</p>
+        </div>
+        <div class="states">
+          <p class="lbl">states</p>
+          <div class="pills"><span>zero balance / first run</span><span>funded</span><span>inbound pending</span><span>rate feed stale</span><span>offline (cached)</span><span>KYC required banner</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ------------------------------------------------------ 03 -->
+    <div class="screen-row">
+      <div class="device">
+        <div class="island"></div>
+        <div class="screen">
+          <div class="sb">
+            <span class="time">9:41</span>
+            <span class="icons"><svg width="18"><use href="#sb-signal"/></svg><svg width="15"><use href="#sb-wifi"/></svg><svg width="24"><use href="#sb-batt"/></svg></span>
+          </div>
+          <div class="nav">
+            <div class="back"><svg><use href="#chev-l"/></svg></div>
+            <span class="title">New transfer</span>
+            <span class="step">1 / 4</span>
+          </div>
+          <div class="sbody">
+            <div style="padding:14px 0 4px;">
+              <p class="t-label">you send</p>
+              <p class="amt-hero">$500.00<span class="caret"></span></p>
+            </div>
+
+            <div class="divmark">
+              <div class="ln"></div>
+              <svg><use href="#mark"/></svg>
+              <div class="ln"></div>
+            </div>
+
+            <div style="padding-bottom:16px;">
+              <p class="t-label">Elif receives</p>
+              <p class="amt-sub">₺26,420.00 <span class="cur">TRY</span></p>
+            </div>
+
+            <div class="rate-strip" style="margin-bottom:10px;">
+              <p class="rl">1 USD = <b>52.84 ₺</b> <span style="color:var(--mist);">· mid-market</span></p>
+              <span class="lock"><svg><use href="#lock"/></svg>14:52</span>
+            </div>
+
+            <div class="card tight" style="margin-bottom:14px;">
+              <div class="row" style="cursor:pointer;">
+                <p style="font-size:12.5px;color:var(--mist);margin:0;">Fees</p>
+                <p style="font-size:12.5px;margin:0;display:flex;align-items:center;gap:6px;font-variant-numeric:tabular-nums;">$3.75 <svg style="width:11px;height:11px;color:var(--mist);"><use href="#chev-d"/></svg></p>
+              </div>
+              <div style="border-top:1px solid var(--line);margin-top:11px;padding-top:4px;">
+                <div class="fee-line"><span>On-ramp · ACH → USDC</span><span>$1.25</span></div>
+                <div class="fee-line"><span>Network · Base</span><span>$0.01</span></div>
+                <div class="fee-line"><span>Payout · USDC → TRY</span><span>$2.49</span></div>
+                <div class="fee-line total"><span>Total charged</span><span>$503.75</span></div>
+              </div>
+              <p style="font-size:10.5px;color:var(--success);margin:12px 0 0;line-height:1.5;">No FX markup — you get the mid-market rate. Our margin is the $3.75.</p>
+            </div>
+
+            <div class="keypad">
+              <div class="k">1</div><div class="k">2</div><div class="k">3</div>
+              <div class="k">4</div><div class="k">5</div><div class="k">6</div>
+              <div class="k">7</div><div class="k">8</div><div class="k">9</div>
+              <div class="k fn">.</div><div class="k">0</div><div class="k fn"><svg><use href="#del"/></svg></div>
+            </div>
+          </div>
+          <div class="dock">
+            <button class="btn primary">Continue</button>
+          </div>
+          <div class="hi"></div>
+        </div>
+      </div>
+      <div class="anno">
+        <p class="num">03</p>
+        <h3>Amount <span class="badge hybrid" style="vertical-align:middle;margin-left:6px;">hybrid</span></h3>
+        <p class="purpose">The quote <em>is</em> the product. Everything else is logistics.</p>
+        <ul>
+          <li><b>Mid-market rate, no markup — stated on the screen.</b> Legacy remitters bury a 3–5% spread in a "free transfer". Naming our margin out loud is the entire competitive posture, so it goes next to the number, not in a help article.</li>
+          <li><b>The rate lock has a visible countdown.</b> A quote that silently expires is the most common way a transfer flow loses trust. If it's going to expire, the user watches it happen.</li>
+          <li><b>Fees expand, they don't hide.</b> Three line items, each named after the rail it pays for — on-ramp, network, payout. A CTO reading this sees the cost structure of the corridor.</li>
+          <li><b>Custom keypad, not the OS keyboard.</b> The receive amount recomputes on every keystroke; a system keyboard would resize the viewport and make the two amounts jump. It also lets us reject a second decimal point rather than validate after the fact.</li>
+          <li>The mark is the divider between the two currencies — the identity's own applied pattern, doing its job.</li>
+          <li>"Elif receives", not "recipient gets". The recipient is already known from the last transfer.</li>
+        </ul>
+        <div class="arch">
+          <p class="lbl">architecture</p>
+          <p><b>Quotes are server-issued and signed, never computed on the client.</b> The client displays a <code>quoteId</code> with an <code>expiresAt</code>; 08 submits the <code>quoteId</code>, not the amounts. This is what stops a stale or tampered rate from reaching settlement — the client's numbers are a rendering of the quote, never the source of it.</p>
+        </div>
+        <div class="states">
+          <p class="lbl">states</p>
+          <div class="pills"><span>empty</span><span>typing</span><span>valid</span><span>below min $10</span><span>above tier limit</span><span>insufficient balance</span><span>rate refreshing</span><span>rate expired</span><span>corridor paused</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ------------------------------------------------------ 04 -->
+    <div class="screen-row">
+      <div class="device">
+        <div class="island"></div>
+        <div class="screen">
+          <div class="sb">
+            <span class="time">9:41</span>
+            <span class="icons"><svg width="18"><use href="#sb-signal"/></svg><svg width="15"><use href="#sb-wifi"/></svg><svg width="24"><use href="#sb-batt"/></svg></span>
+          </div>
+          <div class="nav">
+            <div class="back"><svg><use href="#chev-l"/></svg></div>
+            <span class="title">Add USD</span>
+            <span class="step">2 / 4</span>
+          </div>
+          <div class="sbody">
+            <h2 class="h-display" style="margin-top:10px;">How do you want<br>to pay the $503.75?</h2>
+            <p class="t-body" style="margin-bottom:20px;">Your USD becomes USDC the moment it lands.</p>
+
+            <div class="opt sel">
+              <span class="radio"></span>
+              <div class="txt">
+                <p class="o1">Bank transfer <span style="font-size:10px;color:var(--mist);font-weight:400;">ACH</span></p>
+                <p class="o2">Chase ···4417 · arrives <b style="color:var(--paper);font-weight:500;">Wed, Aug 5</b></p>
+              </div>
+              <span class="cost free">Free</span>
+            </div>
+
+            <div class="opt">
+              <span class="radio"></span>
+              <div class="txt">
+                <p class="o1">Debit card</p>
+                <p class="o2">Instant · arrives today</p>
+              </div>
+              <span class="cost">$7.56</span>
+            </div>
+
+            <div class="opt">
+              <span class="radio"></span>
+              <div class="txt">
+                <p class="o1">Wire</p>
+                <p class="o2">Same business day if sent before 15:00 ET</p>
+              </div>
+              <span class="cost">$15.00</span>
+            </div>
+
+            <div class="card tight" style="margin:16px 0 14px;">
+              <div class="row" style="margin-bottom:12px;">
+                <p style="font-size:12.5px;color:var(--mist);margin:0;">You pay</p>
+                <p style="font-size:14px;margin:0;" class="num">$503.75</p>
+              </div>
+              <div class="route-mini">
+                <span class="n on"></span><span class="seg on"></span>
+                <span class="n on"></span><span class="seg"></span>
+                <span class="n"></span>
+              </div>
+              <div class="route-mini-labels"><span>Chase</span><span>USDC · Base</span><span>Garanti</span></div>
+            </div>
+
+            <div class="disclose">
+              <svg><use href="#alert"/></svg>
+              <p><b style="font-weight:600;">Simulated leg.</b> Bridge's on-ramp is KYB-gated, so no real bank is debited. Timing and fees are modelled on Bridge's live behaviour.</p>
+            </div>
+          </div>
+          <div class="dock">
+            <button class="btn primary">Pay $503.75</button>
+          </div>
+          <div class="hi"></div>
+        </div>
+      </div>
+      <div class="anno">
+        <p class="num">04</p>
+        <h3>Add USD — on-ramp <span class="badge mock" style="vertical-align:middle;margin-left:6px;">simulated</span></h3>
+        <p class="purpose">Make the speed-versus-cost trade legible <em>before</em> the user commits to it.</p>
+        <ul>
+          <li><b>A date, not a duration.</b> "Arrives Wed, Aug 5" instead of "1–3 business days" — the vague version is where remittance apps lose people, because the sender usually has a real deadline on the other end.</li>
+          <li><b>ACH is the default and it's free.</b> Instant costs 1.5%. We show both honestly and let the user decide whether their urgency is worth $7.56.</li>
+          <li>The mini route preview shows <b>which leg they're buying</b> — the choice only affects the first hop; the chain and payout legs are identical either way.</li>
+          <li>The simulation notice is <b>in the flow, at the moment of the lie</b>. It names why (KYB gating) and what's still faithful (timing, fee structure).</li>
+        </ul>
+        <div class="arch">
+          <p class="lbl">architecture — the important one</p>
+          <p><b>ACH is the settlement-risk leg, and it's the reason this corridor is hard.</b> An ACH debit can be returned days after it appears to have cleared — <code>R01</code> insufficient funds up to 2 days, <code>R08</code> stop payment, <code>R10</code> unauthorised up to <b>60 days</b>. The USDC has been sent and the TRY paid out long before that window closes. Every operator has to pick: hold the payout until ACH settles (slow, safe) or front the funds and underwrite the return risk (fast, needs capital and fraud scoring). <b>Corridor holds.</b> That's why 09 shows "USD received" as a discrete step with its own timestamp rather than collapsing it into a spinner — the wait is real, so the UI makes it legible instead of hiding it.</p>
+        </div>
+        <div class="states">
+          <p class="lbl">states</p>
+          <div class="pills"><span>no source linked</span><span>linking (Plaid)</span><span>source selected</span><span>micro-deposit pending</span><span>insufficient funds</span><span>submitting</span><span>debit failed</span><span>ACH returned</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ------------------------------------------------------ 05 -->
+    <div class="screen-row">
+      <div class="device">
+        <div class="island"></div>
+        <div class="screen">
+          <div class="sb">
+            <span class="time">9:41</span>
+            <span class="icons"><svg width="18"><use href="#sb-signal"/></svg><svg width="15"><use href="#sb-wifi"/></svg><svg width="24"><use href="#sb-batt"/></svg></span>
+          </div>
+          <div class="nav">
+            <div class="back"><svg><use href="#chev-l"/></svg></div>
+            <span class="title">Verify identity</span>
+            <span class="step">3 / 4</span>
+          </div>
+          <div class="sbody">
+            <div style="padding:18px 0 22px;">
+              <div class="bloom warn" style="margin-bottom:24px;"><svg><use href="#lock"/></svg></div>
+              <h2 class="h-display">One check before<br>your first payout.</h2>
+              <p class="t-body" style="max-width:290px;">US money-transmission rules require us to verify who you are before dollars can leave for a foreign bank account. Once. Not every transfer.</p>
+            </div>
+
+            <div class="card" style="margin-bottom:14px;">
+              <p class="t-micro" style="margin-bottom:16px;">what you'll need · about 2 minutes</p>
+              <div class="list-row" style="padding:11px 0;">
+                <div class="lead" style="width:30px;height:30px;font-size:11px;">1</div>
+                <div class="mid"><p class="l1" style="font-size:13.5px;">Government ID</p><p class="l2">Driver's licence or passport</p></div>
+              </div>
+              <div class="list-row" style="padding:11px 0;">
+                <div class="lead" style="width:30px;height:30px;font-size:11px;">2</div>
+                <div class="mid"><p class="l1" style="font-size:13.5px;">A selfie</p><p class="l2">Matched against the ID photo</p></div>
+              </div>
+              <div class="list-row" style="padding:11px 0;">
+                <div class="lead" style="width:30px;height:30px;font-size:11px;">3</div>
+                <div class="mid"><p class="l1" style="font-size:13.5px;">Home address</p><p class="l2">Pre-filled from your ID</p></div>
+              </div>
+            </div>
+
+            <div class="card tight" style="margin-bottom:12px;">
+              <p style="font-size:11.5px;color:var(--mist);margin:0;line-height:1.6;">
+                <b style="color:var(--paper);font-weight:500;">Corridor never stores your documents.</b>
+                Images go straight to our verification provider. We keep the result and a reference — never the file.
+              </p>
+            </div>
+
+            <div class="disclose">
+              <svg><use href="#alert"/></svg>
+              <p><b style="font-weight:600;">Real flow, mocked provider.</b> Sequencing, states and retry logic are production-shaped; the vendor response is a fixture.</p>
+            </div>
+          </div>
+          <div class="dock">
+            <button class="btn primary">Start verification</button>
+            <button class="btn ghost">Not now</button>
+          </div>
+          <div class="hi"></div>
+        </div>
+      </div>
+      <div class="anno">
+        <p class="num">05</p>
+        <h3>KYC gate <span class="badge hybrid" style="vertical-align:middle;margin-left:6px;">hybrid</span></h3>
+        <p class="purpose">Explain before demanding. A verification wall with no stated reason reads as a scam to exactly the users who most need this product.</p>
+        <ul>
+          <li><b>Placed after the quote, before funding.</b> The user has already seen what they'd get, so they're verifying <em>for</em> something concrete. Gating at signup instead would kill the funnel before the value is visible.</li>
+          <li><b>Names the actual reason</b> — US money transmission — rather than "for security reasons". Diaspora senders have usually been asked for documents by someone who shouldn't have asked; specificity is what separates us from that.</li>
+          <li><b>"Once. Not every transfer."</b> The single most valuable sentence on the screen.</li>
+          <li><b>Says what we don't keep</b>, unprompted. Data handling stated before the camera opens, not in a policy nobody opens.</li>
+          <li>Time estimate is concrete, and "Not now" is a real exit — the quote survives, the transfer parks.</li>
+        </ul>
+        <div class="arch">
+          <p class="lbl">architecture</p>
+          <p>KYC status is a <b>server-owned state machine</b> — <code>none → pending → review → approved | rejected | resubmit</code> — never inferred client-side. The client polls or subscribes; it never decides. Approval is also <b>tiered</b>: basic KYC clears the $2,999 per-transfer limit shown on 03, higher limits require proof of address and source of funds. Turkey adds a second constraint the flow has to respect — <b>the payout name must match the verified sender or a declared recipient</b>, which is why 07 warns about name matching rather than discovering it at payout time.</p>
+        </div>
+        <div class="states">
+          <p class="lbl">states</p>
+          <div class="pills"><span>not started</span><span>in progress</span><span>in review</span><span>approved</span><span>resubmit needed</span><span>rejected</span><span>tier upgrade required</span><span>provider down</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ------------------------------------------------------ 06 -->
+    <div class="screen-row">
+      <div class="device">
+        <div class="island"></div>
+        <div class="screen">
+          <div class="sb">
+            <span class="time">9:41</span>
+            <span class="icons"><svg width="18"><use href="#sb-signal"/></svg><svg width="15"><use href="#sb-wifi"/></svg><svg width="24"><use href="#sb-batt"/></svg></span>
+          </div>
+          <div class="nav">
+            <div class="back"><svg><use href="#x"/></svg></div>
+            <span class="title">Government ID</span>
+            <span class="step">2 / 3</span>
+          </div>
+          <div class="sbody">
+            <div class="rail" style="margin-top:6px;">
+              <span class="seg on"></span><span class="seg on"></span><span class="seg"></span>
+            </div>
+
+            <h2 class="h-title" style="margin-bottom:6px;">Back of your licence</h2>
+            <p class="t-body" style="margin-bottom:20px;">Fill the frame. Flat surface, no glare.</p>
+
+            <div class="viewport" style="margin-bottom:18px;">
+              <div class="idcard">
+                <div class="ph"></div>
+                <div class="ln" style="top:24%;width:52%;"></div>
+                <div class="ln" style="top:42%;width:44%;"></div>
+                <div class="ln" style="top:60%;width:56%;"></div>
+                <div class="ln" style="top:78%;width:36%;"></div>
+              </div>
+              <div class="guide"><i></i><i></i><i></i><i></i></div>
+            </div>
+
+            <div class="row" style="margin-bottom:18px;">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span class="pill done">front captured</span>
+              </div>
+              <p style="font-size:11px;color:var(--success);margin:0;display:flex;align-items:center;gap:5px;">
+                <svg style="width:11px;height:11px;"><use href="#check"/></svg> Glare check passed
+              </p>
+            </div>
+
+            <div class="shutter"></div>
+            <p style="font-size:11px;color:var(--mist);text-align:center;margin:14px 0 0;">
+              Having trouble? <span style="color:var(--gold-bright);">Upload from photos</span>
+            </p>
+          </div>
+          <div class="hi"></div>
+        </div>
+      </div>
+      <div class="anno">
+        <p class="num">06</p>
+        <h3>ID capture <span class="badge hybrid" style="vertical-align:middle;margin-left:6px;">hybrid</span></h3>
+        <p class="purpose">One instruction at a time, with the camera doing the teaching.</p>
+        <ul>
+          <li><b>The guide frame is the instruction.</b> Two short lines of copy, not a paragraph. Anything longer gets skipped by a user holding a phone in one hand and a licence in the other.</li>
+          <li><b>Glare and blur are checked on-device before upload.</b> Round-tripping a bad frame to a vendor and failing 60 seconds later is the single worst moment in any KYC flow — most abandonment happens on the second rejection.</li>
+          <li>The <b>progress rail</b> is three segments, not a percentage. The user needs to know how much is left, not how much is done.</li>
+          <li>"front captured" stays visible so the user knows what's banked. Nothing they've already done should feel at risk.</li>
+          <li><b>Upload-from-photos escape hatch</b> for cracked cameras, bad light, and shaky hands. Never trap someone in a camera.</li>
+        </ul>
+        <div class="arch">
+          <p class="lbl">architecture</p>
+          <p>Images never touch Corridor's servers — the client uploads <b>direct to the provider with a short-lived signed URL</b>, and our backend only ever sees <code>{ sessionId, status, reasonCode }</code>. That's a deliberate reduction of what a breach could expose, and it's the technical fact behind the promise made on 05. Capture is <b>resumable</b>: sessions survive backgrounding, so an interrupted verification doesn't restart at step one.</p>
+        </div>
+        <div class="states">
+          <p class="lbl">states</p>
+          <div class="pills"><span>framing</span><span>glare detected</span><span>blur detected</span><span>captured</span><span>retake</span><span>uploading</span><span>reviewing</span><span>permission denied</span><span>provider timeout</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ------------------------------------------------------ 07 -->
+    <div class="screen-row">
+      <div class="device">
+        <div class="island"></div>
+        <div class="screen">
+          <div class="sb">
+            <span class="time">9:41</span>
+            <span class="icons"><svg width="18"><use href="#sb-signal"/></svg><svg width="15"><use href="#sb-wifi"/></svg><svg width="24"><use href="#sb-batt"/></svg></span>
+          </div>
+          <div class="nav">
+            <div class="back"><svg><use href="#chev-l"/></svg></div>
+            <span class="title">Recipient</span>
+            <span class="step">4 / 4</span>
+          </div>
+          <div class="sbody">
+            <h2 class="h-display" style="margin-top:10px;">Who's receiving<br>the ₺26,420?</h2>
+            <p class="t-body" style="margin-bottom:20px;">Turkish bank account, in Turkish lira.</p>
+
+            <p class="t-micro" style="margin-bottom:10px;">saved</p>
+            <div class="opt sel" style="margin-bottom:20px;">
+              <span class="radio"></span>
+              <div class="txt">
+                <p class="o1">Elif Yıldız</p>
+                <p class="o2" style="font-family:var(--ff-mono);font-size:11px;">TR64 ···· 2345 · Garanti BBVA</p>
+              </div>
+              <span class="pill done" style="align-self:center;">verified</span>
+            </div>
+
+            <p class="t-micro" style="margin-bottom:10px;">or add someone new</p>
+
+            <div class="field">
+              <p class="fl">Full name — exactly as their bank has it</p>
+              <div class="input"><span class="ph">Ad Soyad</span></div>
+            </div>
+
+            <div class="field">
+              <p class="fl">IBAN</p>
+              <div class="input mono focus"><span class="pre">TR</span><span>64 0062 0001 2345</span><span class="caret"></span></div>
+              <p class="hint ok"><svg><use href="#check"/></svg> Checksum valid · Garanti BBVA</p>
+            </div>
+
+            <div class="card tight" style="margin-top:6px;">
+              <div style="display:flex;gap:10px;align-items:flex-start;">
+                <svg style="width:14px;height:14px;color:var(--warning);flex-shrink:0;margin-top:2px;"><use href="#alert"/></svg>
+                <p style="font-size:11.5px;color:var(--mist);margin:0;line-height:1.6;">
+                  <b style="color:var(--paper);font-weight:500;">Turkish banks reject on name mismatch.</b>
+                  If the name doesn't match the account holder exactly, the payout bounces — and takes 2–3 days to come back.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="dock">
+            <button class="btn primary">Continue</button>
+          </div>
+          <div class="hi"></div>
+        </div>
+      </div>
+      <div class="anno">
+        <p class="num">07</p>
+        <h3>Recipient <span class="badge mock" style="vertical-align:middle;margin-left:6px;">payout simulated</span> <span class="badge real" style="vertical-align:middle;">validation real</span></h3>
+        <p class="purpose">Catch the failure here, where it costs a retype — not at payout, where it costs three days.</p>
+        <ul>
+          <li><b>IBAN validated locally: TR length (26) + ISO 7064 mod-97 checksum</b>, before any network call. Instant feedback, zero round trips, works offline.</li>
+          <li><b>The bank name is derived from the IBAN's own bank code</b> (<code>0062</code> → Garanti BBVA) and echoed back. That's the cheapest possible confirmation that the user typed the right account — they recognise the bank, or they don't.</li>
+          <li><b>The name-match warning is stated up front,</b> with the actual consequence and the actual delay. It's the number one cause of Turkish payout rejection, and a user who reads this sentence checks the spelling.</li>
+          <li>"Exactly as their bank has it" beats "Full name" — it tells the user what correctness means here, which is not what it means anywhere else in the app.</li>
+          <li>The saved recipient is pre-selected and marked <code>verified</code> — a recipient who has successfully received once is the safest path, so it's the default.</li>
+          <li>Turkish placeholder text (<em>Ad Soyad</em>) — this corridor's users are Turkish speakers.</li>
+        </ul>
+        <div class="arch">
+          <p class="lbl">architecture</p>
+          <p>Local validation catches format errors; it <b>cannot</b> catch a valid IBAN belonging to the wrong person. Real implementations resolve that with a name-check service before debit where the market offers one. Turkey does not, so the design absorbs it: warn loudly at entry, mark previously-successful recipients as <code>verified</code>, and make the returned-payout path on 11 non-catastrophic. <b>When you can't prevent a failure, make it cheap.</b></p>
+        </div>
+        <div class="states">
+          <p class="lbl">states</p>
+          <div class="pills"><span>saved selected</span><span>empty</span><span>typing</span><span>bad checksum</span><span>wrong country</span><span>unsupported bank</span><span>valid</span><span>sanctions hit</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ------------------------------------------------------ 08 -->
+    <div class="screen-row">
+      <div class="device">
+        <div class="island"></div>
+        <div class="screen">
+          <div class="sb">
+            <span class="time">9:41</span>
+            <span class="icons"><svg width="18"><use href="#sb-signal"/></svg><svg width="15"><use href="#sb-wifi"/></svg><svg width="24"><use href="#sb-batt"/></svg></span>
+          </div>
+          <div class="nav">
+            <div class="back"><svg><use href="#chev-l"/></svg></div>
+            <span class="title">Review</span>
+            <span class="spacer"></span>
+          </div>
+          <div class="sbody">
+            <div class="card" style="margin:6px 0 12px;">
+              <p class="t-label">you send</p>
+              <p class="amt-sub" style="font-size:30px;margin-bottom:2px;">$503.75 <span class="cur">USD</span></p>
+              <p style="font-size:11px;color:var(--mist);margin:0;">from Chase ···4417</p>
+
+              <div class="divmark">
+                <div class="ln"></div>
+                <svg><use href="#mark"/></svg>
+                <div class="ln"></div>
+              </div>
+
+              <p class="t-label">Elif Yıldız receives</p>
+              <p class="amt-sub" style="font-size:30px;margin-bottom:2px;">₺26,420.00 <span class="cur">TRY</span></p>
+              <p style="font-size:11px;color:var(--mist);margin:0;font-family:var(--ff-mono);">TR64 ···· 2345 · Garanti BBVA</p>
+            </div>
+
+            <div class="rate-strip warn" style="margin-bottom:12px;">
+              <p class="rl">1 USD = <b>52.84 ₺</b></p>
+              <span class="lock"><svg><use href="#lock"/></svg>00:47 left</span>
+            </div>
+
+            <div class="card tight" style="margin-bottom:12px;">
+              <div class="fee-line"><span>Transfer amount</span><span>$500.00</span></div>
+              <div class="fee-line"><span>On-ramp · ACH → USDC</span><span>$1.25</span></div>
+              <div class="fee-line"><span>Network · Base</span><span>$0.01</span></div>
+              <div class="fee-line"><span>Payout · USDC → TRY</span><span>$2.49</span></div>
+              <div class="fee-line total"><span>Total charged</span><span>$503.75</span></div>
+            </div>
+
+            <div class="card tight" style="margin-bottom:12px;">
+              <div class="row" style="margin-bottom:14px;">
+                <p style="font-size:12px;color:var(--mist);margin:0;">Estimated arrival</p>
+                <p style="font-size:12.5px;margin:0;font-weight:500;">Wed, Aug 5 · by 14:00</p>
+              </div>
+              <div class="route-mini">
+                <span class="n on"></span><span class="seg"></span>
+                <span class="n"></span><span class="seg"></span>
+                <span class="n"></span><span class="seg"></span>
+                <span class="n"></span>
+              </div>
+              <div class="route-mini-labels"><span>ACH</span><span>USDC</span><span>Base</span><span>TRY</span></div>
+            </div>
+          </div>
+          <div class="dock bordered">
+            <div class="slider">
+              <div class="knob"><svg><use href="#chev-r"/></svg></div>
+              <span class="lbl">Slide to send $503.75</span>
+            </div>
+          </div>
+          <div class="hi"></div>
+        </div>
+      </div>
+      <div class="anno">
+        <p class="num">08</p>
+        <h3>Review &amp; confirm <span class="badge hybrid" style="vertical-align:middle;margin-left:6px;">hybrid</span></h3>
+        <p class="purpose">The last screen where anything can be changed. Every number that will be charged is visible without tapping anything.</p>
+        <ul>
+          <li><b>Nothing is behind an expander.</b> On 03 the fee breakdown collapses because the user is still exploring; here they're committing, so it's all open. Same data, different disclosure, because the stakes changed.</li>
+          <li><b>Slide to send, not tap to send.</b> Deliberate friction proportional to irreversibility — this is the moment money leaves. It also makes accidental sends essentially impossible.</li>
+          <li><b>The lock is under a minute and the strip has turned amber.</b> The rate-expiry warning arrives before the failure, not as the failure — 11a is what happens if they ignore it.</li>
+          <li><b>Both the source and destination account are restated</b> here, at the last responsible moment, in mono. Wrong-account sends are unrecoverable; wrong-account reviews cost one tap back.</li>
+          <li>The four-node route sets the expectation that 09 will fulfil — the user has already seen the map before they watch the dot move along it.</li>
+        </ul>
+        <div class="arch">
+          <p class="lbl">architecture</p>
+          <p>Submission carries an <b>idempotency key</b> generated when the screen mounts, so a retry on a flaky connection can never double-send. The server re-validates the <code>quoteId</code> against its own clock — <b>a client with a frozen countdown still gets rejected</b>. On expiry the transfer isn't discarded, it's re-quoted: same recipient, same amount, new rate, explicit re-confirmation.</p>
+        </div>
+        <div class="states">
+          <p class="lbl">states</p>
+          <div class="pills"><span>locked</span><span>expiring &lt; 60s</span><span>expired</span><span>submitting</span><span>submitted</span><span>rejected — limits</span><span>rejected — compliance</span><span>network error / retry</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ------------------------------------------------------ 09 -->
+    <div class="screen-row">
+      <div class="device">
+        <div class="island"></div>
+        <div class="screen">
+          <div class="sb">
+            <span class="time">9:41</span>
+            <span class="icons"><svg width="18"><use href="#sb-signal"/></svg><svg width="15"><use href="#sb-wifi"/></svg><svg width="24"><use href="#sb-batt"/></svg></span>
+          </div>
+          <div class="nav">
+            <div class="back"><svg><use href="#chev-l"/></svg></div>
+            <span class="title">Transfer</span>
+            <span class="spacer"></span>
+          </div>
+          <div class="sbody">
+            <div style="padding:10px 0 20px;">
+              <span class="pill live" style="margin-bottom:12px;">on chain now</span>
+              <p class="amt-sub" style="font-size:32px;margin:8px 0 6px;">₺26,420.00</p>
+              <p style="font-size:12.5px;color:var(--mist);margin:0;">to Elif Yıldız · arriving by 14:00 today</p>
+            </div>
+
+            <div class="route">
+              <div class="step done">
+                <span class="node"><svg><use href="#check"/></svg></span>
+                <p class="r1">USD received</p>
+                <p class="r2">Aug 5, 09:38 · ACH cleared from Chase ···4417</p>
+              </div>
+              <div class="step done">
+                <span class="node"><svg><use href="#check"/></svg></span>
+                <p class="r1">Converted to USDC</p>
+                <p class="r2">Aug 5, 09:39 · $500.00 → 500.00 USDC at par</p>
+              </div>
+              <div class="step live">
+                <span class="node"></span>
+                <p class="r1">Sending on Base <span class="pill live">2 / 12 confs</span></p>
+                <p class="r2" style="margin-bottom:9px;">Aug 5, 09:41 · 500.00 USDC</p>
+                <div class="chip" style="margin-bottom:4px;">
+                  <span>0x8f2a···c19e</span>
+                  <svg><use href="#copy"/></svg>
+                  <svg><use href="#ext"/></svg>
+                </div>
+              </div>
+              <div class="step wait">
+                <span class="node"></span>
+                <p class="r1">TRY payout</p>
+                <p class="r2">Garanti BBVA · usually under 30 min</p>
+              </div>
+              <div class="step wait">
+                <span class="node"></span>
+                <p class="r1">Delivered</p>
+                <p class="r2">Elif is notified by her bank</p>
+              </div>
+            </div>
+          </div>
+          <div class="dock bordered">
+            <div class="row">
+              <p style="font-size:11.5px;color:var(--mist);margin:0;">Ref <span style="font-family:var(--ff-mono);color:var(--paper);">CRD-8F2A-4417</span></p>
+              <button class="btn secondary sm">Get help</button>
+            </div>
+          </div>
+          <div class="hi"></div>
+        </div>
+      </div>
+      <div class="anno">
+        <p class="num">09</p>
+        <h3>In flight <span class="badge real" style="vertical-align:middle;margin-left:6px;">chain leg real</span> <span class="badge mock" style="vertical-align:middle;">fiat legs</span></h3>
+        <p class="purpose">Five real steps mapped to five real rails — not a progress bar pretending to know something.</p>
+        <ul>
+          <li><b>Every step is a rail, and every completed step has a timestamp.</b> A generic spinner tells the user nothing and tells a reviewing engineer less. This screen is the architecture diagram, rendered for a non-technical user.</li>
+          <li><b>The hash appears the instant it exists</b> — mid-flight, not on the receipt. It's the verifiable artifact; making someone wait for success to see proof gets the sequencing backwards.</li>
+          <li><b>Confirmation count is shown</b> (<code>2 / 12</code>). On Base that's seconds, but it's the honest unit for this step, and it's what makes the on-chain leg feel materially different from the two fiat legs around it.</li>
+          <li>Pending steps carry their <b>expectation</b> — "usually under 30 min" — so silence never reads as failure.</li>
+          <li><b>The gold dot from the identity is doing real work here</b>, pulsing on the live node. The motion signature is load-bearing, not decoration.</li>
+          <li>The reference number and a help route sit in persistent chrome. Something going wrong is precisely when a user shouldn't have to hunt.</li>
+        </ul>
+        <div class="arch">
+          <p class="lbl">architecture</p>
+          <p>State is <b>push, with polling as the floor</b> — Bridge webhooks and chain subscriptions drive the timeline, and a backoff poll covers dropped sockets and cold starts. Steps are <b>monotonic</b>: the UI never walks a step backwards on out-of-order webhooks, because a user watching a completed step un-complete has just learned not to trust the screen. Each step also has a <b>stall threshold</b>; crossing it swaps the copy from "usually under 30 min" to a named, actionable delay rather than leaving the row silently spinning.</p>
+        </div>
+        <div class="states">
+          <p class="lbl">states</p>
+          <div class="pills"><span>per-step: wait / live / done / failed</span><span>ACH pending (days)</span><span>chain pending</span><span>chain reorg</span><span>payout queued — bank closed</span><span>step stalled</span><span>payout returned</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ------------------------------------------------------ 10 -->
+    <div class="screen-row">
+      <div class="device">
+        <div class="island"></div>
+        <div class="screen">
+          <div class="sb">
+            <span class="time">9:41</span>
+            <span class="icons"><svg width="18"><use href="#sb-signal"/></svg><svg width="15"><use href="#sb-wifi"/></svg><svg width="24"><use href="#sb-batt"/></svg></span>
+          </div>
+          <div class="nav">
+            <div class="back"><svg><use href="#x"/></svg></div>
+            <span class="title">Receipt</span>
+            <div class="back" style="background:transparent;border:none;"><svg style="width:15px;height:15px;color:var(--mist);"><use href="#share"/></svg></div>
+          </div>
+          <div class="sbody">
+            <div style="text-align:center;padding:16px 0 22px;">
+              <div class="bloom" style="margin:0 auto 20px;"><svg><use href="#check"/></svg></div>
+              <p class="t-micro" style="margin-bottom:10px;">delivered</p>
+              <p class="amt-hero" style="font-size:40px;justify-content:center;">₺26,420.00</p>
+              <p style="font-size:13px;color:var(--mist);margin:12px 0 0;">to Elif Yıldız · Garanti BBVA</p>
+              <p style="font-size:12px;color:var(--mist);margin:4px 0 0;">Aug 5, 2026 · 10:12</p>
+            </div>
+
+            <div class="card tight" style="margin-bottom:12px;">
+              <div class="fee-line"><span>You paid</span><span>$503.75</span></div>
+              <div class="fee-line"><span>Rate used</span><span>52.84 ₺ / USD</span></div>
+              <div class="fee-line"><span>Total fees</span><span>$3.75</span></div>
+              <div class="fee-line"><span>Time in transit</span><span>1d 19h 50m</span></div>
+              <div class="fee-line total"><span>Elif received</span><span>₺26,420.00</span></div>
+            </div>
+
+            <div class="card tight" style="margin-bottom:12px;">
+              <p class="t-micro" style="margin-bottom:11px;">on-chain proof</p>
+              <div class="chip" style="margin-bottom:11px;">
+                <span>0x8f2a···c19e</span>
+                <svg><use href="#copy"/></svg>
+              </div>
+              <div class="row">
+                <p style="font-size:11px;color:var(--mist);margin:0;">Base Sepolia · 500.00 USDC · 12 confs</p>
+                <p style="font-size:11.5px;color:var(--gold-bright);margin:0;display:flex;align-items:center;gap:5px;">
+                  BaseScan <svg style="width:10px;height:10px;"><use href="#ext"/></svg>
+                </p>
+              </div>
+            </div>
+
+            <div class="row" style="padding:2px 0 10px;">
+              <p style="font-size:11.5px;color:var(--mist);margin:0;">Reference</p>
+              <p style="font-family:var(--ff-mono);font-size:11.5px;margin:0;">CRD-8F2A-4417</p>
+            </div>
+          </div>
+          <div class="dock">
+            <button class="btn primary">Send again</button>
+            <button class="btn ghost">Download receipt</button>
+          </div>
+          <div class="hi"></div>
+        </div>
+      </div>
+      <div class="anno">
+        <p class="num">10</p>
+        <h3>Receipt <span class="badge real" style="vertical-align:middle;margin-left:6px;">hash real</span></h3>
+        <p class="purpose">The proof artifact. This is the screen that gets screenshotted and sent to the person on the other end.</p>
+        <ul>
+          <li><b>The tx hash is copyable and links out to BaseScan.</b> This is the case study's evidence: a real, independently verifiable Base Sepolia transfer. Anyone reviewing the portfolio can check it without taking my word for anything.</li>
+          <li><b>Rate used and total fees are restated</b> after the fact. A quote you can only see before you commit isn't a quote you can audit — and disputes are always after.</li>
+          <li><b>"Time in transit: 1d 19h 50m"</b> — reported honestly rather than quietly omitted. ACH was the slow leg; the chain leg took seconds. That contrast <em>is</em> the argument for stablecoin rails, and hiding it would throw away the point.</li>
+          <li><b>Delivered amount is the hero</b>, in the recipient's currency. The sender's mental model ends at "did she get the lira", so the receipt answers that first and everything else underneath.</li>
+          <li><b>"Send again" over "Done"</b>. Remittance is a habit — most senders are on a monthly cycle to the same person.</li>
+          <li>Share is in the nav bar. Sending the receipt to the recipient is the most common next action after closing.</li>
+        </ul>
+        <div class="arch">
+          <p class="lbl">architecture</p>
+          <p>The receipt renders from an <b>immutable settled record</b>, not from live state — once terminal, it never re-fetches and never changes. Downloadable as PDF with the same reference number, because this is the document that goes to a bank or an accountant. <b>"Delivered" means the payout was confirmed by Bridge as credited</b>, not merely submitted; the two are days apart when a Turkish bank holiday intervenes, and conflating them is how a receipt becomes a lie.</p>
+        </div>
+        <div class="states">
+          <p class="lbl">states</p>
+          <div class="pills"><span>delivered</span><span>delivered late</span><span>partially returned</span><span>refunded</span><span>under review</span></div>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ==========================================================
+       11 — EDGE STATES
+       ========================================================== -->
+  <section class="block" id="edge">
+    <div class="eyebrow">11 · edge states</div>
+    <h2 class="sec">Where the money doesn't move</h2>
+    <p class="note">
+      Happy paths are easy to design and prove nothing. These three are the failures this corridor
+      actually produces — a rate that dies mid-flow, a document a provider won't accept, and a Turkish
+      bank that bounces the payout. Each one has a rule: <b>say what happened, say where the money is,
+      say what to do next — in that order.</b>
+    </p>
+
+    <div class="trio">
+
+      <!-- 11a rate expired -->
+      <div class="unit">
+        <div class="device sm">
+          <div class="island"></div>
+          <div class="screen">
+            <div class="sb"><span class="time">9:41</span><span class="icons"><svg width="14"><use href="#sb-signal"/></svg><svg width="12"><use href="#sb-wifi"/></svg><svg width="19"><use href="#sb-batt"/></svg></span></div>
+            <div class="nav" style="height:40px;padding:0 15px;">
+              <div class="back" style="width:26px;height:26px;"><svg style="width:11px;height:11px;"><use href="#chev-l"/></svg></div>
+              <span class="title" style="font-size:11.5px;">Review</span>
+              <span class="spacer" style="width:26px;"></span>
+            </div>
+            <div class="sbody" style="padding:0 15px;">
+              <div style="text-align:center;padding:14px 0 16px;">
+                <div class="bloom warn" style="margin:0 auto 14px;width:56px;height:56px;"><svg style="width:24px;height:24px;"><use href="#refresh"/></svg></div>
+                <p style="font-family:var(--ff-display);font-weight:600;font-size:17px;letter-spacing:-0.02em;margin:0 0 7px;">Your rate expired</p>
+                <p style="font-size:11px;color:var(--mist);margin:0;line-height:1.5;">Nothing was sent. Here's the current rate.</p>
+              </div>
+              <div class="card tight" style="padding:12px;margin-bottom:10px;">
+                <div class="fee-line" style="font-size:10.5px;padding:5px 0;"><span>Old rate</span><span style="text-decoration:line-through;color:var(--mist);">52.84 ₺</span></div>
+                <div class="fee-line" style="font-size:10.5px;padding:5px 0;"><span>Current rate</span><span style="color:var(--warning);">52.61 ₺</span></div>
+                <div class="fee-line total" style="font-size:11.5px;padding-top:9px;"><span>Elif now receives</span><span>₺26,305.00</span></div>
+                <p style="font-size:9.5px;color:var(--warning);margin:9px 0 0;">₺115 less than your expired quote.</p>
+              </div>
+              <div class="rate-strip" style="padding:9px 11px;">
+                <p class="rl" style="font-size:10.5px;">New lock</p>
+                <span class="lock" style="font-size:9.5px;"><svg style="width:9px;height:9px;"><use href="#lock"/></svg>15:00</span>
+              </div>
+            </div>
+            <div class="dock" style="padding:10px 15px 3px;">
+              <button class="btn primary" style="font-size:11.5px;padding:12px 0;">Accept new rate</button>
+              <button class="btn ghost" style="font-size:11px;padding:9px 0;">Cancel transfer</button>
+            </div>
+            <div class="hi"></div>
+          </div>
+        </div>
+        <div class="cap">
+          <h4>11a · Rate expired</h4>
+          <p><b>"Nothing was sent"</b> is the first line, because that's the user's first fear. Then the delta — old, new, and what it costs in lira, stated in the currency the recipient actually cares about. Re-accepting is an explicit choice with a fresh lock, never a silent re-quote. <b>An app that quietly repriced would be indistinguishable from one that skimmed.</b></p>
+        </div>
+      </div>
+
+      <!-- 11b kyc resubmit -->
+      <div class="unit">
+        <div class="device sm">
+          <div class="island"></div>
+          <div class="screen">
+            <div class="sb"><span class="time">9:41</span><span class="icons"><svg width="14"><use href="#sb-signal"/></svg><svg width="12"><use href="#sb-wifi"/></svg><svg width="19"><use href="#sb-batt"/></svg></span></div>
+            <div class="nav" style="height:40px;padding:0 15px;">
+              <div class="back" style="width:26px;height:26px;"><svg style="width:11px;height:11px;"><use href="#chev-l"/></svg></div>
+              <span class="title" style="font-size:11.5px;">Verify identity</span>
+              <span class="spacer" style="width:26px;"></span>
+            </div>
+            <div class="sbody" style="padding:0 15px;">
+              <div style="text-align:center;padding:14px 0 16px;">
+                <div class="bloom warn" style="margin:0 auto 14px;width:56px;height:56px;"><svg style="width:24px;height:24px;"><use href="#alert"/></svg></div>
+                <p style="font-family:var(--ff-display);font-weight:600;font-size:17px;letter-spacing:-0.02em;margin:0 0 7px;">We need one photo again</p>
+                <p style="font-size:11px;color:var(--mist);margin:0;line-height:1.5;">Your ID front was too dark to read. Everything else is approved.</p>
+              </div>
+              <div class="card tight" style="padding:12px;margin-bottom:10px;">
+                <div class="list-row" style="padding:8px 0;">
+                  <div class="lead" style="width:24px;height:24px;font-size:9px;background:rgba(201,138,75,0.14);color:var(--warning);">!</div>
+                  <div class="mid"><p class="l1" style="font-size:11px;">ID — front</p><p class="l2" style="font-size:9.5px;">Low light · retake needed</p></div>
+                </div>
+                <div class="list-row" style="padding:8px 0;">
+                  <div class="lead" style="width:24px;height:24px;font-size:9px;background:rgba(143,168,118,0.14);color:var(--success);">✓</div>
+                  <div class="mid"><p class="l1" style="font-size:11px;">ID — back</p><p class="l2" style="font-size:9.5px;">Accepted</p></div>
+                </div>
+                <div class="list-row" style="padding:8px 0;">
+                  <div class="lead" style="width:24px;height:24px;font-size:9px;background:rgba(143,168,118,0.14);color:var(--success);">✓</div>
+                  <div class="mid"><p class="l1" style="font-size:11px;">Selfie</p><p class="l2" style="font-size:9.5px;">Matched</p></div>
+                </div>
+              </div>
+              <div class="card tight" style="padding:11px;">
+                <p style="font-size:9.5px;color:var(--mist);margin:0;line-height:1.6;">
+                  <b style="color:var(--paper);font-weight:500;">Your transfer is saved.</b>
+                  Your rate is re-quoted when you're verified — no money has moved.
+                </p>
+              </div>
+            </div>
+            <div class="dock" style="padding:10px 15px 3px;">
+              <button class="btn primary" style="font-size:11.5px;padding:12px 0;">Retake ID photo</button>
+              <button class="btn ghost" style="font-size:11px;padding:9px 0;">Do this later</button>
+            </div>
+            <div class="hi"></div>
+          </div>
+        </div>
+        <div class="cap">
+          <h4>11b · KYC resubmit</h4>
+          <p>Rejection is <b>scoped, not total</b> — one item failed, two passed, and the screen shows the ledger so the user doesn't fear starting over. The reason is specific and actionable (<b>"too dark to read"</b>, not "could not be verified"). Vague rejection copy is what turns a 30-second retake into an abandoned account, and it's usually chosen to avoid coaching fraudsters — a real tradeoff, resolved here toward the honest user.</p>
+        </div>
+      </div>
+
+      <!-- 11c payout returned -->
+      <div class="unit">
+        <div class="device sm">
+          <div class="island"></div>
+          <div class="screen">
+            <div class="sb"><span class="time">9:41</span><span class="icons"><svg width="14"><use href="#sb-signal"/></svg><svg width="12"><use href="#sb-wifi"/></svg><svg width="19"><use href="#sb-batt"/></svg></span></div>
+            <div class="nav" style="height:40px;padding:0 15px;">
+              <div class="back" style="width:26px;height:26px;"><svg style="width:11px;height:11px;"><use href="#chev-l"/></svg></div>
+              <span class="title" style="font-size:11.5px;">Transfer</span>
+              <span class="spacer" style="width:26px;"></span>
+            </div>
+            <div class="sbody" style="padding:0 15px;">
+              <div style="padding:12px 0 14px;">
+                <span class="pill fail" style="font-size:9.5px;">payout returned</span>
+                <p style="font-family:var(--ff-display);font-weight:600;font-size:17px;letter-spacing:-0.02em;margin:10px 0 7px;">Garanti sent it back</p>
+                <p style="font-size:11px;color:var(--mist);margin:0;line-height:1.55;">The account holder's name didn't match. This is the most common reason a Turkish payout bounces.</p>
+              </div>
+
+              <div class="card tight" style="padding:12px;margin-bottom:10px;border-color:rgba(143,168,118,0.3);">
+                <p style="font-size:10.5px;color:var(--success);margin:0 0 5px;font-weight:600;">Your money is safe.</p>
+                <p style="font-size:9.5px;color:var(--mist);margin:0;line-height:1.6;">500.00 USDC is back in your Corridor balance. Fees for the returned leg were refunded.</p>
+              </div>
+
+              <div class="route" style="padding-left:24px;">
+                <div class="step done"><span class="node" style="left:-30px;"><svg><use href="#check"/></svg></span><p class="r1" style="font-size:11px;">USD received</p><p class="r2" style="font-size:9.5px;">Aug 5, 09:38</p></div>
+                <div class="step done"><span class="node" style="left:-30px;"><svg><use href="#check"/></svg></span><p class="r1" style="font-size:11px;">Sent on Base</p><p class="r2" style="font-size:9.5px;">Aug 5, 09:41 · 0x8f2a···c19e</p></div>
+                <div class="step fail"><span class="node" style="left:-30px;"><svg style="width:7px;height:7px;color:var(--void);"><use href="#x"/></svg></span><p class="r1" style="font-size:11px;">TRY payout rejected</p><p class="r2" style="font-size:9.5px;">Aug 5, 10:04 · name mismatch</p></div>
+                <div class="step done"><span class="node" style="left:-30px;"><svg><use href="#check"/></svg></span><p class="r1" style="font-size:11px;">Returned to balance</p><p class="r2" style="font-size:9.5px;">Aug 5, 10:06 · 500.00 USDC</p></div>
+              </div>
+            </div>
+            <div class="dock" style="padding:10px 15px 3px;">
+              <button class="btn primary" style="font-size:11.5px;padding:12px 0;">Fix name &amp; retry</button>
+              <button class="btn ghost" style="font-size:11px;padding:9px 0;">Get help</button>
+            </div>
+            <div class="hi"></div>
+          </div>
+        </div>
+        <div class="cap">
+          <h4>11c · Payout returned</h4>
+          <p>The one that matters. <b>"Your money is safe" appears above the fold</b>, before any explanation — a user watching ₺26,420 fail needs the location of their funds in the first second, not the third paragraph. The timeline stays visible with the failure in place, so the return is legible as a <b>completed round trip rather than a hole</b>. Fees for the leg that didn't happen come back. The retry is one tap and preserves everything already entered.</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ==========================================================
+       COMPONENT LIBRARY
+       ========================================================== -->
+  <section class="block" id="components">
+    <div class="eyebrow">component library</div>
+    <h2 class="sec">The parts, out of context</h2>
+    <p class="note">
+      Every component above, assembled from the phase 1 tokens and nothing else. These port directly to
+      React Native primitives in phase 4 — same names, same variants, same states.
+    </p>
+
+    <div class="lib-grid">
+
+      <div class="lib-card">
+        <p class="lc-title">Button</p>
+        <p class="lc-note">One primary per screen, always gold. Height 48, radius md. Ghost is for exits, never for actions that cost money.</p>
+        <div class="lc-body">
+          <button class="btn primary">Primary</button>
+          <button class="btn secondary">Secondary</button>
+          <button class="btn disabled">Disabled</button>
+          <button class="btn danger">Destructive</button>
+          <button class="btn ghost">Ghost / exit</button>
+        </div>
+      </div>
+
+      <div class="lib-card">
+        <p class="lc-title">Status pill</p>
+        <p class="lc-note">Semantic colors only — never gold. Gold means brand and action; a status that borrowed it would compete with the CTA.</p>
+        <div class="lc-body" style="display:flex;flex-wrap:wrap;gap:8px;">
+          <span class="pill done">delivered</span>
+          <span class="pill live">in transit</span>
+          <span class="pill wait">queued</span>
+          <span class="pill fail">returned</span>
+          <span class="pill live">2 / 12 confs</span>
+          <span class="pill done">verified</span>
+        </div>
+      </div>
+
+      <div class="lib-card">
+        <p class="lc-title">Input</p>
+        <p class="lc-note">Focus is a gold border plus a lift to concrete-raised — no glow, no shadow. Validation resolves inline, under the field.</p>
+        <div class="lc-body">
+          <div class="input"><span class="ph">Default</span></div>
+          <div class="input focus"><span>Focused</span><span class="caret"></span></div>
+          <div class="input mono"><span class="pre">TR</span><span>64 0062 0001 2345</span></div>
+          <div class="input err"><span>Wrong country code</span></div>
+          <p class="hint bad" style="margin:0;"><svg><use href="#alert"/></svg> IBAN must start with TR for this corridor</p>
+          <p class="hint ok" style="margin:0;"><svg><use href="#check"/></svg> Checksum valid · Garanti BBVA</p>
+        </div>
+      </div>
+
+      <div class="lib-card">
+        <p class="lc-title">Chip</p>
+        <p class="lc-note">Mono for anything a machine produced — hashes, addresses, references. Gold-bright signals "verifiable", not "important".</p>
+        <div class="lc-body" style="display:flex;flex-wrap:wrap;gap:9px;">
+          <span class="chip"><span>0x8f2a···c19e</span><svg><use href="#copy"/></svg><svg><use href="#ext"/></svg></span>
+          <span class="chip"><span style="color:var(--mist);">0x7A3f···0a9E</span><svg><use href="#copy"/></svg></span>
+          <span class="chip mock"><span>Simulated leg</span></span>
+          <span class="chip"><span style="font-family:var(--ff-ui);color:var(--paper);font-size:11px;">CRD-8F2A-4417</span></span>
+        </div>
+      </div>
+
+      <div class="lib-card">
+        <p class="lc-title">Amount</p>
+        <p class="lc-note">Bricolage for display moments — entry, receipt hero. Inter with tabular figures everywhere numbers stack and must align.</p>
+        <div class="lc-body">
+          <p class="amt-hero" style="font-size:38px;">$503.75<span class="cur">USD</span></p>
+          <p class="amt-sub" style="font-size:27px;">₺26,420.00 <span class="cur">TRY</span></p>
+          <div style="border-top:1px solid var(--line);padding-top:8px;">
+            <div class="fee-line"><span>On-ramp · ACH → USDC</span><span>$1.25</span></div>
+            <div class="fee-line"><span>Network · Base</span><span>$0.01</span></div>
+            <div class="fee-line total"><span>Total charged</span><span>$503.75</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="lib-card">
+        <p class="lc-title">Route line</p>
+        <p class="lc-note">The identity mark, unrolled. Vertical for live status, horizontal for previews. Gold behind, line ahead — the boundary is always the current step.</p>
+        <div class="lc-body">
+          <div class="route" style="margin-bottom:22px;">
+            <div class="step done"><span class="node"><svg><use href="#check"/></svg></span><p class="r1">Complete</p><p class="r2">with timestamp</p></div>
+            <div class="step live"><span class="node"></span><p class="r1">In progress</p><p class="r2">pulsing gold node</p></div>
+            <div class="step wait"><span class="node"></span><p class="r1">Pending</p><p class="r2">with expectation</p></div>
+          </div>
+          <div class="route-mini">
+            <span class="n on"></span><span class="seg on"></span>
+            <span class="n on"></span><span class="seg"></span>
+            <span class="n"></span><span class="seg"></span>
+            <span class="n"></span>
+          </div>
+          <div class="route-mini-labels"><span>ACH</span><span>USDC</span><span>Base</span><span>TRY</span></div>
+        </div>
+      </div>
+
+      <div class="lib-card">
+        <p class="lc-title">Selectable option</p>
+        <p class="lc-note">Selection is a gold border plus a raised surface — two signals, so it survives both color-blindness and glare.</p>
+        <div class="lc-body">
+          <div class="opt sel" style="margin:0;">
+            <span class="radio"></span>
+            <div class="txt"><p class="o1">Bank transfer <span style="font-size:10px;color:var(--mist);font-weight:400;">ACH</span></p><p class="o2">arrives Wed, Aug 5</p></div>
+            <span class="cost free">Free</span>
+          </div>
+          <div class="opt" style="margin:0;">
+            <span class="radio"></span>
+            <div class="txt"><p class="o1">Debit card</p><p class="o2">Instant</p></div>
+            <span class="cost">$7.56</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="lib-card">
+        <p class="lc-title">Rate strip</p>
+        <p class="lc-note">The lock countdown is mono — it's a machine-owned number the user is watching, and mono makes it read as authoritative rather than decorative.</p>
+        <div class="lc-body">
+          <div class="rate-strip"><p class="rl">1 USD = <b>52.84 ₺</b> <span style="color:var(--mist);">· mid-market</span></p><span class="lock"><svg><use href="#lock"/></svg>14:52</span></div>
+          <div class="rate-strip warn"><p class="rl">1 USD = <b>52.84 ₺</b></p><span class="lock"><svg><use href="#lock"/></svg>00:47 left</span></div>
+        </div>
+      </div>
+
+      <div class="lib-card">
+        <p class="lc-title">Disclosure</p>
+        <p class="lc-note">Warning-toned, never error-toned — nothing is broken, something is simulated. Appears at the moment of the mock, not on a legal page.</p>
+        <div class="lc-body">
+          <div class="disclose"><svg><use href="#alert"/></svg><p><b style="font-weight:600;">Simulated leg.</b> Bridge's on-ramp is KYB-gated, so no real bank is debited.</p></div>
+          <div class="demo-strip" style="border:1px solid var(--line);border-radius:var(--r-sm);"><span class="dot"></span><p>Demo build · Base Sepolia · fiat rails simulated</p></div>
+        </div>
+      </div>
+
+      <div class="lib-card">
+        <p class="lc-title">List row</p>
+        <p class="lc-note">One shape for activity, recipients and checklists. Value right, tabular, status underneath — so a column of transfers scans vertically.</p>
+        <div class="lc-body">
+          <div class="list-row"><div class="lead">TR</div><div class="mid"><p class="l1">Elif Yıldız</p><p class="l2">Aug 3 · Garanti BBVA</p></div><div class="end"><p class="v">₺26,420</p><p class="s"><span class="pill live">in transit</span></p></div></div>
+          <div class="list-row"><div class="lead">US</div><div class="mid"><p class="l1">Added funds</p><p class="l2">Jul 19 · Chase ···4417</p></div><div class="end"><p class="v">+250.00</p><p class="s">USDC</p></div></div>
+        </div>
+      </div>
+
+      <div class="lib-card">
+        <p class="lc-title">Confirm slider</p>
+        <p class="lc-note">Reserved for irreversible actions. Exactly one in the app, on 08. If a second one ever appears, the first has stopped meaning anything.</p>
+        <div class="lc-body">
+          <div class="slider"><div class="knob"><svg><use href="#chev-r"/></svg></div><span class="lbl">Slide to send $503.75</span></div>
+        </div>
+      </div>
+
+      <div class="lib-card">
+        <p class="lc-title">Country token &amp; corridor strip</p>
+        <p class="lc-note">Two-letter mono tokens instead of flag emoji — flags render inconsistently across platforms and carry political weight a payment rail shouldn't.</p>
+        <div class="lc-body">
+          <div style="display:flex;gap:9px;"><span class="ctok on">US</span><span class="ctok on">TR</span><span class="ctok">DE</span><span class="ctok">MX</span></div>
+          <div class="corridor-strip">
+            <span class="ctok on">US</span>
+            <div class="track"><div class="ln"></div></div>
+            <span class="ctok on">TR</span>
+            <span style="font-size:11px;color:var(--mist);font-variant-numeric:tabular-nums;">52.84 ₺</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="table-scroll">
+      <table class="spec-table">
+        <thead>
+          <tr><th>Rule</th><th>Spec</th><th>Why</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Gold budget</td><td>One gold element per viewport, max two</td><td>The accent only reads as "the action" if nothing else is competing. Status pills use semantic colors for exactly this reason.</td></tr>
+          <tr><td>Elevation</td><td><code>void</code> → <code>concrete</code> → <code>concrete-raised</code>, plus a 1px <code>line</code> border</td><td>No drop shadows on dark — depth is surface luminance. Inherited from phase 1 and enforced everywhere here.</td></tr>
+          <tr><td>Numerals</td><td>Inter, <code>tabular-nums</code>, in every stacked or aligned context</td><td>Fee breakdowns and activity lists have to align on the decimal. Bricolage is display-only.</td></tr>
+          <tr><td>Mono usage</td><td>Hashes, addresses, IBANs, reference numbers, lock countdowns</td><td>Mono means "a machine produced this and you may need to check it character by character".</td></tr>
+          <tr><td>Touch targets</td><td>44 × 44 minimum; primary buttons 48 tall</td><td>Apple HIG floor. The keypad on 03 runs 52 — it's used under time pressure with a locked rate.</td></tr>
+          <tr><td>Radius</td><td>sm 8 chips/hints · md 14 buttons, inputs, tight cards · lg 24 primary cards</td><td>Radius encodes hierarchy: the larger the surface's role, the softer its corner.</td></tr>
+          <tr><td>Copy voice</td><td>Plain sentences. No crypto vocabulary before the receipt.</td><td>"Wallet", "gas", "chain" appear only where they're unavoidable and always with an explanation nearby.</td></tr>
+          <tr><td>Error voice</td><td>What happened → where the money is → what to do</td><td>Fixed order. A user reading a failure needs the second one fastest, and it's the one most apps put last.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ==========================================================
+       MOTION
+       ========================================================== -->
+  <section class="block" id="motion">
+    <div class="eyebrow">motion &amp; interaction</div>
+    <h2 class="sec">Quiet, except once</h2>
+    <p class="note">
+      Phase 1 set the rule: the gold dot travelling the route on step-complete is the signature, and
+      everywhere else motion stays out of the way at 200–250ms ease-out. Phase 2 spends that budget
+      exactly once — on screen 09, where the dot is reporting real settlement rather than decorating a
+      transition.
+    </p>
+    <div class="table-scroll">
+      <table class="spec-table">
+        <thead><tr><th>Moment</th><th>Motion</th><th>Duration</th></tr></thead>
+        <tbody>
+          <tr><td>Step completes (09)</td><td>Gold dot travels the segment, node fills, check draws</td><td>640ms · ease-in-out — the signature, and the only motion over 300ms</td></tr>
+          <tr><td>Live node (09)</td><td>Gold dot pulses 1.0 → 0.62 scale</td><td>1800ms loop · ease-in-out</td></tr>
+          <tr><td>Amount recalculates (03)</td><td>Receive figure cross-fades; no slide, no count-up</td><td>140ms · linear — a counting animation on money reads as a slot machine</td></tr>
+          <tr><td>Rate lock crosses 60s (08)</td><td>Strip border and countdown shift to warning over one tick</td><td>250ms · ease-out</td></tr>
+          <tr><td>Screen push / pop</td><td>Horizontal slide, native stack defaults</td><td>250ms · ease-out</td></tr>
+          <tr><td>Sheet present</td><td>Vertical, scrim to 60% void</td><td>220ms · ease-out</td></tr>
+          <tr><td>Confirm slider (08)</td><td>Knob follows finger 1:1; releases below 80% snap back</td><td>Gesture-driven · 180ms spring on release</td></tr>
+          <tr><td>Success bloom (10)</td><td>Ring scales 0.9 → 1.0, check draws, single haptic</td><td>420ms · ease-out</td></tr>
+          <tr><td>Failure (11)</td><td>No animation at all. The screen is simply there.</td><td>0ms — animating a failure makes it feel designed rather than reported</td></tr>
+          <tr><td><code>prefers-reduced-motion</code></td><td>All loops and travel become instant state changes; cross-fades survive</td><td>Non-negotiable, including the signature</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ==========================================================
+       HANDOFF
+       ========================================================== -->
+  <section class="block" id="handoff">
+    <div class="eyebrow">handoff</div>
+    <h2 class="sec">What phase 3 has to wire</h2>
+    <p class="note">
+      Each screen's data dependency, named. This is the list the architecture diagram gets built from.
+    </p>
+    <div class="table-scroll">
+      <table class="spec-table">
+        <thead><tr><th>Screen</th><th>Depends on</th><th>Rail</th></tr></thead>
+        <tbody>
+          <tr><td>01 Welcome</td><td>Privy <code>useLoginWithEmail</code> / passkey; embedded wallet provisioning</td><td><span class="badge real">real</span></td></tr>
+          <tr><td>02 Home</td><td>USDC <code>balanceOf</code> via Privy provider; merged transfer list; rate feed</td><td><span class="badge real">real</span> + <span class="badge mock">rate</span></td></tr>
+          <tr><td>03 Amount</td><td>Server-signed quote — <code>quoteId</code>, <code>rate</code>, <code>fees[]</code>, <code>expiresAt</code></td><td><span class="badge hybrid">hybrid</span></td></tr>
+          <tr><td>04 Add USD</td><td>Bridge on-ramp: source list, <code>POST /transfers</code>, ACH settlement estimate</td><td><span class="badge mock">simulated</span></td></tr>
+          <tr><td>05–06 KYC</td><td>Provider session token, signed upload URL, status webhook</td><td><span class="badge hybrid">hybrid</span></td></tr>
+          <tr><td>07 Recipient</td><td>Local mod-97 IBAN validation + bank-code lookup; recipient store</td><td><span class="badge real">real</span></td></tr>
+          <tr><td>08 Review</td><td><code>quoteId</code> re-validation, idempotency key, submit</td><td><span class="badge hybrid">hybrid</span></td></tr>
+          <tr><td>09 In flight</td><td>Bridge webhooks + Base Sepolia tx subscription; backoff poll fallback</td><td><span class="badge real">chain</span> + <span class="badge mock">fiat</span></td></tr>
+          <tr><td>10 Receipt</td><td>Immutable settled record; BaseScan deep link; PDF export</td><td><span class="badge real">hash</span></td></tr>
+          <tr><td>11 Edge</td><td>Re-quote endpoint; KYC <code>reasonCode</code> mapping; payout return handler</td><td><span class="badge hybrid">hybrid</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="note" style="margin-top:34px;">
+      <b>Phase 4 port.</b> The tokens block at the top of this file becomes <code>theme/tokens.ts</code>
+      unchanged — same names, same values. Each component card above becomes one RN primitive with the
+      same variants. The device frame here is 393 × 852 because that's the iPhone 15/16 Pro logical
+      viewport; layouts use the spacing scale and flex, so the 375-wide and 430-wide cases fall out
+      without a second design pass.
+    </p>
+
+    <hr class="rule" style="margin:56px 0 0;">
+    <p class="note" style="margin-top:34px;">
+      <b>Phase 5 will disclose, in the failure-modes writeup:</b> the ACH return window and why Corridor
+      holds rather than fronts; rate-lock expiry and re-quote semantics; Turkish name-match rejection and
+      the returned-payout path; chain reorg handling on the settlement leg; KYC provider outage as a
+      hard stop rather than a bypass; and — first, not last — that the Bridge legs in this build are
+      simulated because Bridge is KYB-gated.
+    </p>
+
+    <div style="display:flex;align-items:center;gap:12px;margin-top:52px;">
+      <svg style="width:20px;height:20px;"><use href="#mark"/></svg>
+      <p style="font-size:12.5px;color:var(--mist);margin:0;">
+        corridor · phase 2 · UI/UX system &amp; screens · tokens inherited from
+        <span style="color:var(--paper);">corridor-identity.html</span>
+      </p>
+    </div>
+  </section>
+
+</div>
+</body>
+</html>
