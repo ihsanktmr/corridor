@@ -11,7 +11,7 @@ import { formatIban, validateTurkishIban, IBAN_MESSAGES } from '../../domain/iba
 import { addRecipient } from '../../services/corridor';
 import { useCorridor } from '../../state/useCorridor';
 import { color, space } from '../../theme/tokens';
-import { type } from '../../theme/type';
+import { face, type } from '../../theme/type';
 
 /**
  * 07 · Recipient
@@ -122,7 +122,7 @@ export default function RecipientScreen() {
           <View style={{ flexDirection: 'row', gap: 10 }}>
             <Text style={{ color: color.warning, fontSize: 13, lineHeight: 18 }}>!</Text>
             <Text style={[type.label, { flex: 1, fontSize: 11.5, lineHeight: 18 }]}>
-              <Text style={{ color: color.paper, fontWeight: '500' }}>
+              <Text style={{ color: color.paper, fontFamily: face.medium }}>
                 Turkish banks reject on name mismatch.{' '}
               </Text>
               If the name doesn't match the account holder exactly, the payout bounces — and takes 2–3

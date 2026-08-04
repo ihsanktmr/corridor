@@ -1,7 +1,7 @@
 import { ActivityIndicator, Pressable, Text, View, type ViewStyle } from 'react-native';
 
 import { color, radius, space } from '../theme/tokens';
-import { type } from '../theme/type';
+import { face, type } from '../theme/type';
 
 type Variant = 'primary' | 'secondary' | 'ghost' | 'danger';
 
@@ -73,7 +73,7 @@ export function Button({
         <Text
           style={[
             type.bodyStrong,
-            { fontSize: 15, fontWeight: variant === 'ghost' ? '500' : '600', color: label_[variant] },
+            { fontSize: 15, fontFamily: variant === 'ghost' ? face.medium : face.semibold, color: label_[variant] },
           ]}
         >
           {label}

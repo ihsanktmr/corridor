@@ -99,19 +99,37 @@ export function rescale(m: Money, to: Currency): Money {
   return { currency: to, minor: m.minor / divisor };
 }
 
-/** `$500.00` · `₺26,420.00` · `500.00 USDC` */
-export function format(m: Money, opts: { grouping?: boolean } = {}): string {
+/**
+ * `$500.00` · `₺26,420.00` · `500.000000 USDC`
+ *
+ * Exact by default — the string round-trips through `parseAmount`. Pass `decimals`
+ * to shorten for display: USDC carries six places, and rendering a balance as
+ * "1,284.500000" is precision the user did not ask for and cannot use. Display
+ * rounds half-up; it is never fed back into arithmetic.
+ */
+export function format(
+  m: Money,
+  opts: { grouping?: boolean; decimals?: number } = {},
+): string {
   const grouping = opts.grouping ?? true;
   const scale = SCALE[m.currency];
   const negative = m.minor < 0n;
-  const abs = negative ? -m.minor : m.minor;
+  let abs = negative ? -m.minor : m.minor;
+
+  if (opts.decimals !== undefined && opts.decimals < scale) {
+    const drop = 10n ** BigInt(scale - opts.decimals);
+    abs = ((abs * 2n + drop) / (drop * 2n)) * drop;
+  }
 
   const digits = abs.toString().padStart(scale + 1, '0');
   const whole = digits.slice(0, digits.length - scale);
-  const fraction = digits.slice(digits.length - scale);
+  let fraction = digits.slice(digits.length - scale);
+  if (opts.decimals !== undefined && opts.decimals < scale) {
+    fraction = fraction.slice(0, opts.decimals);
+  }
 
   const grouped = grouping ? whole.replace(/\B(?=(\d{3})+(?!\d))/g, ',') : whole;
-  const body = scale > 0 ? `${grouped}.${fraction}` : grouped;
+  const body = fraction.length > 0 ? `${grouped}.${fraction}` : grouped;
 
   const symbol = SYMBOL[m.currency];
   const sign = negative ? '-' : '';
@@ -119,6 +137,6 @@ export function format(m: Money, opts: { grouping?: boolean } = {}): string {
 }
 
 /** Bare digits, for pairing with a separate currency label in the UI. */
-export function formatBare(m: Money): string {
-  return format(m).replace(/^(-?)[$₺]/, '$1').replace(/ (USD|TRY|USDC)$/, '');
+export function formatBare(m: Money, opts: { decimals?: number } = {}): string {
+  return format(m, opts).replace(/^(-?)[$₺]/, '$1').replace(/ (USD|TRY|USDC)$/, '');
 }

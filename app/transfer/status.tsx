@@ -11,7 +11,7 @@ import { CONFIRMATIONS_REQUIRED, shortHash, type Step, type Transfer } from '../
 import { recipientById, transferById } from '../../services/corridor';
 import { useCorridor } from '../../state/useCorridor';
 import { color, space } from '../../theme/tokens';
-import { type } from '../../theme/type';
+import { face, type } from '../../theme/type';
 
 /**
  * 09 · In flight  ·  and 11c · payout returned
@@ -100,8 +100,16 @@ function liveLabel(t: Transfer): string {
   }
 }
 
+/** Reason codes rendered as the sender would say them, not as the rail reports them. */
+const PAYOUT_FAILURE: Record<string, string> = {
+  name_mismatch: 'name did not match the account holder',
+  account_closed: 'account closed',
+  bank_rejected: 'rejected by the bank',
+  sanctions_hold: 'held for review',
+};
+
 /** Each step is a rail, with a timestamp when done and an expectation when not. */
-function buildSteps(t: Transfer) {
+function buildSteps(transfer: Transfer) {
   const at = (s: Step) =>
     s.at
       ? new Date(s.at).toLocaleString('en-US', {
@@ -113,7 +121,7 @@ function buildSteps(t: Transfer) {
         })
       : '';
 
-  const [onramp, mint, chain, payout, delivered] = t.steps;
+  const [onramp, mint, chain, payout, delivered] = transfer.steps;
 
   return [
     {
@@ -134,12 +142,19 @@ function buildSteps(t: Transfer) {
         ? { badge: `${Math.min(2, CONFIRMATIONS_REQUIRED)} / ${CONFIRMATIONS_REQUIRED} confs` }
         : {}),
       detail: chain?.at ? `${at(chain)} · 500.00 USDC` : 'Base Sepolia',
-      extra: t.txHash ? <Chip value={shortHash(t.txHash)} /> : undefined,
+      extra: transfer.txHash ? <Chip value={shortHash(transfer.txHash)} /> : undefined,
     },
     {
       step: payout!,
       title: 'TRY payout',
-      detail: payout?.status === 'done' ? at(payout) : 'Garanti BBVA · usually under 30 min',
+      // A failed step must never keep wearing the pending step's expectation.
+      // "usually under 30 min" under a red cross is the screen contradicting itself.
+      detail:
+        payout?.status === 'failed'
+          ? `${at(payout)} · ${PAYOUT_FAILURE[transfer.payoutReturn ?? 'bank_rejected']}`
+          : payout?.status === 'done'
+            ? at(payout)
+            : 'Garanti BBVA · usually under 30 min',
     },
     {
       step: delivered!,
@@ -180,11 +195,11 @@ function PayoutReturned({ transfer }: { transfer: Transfer }) {
           tight
           style={{ marginBottom: space.md, borderColor: 'rgba(143,168,118,0.3)' }}
         >
-          <Text style={{ fontSize: 12, color: color.success, fontWeight: '600', marginBottom: 5 }}>
+          <Text style={{ fontSize: 12, color: color.success, fontFamily: face.semibold, marginBottom: 5 }}>
             Your money is safe.
           </Text>
           <Text style={[type.label, { fontSize: 11.5, lineHeight: 18 }]}>
-            {transfer.refunded ? format(transfer.refunded) : '500.000000 USDC'} is back in your Corridor
+            {transfer.refunded ? format(transfer.refunded, { decimals: 2 }) : '500.00 USDC'} is back in your Corridor
             balance. Fees for the returned leg were refunded.
           </Text>
         </Card>

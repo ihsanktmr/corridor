@@ -1,4 +1,4 @@
-import { Platform, type TextStyle } from 'react-native';
+import type { TextStyle } from 'react-native';
 
 import { color } from './tokens';
 
@@ -14,16 +14,27 @@ import { color } from './tokens';
  *   Mono                             — machine-produced values only
  *
  * A fee breakdown has to align on the decimal, so it is never display type.
+ *
+ * NOTE ON WEIGHTS — React Native does not synthesise weight for custom fonts.
+ * `fontWeight: '600'` against a bundled family is silently ignored; the weight has
+ * to come from the family name itself. Every style below therefore names an exact
+ * face, and `face` is exported so inline emphasis elsewhere can do the same.
  */
 
-/**
- * Fonts are declared here but not bundled — the app renders with system faces
- * until `expo-font` loads the real ones. Kept as a named constant so the swap is
- * one edit rather than a search across every stylesheet.
- */
-const DISPLAY = Platform.select({ ios: 'System', android: 'sans-serif', default: 'System' });
-const UI = Platform.select({ ios: 'System', android: 'sans-serif', default: 'System' });
-const MONO = Platform.select({ ios: 'Menlo', android: 'monospace', default: 'monospace' });
+/** Bundled faces, loaded in `app/_layout.tsx`. */
+export const face = {
+  /** headlines, amounts, wordmark */
+  display: 'BricolageGrotesque_600SemiBold',
+  /** the positioning line — set italic, which Bricolage has no true cut for */
+  displayRegular: 'BricolageGrotesque_400Regular',
+
+  regular: 'Inter_400Regular',
+  medium: 'Inter_500Medium',
+  semibold: 'Inter_600SemiBold',
+
+  mono: 'IBMPlexMono_400Regular',
+  monoMedium: 'IBMPlexMono_500Medium',
+} as const;
 
 /** Applied to every numeric value that shares a column with another number. */
 export const tabular: TextStyle = { fontVariant: ['tabular-nums'] };
@@ -31,73 +42,68 @@ export const tabular: TextStyle = { fontVariant: ['tabular-nums'] };
 export const type = {
   /** amount entry, receipt hero */
   displayXL: {
-    fontFamily: DISPLAY,
+    fontFamily: face.display,
     fontSize: 46,
-    fontWeight: '600',
     letterSpacing: -1.4,
-    lineHeight: 48,
+    lineHeight: 52,
     color: color.paper,
   },
   displayL: {
-    fontFamily: DISPLAY,
+    fontFamily: face.display,
     fontSize: 34,
-    fontWeight: '600',
     letterSpacing: -0.9,
-    lineHeight: 36,
+    lineHeight: 40,
     color: color.paper,
   },
   /** screen headlines */
   display: {
-    fontFamily: DISPLAY,
+    fontFamily: face.display,
     fontSize: 26,
-    fontWeight: '600',
     letterSpacing: -0.5,
-    lineHeight: 30,
+    lineHeight: 31,
     color: color.paper,
   },
   title: {
-    fontFamily: DISPLAY,
+    fontFamily: face.display,
     fontSize: 20,
-    fontWeight: '600',
     letterSpacing: -0.3,
-    lineHeight: 25,
+    lineHeight: 26,
     color: color.paper,
   },
   body: {
-    fontFamily: UI,
+    fontFamily: face.regular,
     fontSize: 14,
-    fontWeight: '400',
     lineHeight: 22,
     color: color.mist,
   },
   bodyStrong: {
-    fontFamily: UI,
+    fontFamily: face.medium,
     fontSize: 14,
-    fontWeight: '500',
     lineHeight: 20,
     color: color.paper,
   },
   label: {
-    fontFamily: UI,
+    fontFamily: face.regular,
     fontSize: 12.5,
-    fontWeight: '400',
     lineHeight: 17,
     color: color.mist,
   },
   /** section eyebrows — uppercase, tracked out */
   micro: {
-    fontFamily: UI,
+    fontFamily: face.medium,
     fontSize: 10.5,
-    fontWeight: '500',
     letterSpacing: 1.05,
     textTransform: 'uppercase',
     color: color.mist,
   },
   /** hashes, addresses, IBANs, reference numbers, lock countdowns */
   mono: {
-    fontFamily: MONO,
+    fontFamily: face.mono,
     fontSize: 12,
-    fontWeight: '400',
     color: color.goldBright,
   },
 } as const satisfies Record<string, TextStyle>;
+
+/** Inline emphasis inside a run of body text — pairs with `type.body`/`type.label`. */
+export const strong: TextStyle = { fontFamily: face.medium, color: color.paper };
+export const strongest: TextStyle = { fontFamily: face.semibold, color: color.paper };

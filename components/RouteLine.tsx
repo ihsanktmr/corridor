@@ -3,7 +3,7 @@ import { Animated, Text, View } from 'react-native';
 
 import type { Step, StepStatus } from '../domain/transfer';
 import { color, radius, space } from '../theme/tokens';
-import { type } from '../theme/type';
+import { face, type } from '../theme/type';
 import { Pill } from './primitives';
 
 /**
@@ -60,7 +60,7 @@ function RouteStepView({ item, last }: { item: RouteStep; last: boolean }) {
           style={[
             type.bodyStrong,
             { fontSize: 13.5 },
-            step.status === 'wait' ? { color: color.mist, fontWeight: '400' } : null,
+            step.status === 'wait' ? { color: color.mist, fontFamily: face.regular } : null,
             failed ? { color: color.paper } : null,
           ]}
         >
@@ -112,7 +112,7 @@ function Node({ status }: { status: StepStatus }) {
     >
       {status === 'done' ? <Tick /> : null}
       {status === 'failed' ? (
-        <Text style={{ fontSize: 8, fontWeight: '700', color: color.void, lineHeight: 9 }}>×</Text>
+        <Text style={{ fontSize: 8, fontFamily: face.semibold, color: color.void, lineHeight: 9 }}>×</Text>
       ) : null}
       {status === 'live' ? (
         <Animated.View

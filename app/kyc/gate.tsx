@@ -8,7 +8,7 @@ import { providers } from '../../providers/registry';
 import { startKyc } from '../../services/corridor';
 import { useCorridor } from '../../state/useCorridor';
 import { color, space } from '../../theme/tokens';
-import { type } from '../../theme/type';
+import { face, type } from '../../theme/type';
 
 /**
  * 05 · KYC gate  ·  and 11b · resubmit
@@ -64,7 +64,7 @@ export default function KycGate() {
         {/* Says what we don't keep, unprompted, before the camera opens. */}
         <Card tight style={{ marginBottom: space.md }}>
           <Text style={[type.label, { fontSize: 11.5, lineHeight: 18 }]}>
-            <Text style={{ color: color.paper, fontWeight: '500' }}>
+            <Text style={{ color: color.paper, fontFamily: face.medium }}>
               Corridor never stores your documents.{' '}
             </Text>
             Images go straight to our verification provider. We keep the result and a reference — never
@@ -120,7 +120,7 @@ function Resubmit() {
 
         <Card tight>
           <Text style={[type.label, { fontSize: 11.5, lineHeight: 18 }]}>
-            <Text style={{ color: color.paper, fontWeight: '500' }}>Your transfer is saved. </Text>
+            <Text style={{ color: color.paper, fontFamily: face.medium }}>Your transfer is saved. </Text>
             Your rate is re-quoted when you're verified — no money has moved.
           </Text>
         </Card>

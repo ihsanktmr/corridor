@@ -478,3 +478,118 @@ export function transferById(id: string | null): Transfer | null {
 export function recipientById(id: string): Recipient | null {
   return state.recipients.find((r) => r.id === id) ?? null;
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Demo scenes
+//
+// Deep links that construct a given state and jump straight to the screen that
+// renders it — `corridor://demo/inflight`, `corridor://demo/returned`, and so on.
+//
+// This exists because the interesting screens are three or four steps into a flow
+// that takes real time to walk, and both a reviewer opening the repo and a
+// screenshot pass need to reach them directly. It builds the same event log the
+// real timeline would; it does not special-case any screen.
+// ─────────────────────────────────────────────────────────────────────────────
+
+export type DemoScene =
+  | 'review'
+  | 'expired'
+  | 'inflight'
+  | 'receipt'
+  | 'returned'
+  | 'kyc-resubmit';
+
+const DEMO_TX_HASH =
+  '0x551c67045ddfe8e8fb94fdad1ca0b5ffd078d3ca50f167531f0680722a55ba10' as Hex;
+
+/** Builds a quote directly, optionally pre-expired for the 11a rate-expiry state. */
+function demoQuote(expired = false): Quote {
+  const now = new Date();
+  const quote = buildQuote({
+    corridor: ACTIVE_CORRIDOR,
+    send: parseAmount('USD', '500.00'),
+    rail: 'ach',
+    rate: currentRate(now),
+    now: expired ? new Date(now.getTime() - 20 * 60_000) : now,
+    id: nextId('q'),
+    sign,
+  });
+  return quote;
+}
+
+function demoTransfer(quote: Quote, events: readonly TransferEvent[]): string {
+  const transferId = nextId('t');
+  records.set(transferId, {
+    seed: { id: transferId, corridor: ACTIVE_CORRIDOR, quote, recipientId: 'r_elif' },
+    log: [],
+  });
+  const base = Date.parse('2026-08-05T09:38:00.000Z');
+  events.forEach((e, i) => append(transferId, e, new Date(base + i * 61_000)));
+  return transferId;
+}
+
+/** Returns the route to navigate to, or null for an unknown scene. */
+export function seedDemo(scene: DemoScene): { pathname: string; id?: string } | null {
+  void login('demo@corridor.dev');
+
+  const settled: readonly TransferEvent[] = [
+    { t: 'quote_accepted', quoteId: 'q_demo' },
+    { t: 'onramp_initiated', ref: 'br_demo', rail: 'ach' },
+    { t: 'onramp_settled', amount: parseAmount('USD', '500.00') },
+    { t: 'minted', amount: parseAmount('USDC', '500.00') },
+  ];
+
+  switch (scene) {
+    case 'review':
+      emit({ quote: demoQuote(), kyc: 'approved' });
+      return { pathname: '/transfer/review' };
+
+    case 'expired':
+      emit({ quote: demoQuote(true), kyc: 'approved' });
+      return { pathname: '/transfer/review' };
+
+    case 'kyc-resubmit':
+      emit({ quote: demoQuote(), kyc: 'resubmit' });
+      return { pathname: '/kyc/gate' };
+
+    case 'inflight': {
+      const quote = demoQuote();
+      const id = demoTransfer(quote, [
+        ...settled,
+        { t: 'chain_submitted', txHash: DEMO_TX_HASH },
+      ]);
+      emit({ activeTransferId: id, kyc: 'approved' });
+      return { pathname: '/transfer/status', id };
+    }
+
+    case 'receipt': {
+      const quote = demoQuote();
+      const id = demoTransfer(quote, [
+        ...settled,
+        { t: 'chain_submitted', txHash: DEMO_TX_HASH },
+        { t: 'chain_confirmed', txHash: DEMO_TX_HASH, confirmations: 12 },
+        { t: 'payout_submitted', ref: 'tr_demo' },
+        { t: 'payout_delivered' },
+      ]);
+      emit({ activeTransferId: id, kyc: 'approved' });
+      return { pathname: '/transfer/receipt', id };
+    }
+
+    case 'returned': {
+      const quote = demoQuote();
+      const id = demoTransfer(quote, [
+        ...settled,
+        { t: 'chain_submitted', txHash: DEMO_TX_HASH },
+        { t: 'chain_confirmed', txHash: DEMO_TX_HASH, confirmations: 12 },
+        { t: 'payout_submitted', ref: 'tr_demo' },
+        { t: 'payout_returned', reason: 'name_mismatch' },
+        { t: 'refunded', amount: parseAmount('USDC', '500.00') },
+      ]);
+      emit({ activeTransferId: id, kyc: 'approved' });
+      return { pathname: '/transfer/status', id };
+    }
+
+    default:
+      return null;
+  }
+}

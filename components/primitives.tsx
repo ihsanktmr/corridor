@@ -3,7 +3,7 @@ import { Animated, Easing, Pressable, Text, View, type ViewStyle } from 'react-n
 
 import { format, formatBare, type Money } from '../domain/money';
 import { color, motion, radius, space } from '../theme/tokens';
-import { tabular, type } from '../theme/type';
+import { face, tabular, type } from '../theme/type';
 import { Mark } from './Mark';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -119,7 +119,7 @@ export function Pill({ tone, label }: { tone: PillTone; label: string }) {
       }}
     >
       <View style={{ width: 5, height: 5, borderRadius: 3, backgroundColor: PILL_COLOR[tone] }} />
-      <Text style={{ fontSize: 10.5, fontWeight: '600', color: PILL_COLOR[tone] }}>{label}</Text>
+      <Text style={{ fontSize: 10.5, fontFamily: face.semibold, color: PILL_COLOR[tone] }}>{label}</Text>
     </View>
   );
 }
@@ -187,7 +187,7 @@ export function Disclose({ text }: { text: string }) {
           marginTop: 1,
         }}
       >
-        <Text style={{ fontSize: 9, fontWeight: '700', color: color.warning, lineHeight: 11 }}>!</Text>
+        <Text style={{ fontSize: 9, fontFamily: face.semibold, color: color.warning, lineHeight: 11 }}>!</Text>
       </View>
       <Text style={{ flex: 1, fontSize: 11, lineHeight: 16, color: color.warning }}>{text}</Text>
     </View>
@@ -214,16 +214,18 @@ export function Amount({
   caret?: boolean;
 }) {
   if (size === 'row') {
-    return <Text style={[type.bodyStrong, tabular, { fontWeight: '600' }]}>{format(value)}</Text>;
+    return <Text style={[type.bodyStrong, tabular, { fontFamily: face.semibold }]}>{format(value)}</Text>;
   }
 
   const style = size === 'hero' ? type.displayXL : type.displayL;
   return (
     <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: space.sm }}>
-      <Text style={style}>{value.currency === 'USDC' ? formatBare(value) : format(value)}</Text>
+      <Text style={style}>
+        {value.currency === 'USDC' ? formatBare(value, { decimals: 2 }) : format(value)}
+      </Text>
       {caret ? <Caret /> : null}
       {showCurrency ? (
-        <Text style={[type.label, { fontSize: size === 'hero' ? 15 : 14, fontWeight: '500' }]}>
+        <Text style={[type.label, { fontSize: size === 'hero' ? 15 : 14, fontFamily: face.medium }]}>
           {value.currency}
         </Text>
       ) : null}
@@ -270,7 +272,7 @@ export function FeeLineRow({
           : {}),
       }}
     >
-      <Text style={[type.label, total ? { color: color.paper, fontSize: 14, fontWeight: '500' } : null]}>
+      <Text style={[type.label, total ? { color: color.paper, fontSize: 14, fontFamily: face.medium } : null]}>
         {label}
       </Text>
       <Text
@@ -278,7 +280,7 @@ export function FeeLineRow({
           type.label,
           tabular,
           { color: color.paper },
-          total ? { fontSize: 14, fontWeight: '600' } : null,
+          total ? { fontSize: 14, fontFamily: face.semibold } : null,
         ]}
       >
         {value}
@@ -416,7 +418,7 @@ export function ListRow({
             justifyContent: 'center',
           }}
         >
-          <Text style={{ fontSize: 11.5, fontWeight: '600', color: color.gold }}>{lead}</Text>
+          <Text style={{ fontSize: 11.5, fontFamily: face.semibold, color: color.gold }}>{lead}</Text>
         </View>
       ) : null}
 
@@ -426,7 +428,7 @@ export function ListRow({
       </View>
 
       <View style={{ alignItems: 'flex-end', gap: 3 }}>
-        {value ? <Text style={[type.bodyStrong, tabular, { fontWeight: '600' }]}>{value}</Text> : null}
+        {value ? <Text style={[type.bodyStrong, tabular, { fontFamily: face.semibold }]}>{value}</Text> : null}
         {meta}
       </View>
     </View>

@@ -5,7 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { formatCountdown, type QuoteStatus } from '../domain/quote';
 import { demoStripLabel } from '../providers/registry';
 import { color, radius, space } from '../theme/tokens';
-import { type } from '../theme/type';
+import { face, type } from '../theme/type';
 import { Mark } from './Mark';
 
 /** Every screen sits on the void with safe-area insets honoured. */
@@ -80,7 +80,7 @@ export function Nav({
           justifyContent: 'center',
         }}
       >
-        <Text style={{ fontSize: 15, fontWeight: '600', color: color.paper, lineHeight: 18 }}>
+        <Text style={{ fontSize: 15, fontFamily: face.semibold, color: color.paper, lineHeight: 18 }}>
           {close ? '×' : '‹'}
         </Text>
       </Pressable>
@@ -163,7 +163,7 @@ export function RateStrip({
       }}
     >
       <Text style={[type.label, { fontSize: 12.5, color: color.paper }]}>
-        1 USD = <Text style={{ fontWeight: '600' }}>{rate} ₺</Text>
+        1 USD = <Text style={{ fontFamily: face.semibold }}>{rate} ₺</Text>
         {showSource ? <Text style={{ color: color.mist }}> · mid-market</Text> : null}
       </Text>
 

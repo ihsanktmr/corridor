@@ -12,7 +12,7 @@ import { onrampFor } from '../../providers/registry';
 import { ACTIVE_CORRIDOR } from '../../providers/registry';
 import { useCorridor } from '../../state/useCorridor';
 import { color, space } from '../../theme/tokens';
-import { tabular, type } from '../../theme/type';
+import { face, tabular, type } from '../../theme/type';
 
 /**
  * 04 · Add USD — on-ramp
@@ -64,7 +64,7 @@ export default function Fund() {
             }
             subtitle={`Chase ···4417 · ${rail === 'ach' ? arrival : 'arrives in 2 business days'}`}
             trailing={
-              <Text style={[type.label, { fontSize: 12.5, fontWeight: '600', color: color.success }]}>
+              <Text style={[type.label, { fontSize: 12.5, fontFamily: face.semibold, color: color.success }]}>
                 Free
               </Text>
             }
@@ -76,7 +76,7 @@ export default function Fund() {
             title="Debit card"
             subtitle="Instant · arrives today"
             trailing={
-              <Text style={[type.bodyStrong, tabular, { fontSize: 12.5, fontWeight: '600' }]}>$7.56</Text>
+              <Text style={[type.bodyStrong, tabular, { fontSize: 12.5, fontFamily: face.semibold }]}>$7.56</Text>
             }
           />
 
@@ -86,7 +86,7 @@ export default function Fund() {
             title="Wire"
             subtitle="Same business day if sent before 15:00 ET"
             trailing={
-              <Text style={[type.bodyStrong, tabular, { fontSize: 12.5, fontWeight: '600' }]}>$15.00</Text>
+              <Text style={[type.bodyStrong, tabular, { fontSize: 12.5, fontFamily: face.semibold }]}>$15.00</Text>
             }
           />
         </View>
@@ -94,7 +94,7 @@ export default function Fund() {
         <Card tight style={{ marginTop: space.base, marginBottom: space.base }}>
           <Row style={{ marginBottom: space.md }}>
             <Text style={[type.label, { fontSize: 12.5 }]}>You pay</Text>
-            <Text style={[type.bodyStrong, tabular, { fontWeight: '600' }]}>{format(charged)}</Text>
+            <Text style={[type.bodyStrong, tabular, { fontFamily: face.semibold }]}>{format(charged)}</Text>
           </Row>
           {/* The choice only affects the first hop — the chain and payout legs are
               identical either way. */}

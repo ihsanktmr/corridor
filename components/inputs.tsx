@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 
 import { color, radius, space } from '../theme/tokens';
-import { tabular, type } from '../theme/type';
+import { face, tabular, type } from '../theme/type';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Text field
@@ -154,7 +154,7 @@ export function Keypad({ value, onChange }: { value: string; onChange: (next: st
               tabular,
               {
                 fontSize: key === '⌫' ? 19 : 23,
-                fontWeight: '500',
+                fontFamily: face.medium,
                 color: key === '.' || key === '⌫' ? color.mist : color.paper,
               },
             ]}
@@ -239,7 +239,7 @@ export function ConfirmSlider({
         style ?? null,
       ]}
     >
-      <Text style={[type.label, { textAlign: 'center', fontSize: 13.5, fontWeight: '500' }]}>{label}</Text>
+      <Text style={[type.label, { textAlign: 'center', fontSize: 13.5, fontFamily: face.medium }]}>{label}</Text>
 
       <Animated.View
         {...responder.panHandlers}
@@ -256,7 +256,7 @@ export function ConfirmSlider({
           transform: [{ translateX: x }],
         }}
       >
-        <Text style={{ fontSize: 17, fontWeight: '700', color: color.void }}>›</Text>
+        <Text style={{ fontSize: 17, fontFamily: face.semibold, color: color.void }}>›</Text>
       </Animated.View>
     </View>
   );

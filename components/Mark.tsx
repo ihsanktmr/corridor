@@ -12,9 +12,20 @@ import { color } from '../theme/tokens';
  * walls. The mark is the brand — it gets real vectors.
  */
 export function Mark({ size = 20, dot = false }: { size?: number; dot?: boolean }) {
-  // Stroke weights scale with the mark so it stays optically even at 17px and 60px.
-  const wall = size >= 40 ? 4 : 7;
-  const sight = size >= 40 ? 2.5 : 4.5;
+  /**
+   * Stroke weight is specified in *rendered pixels*, then converted into the
+   * 100-unit viewBox — so the mark carries the same optical weight at 17px in a
+   * divider as it does at 60px on the welcome screen.
+   *
+   * The identity spec draws it at 72px with a 4-unit wall, i.e. ~2.9 rendered
+   * pixels; that is the target held constant here. An earlier version picked
+   * stroke by size bracket and got thinner as the mark grew, which is backwards.
+   */
+  const px = (target: number, min: number, max: number) =>
+    Math.min(max, Math.max(min, (target * 100) / size));
+
+  const wall = px(2.6, 4, 12);
+  const sight = px(1.7, 2.5, 8);
 
   return (
     <Svg width={size} height={size} viewBox="0 0 100 100">

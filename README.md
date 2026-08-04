@@ -2,6 +2,19 @@
 
 Stablecoin remittance case study — **USD → USDC → TRY payout**, built to demonstrate product design and integration architecture for consumer fintech.
 
+<p align="center">
+  <img src="docs/screens/01-welcome.png" width="160" alt="Welcome — email or passkey, no seed phrase">
+  <img src="docs/screens/03-amount.png" width="160" alt="Amount — mid-market rate, fee breakdown, rate lock">
+  <img src="docs/screens/07-recipient.png" width="160" alt="Recipient — local IBAN validation, name-match warning">
+  <img src="docs/screens/09-in-flight.png" width="160" alt="In flight — five rails, live tx hash">
+  <img src="docs/screens/10-receipt.png" width="160" alt="Receipt — verifiable on-chain proof">
+  <img src="docs/screens/11-payout-returned.png" width="160" alt="Payout returned — your money is safe">
+</p>
+
+<p align="center">
+  <sub>Welcome · Amount · Recipient · In flight · Receipt · Payout returned — iPhone 16 Pro, Expo Go</sub>
+</p>
+
 One corridor, one flow: on-ramp → KYC gate → USDC send → Turkish lira payout. Turkey was chosen deliberately rather than as a generic demo pair — it is a genuine high-inflation, high-stablecoin-adoption market, which is what makes the corridor worth designing.
 
 **No money moves here.** See [What's real](#whats-real) before reading anything else.
@@ -75,6 +88,15 @@ npm start          # then press i for the iOS simulator
 
 Runs in Expo Go — no dev build, no native compilation, no credentials. Every rail is simulated by default, so it works offline.
 
+**Jump straight to a screen.** The interesting states sit three or four steps into a flow that takes real time to walk, so each has a deep link:
+
+```
+corridor://demo/review      corridor://demo/inflight    corridor://demo/receipt
+corridor://demo/expired     corridor://demo/returned    corridor://demo/kyc-resubmit
+```
+
+These build the same event log the real timeline produces — no screen special-cases them.
+
 ```bash
 npm test           # 42 domain tests
 npm run typecheck  # strict + noUncheckedIndexedAccess + exactOptionalPropertyTypes
@@ -109,7 +131,9 @@ app/          expo-router file routes — the 11 screens
 
 Phases 1–5 complete: identity → design system → integration architecture → build → packaging.
 
-Typecheck clean, 42/42 tests, iOS bundle succeeds. Screens 01, 03, 05 and 07 verified on an iPhone 16 Pro simulator; 04, 06, 08–11 are built and typechecked but not yet visually confirmed.
+Typecheck clean, 42/42 tests, iOS bundle succeeds.
+
+Brand faces (Bricolage Grotesque, Inter, IBM Plex Mono) are bundled via `expo-font` and held behind the splash until loaded. Screens 01, 03, 05, 07, 09, 10 and 11c are verified on an iPhone 16 Pro simulator — the screenshots above are that build. Screens 04, 06, 08 and edge states 11a/11b are built and typechecked but not yet visually confirmed.
 
 ## Licence
 
