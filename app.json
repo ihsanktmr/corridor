@@ -1,0 +1,24 @@
+{
+  "expo": {
+    "name": "Corridor",
+    "slug": "corridor",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "scheme": "corridor",
+    "userInterfaceStyle": "dark",
+    "backgroundColor": "#14120F",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "dev.corridor.app"
+    },
+    "android": {
+      "package": "dev.corridor.app",
+      "predictiveBackGestureEnabled": false
+    },
+    "plugins": ["expo-router"],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
