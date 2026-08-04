@@ -693,7 +693,7 @@ const PROVIDERS: Record&lt;ProviderId, Provider&gt; = {
           <tr><td>Quote signing key</td><td>Corridor server only</td><td>Client-side quoting means client-authored rates.</td></tr>
           <tr><td>Session auth</td><td>Privy JWT, verified against Privy's JWKS</td><td>Corridor mints no identity of its own — one fewer credential store to breach.</td></tr>
           <tr><td>KYC document images</td><td>Client → provider, direct</td><td>Signed short-lived upload URL. Corridor stores only <code>{sessionId, status, reasonCode}</code>. This is the technical fact behind the promise on screen 05.</td></tr>
-          <tr><td>Recipient IBANs</td><td>Corridor server, encrypted</td><td>Displayed masked (<code>TR64 ···· 2345</code>); full value never returned to the client after creation.</td></tr>
+          <tr><td>Recipient IBANs</td><td>Corridor server, encrypted</td><td>Displayed masked (<code>TR20 ···· 2345</code>); full value never returned to the client after creation.</td></tr>
           <tr><td>Base RPC</td><td>Public endpoint</td><td>Reads only. No secret, no signing.</td></tr>
         </tbody>
       </table>
