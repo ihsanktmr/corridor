@@ -46,9 +46,23 @@ npm run proof -- --send    # sign and broadcast
 
 The chain is hard-coded and there is no flag to change it. Keys are generated into `.env` (gitignored) and never printed. A successful run writes `proof-artifact.json` with the hash, block number and explorer link.
 
-**Current state: not yet broadcast.** The sender address is funded from public faucets, which are captcha-gated and cannot be automated. Until it runs, `SimulatedWallet.sendUsdc` returns a fixed hash that BaseScan will not resolve.
+### ✓ Broadcast and verifiable
 
-**On the amount.** Circle's faucet issues 20 USDC per address per 2 hours, and the locked demo figure is 500.00 USDC. Rather than spend two days accumulating, the artifact is produced at **20.00 USDC** and the discrepancy is stated here: the *mechanism* is identical — same contract, same decimals, same signing path — the *amount* is not. Quietly minting a 500.00 receipt over a 20.00 transaction would be exactly the kind of thing this project exists to argue against.
+```
+0x551c67045ddfe8e8fb94fdad1ca0b5ffd078d3ca50f167531f0680722a55ba10
+```
+
+**[Verify it on BaseScan →](https://sepolia.basescan.org/tx/0x551c67045ddfe8e8fb94fdad1ca0b5ffd078d3ca50f167531f0680722a55ba10)**
+
+| | |
+|---|---|
+| Status | `success`, block 45038683 |
+| Contract | `0x036CbD53842c5426634e7929541eC2318f3dCF7e` — Circle's canonical Base Sepolia USDC |
+| Transfer | 1.00 USDC → treasury, 57,359 gas |
+
+Full record in [`proof-artifact.json`](proof-artifact.json). The hash is wired into the receipt screen, which links out to BaseScan.
+
+**On the amount.** The demo figures throughout the app are 500.00 USDC; the on-chain transaction is **1.00 USDC**, capped by Circle's testnet faucet. Same contract, same decimals, same signing path — different amount. The receipt screen says so on the screen itself, not just here. A receipt implying a 500.00 settlement over a 1.00 transaction would be exactly the kind of thing this project exists to argue against.
 
 ---
 

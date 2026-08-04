@@ -219,7 +219,7 @@ export function foldTransfer(seed: Seed, log: readonly LoggedEvent[]): Transfer 
   };
 }
 
-/** `0x8f2a···c19e` — the hash chip on screens 09 and 10. */
+/** `0x551c···ba10` — the hash chip on screens 09 and 10. */
 export function shortHash(hash: string): string {
   return hash.length <= 12 ? hash : `${hash.slice(0, 6)}···${hash.slice(-4)}`;
 }

@@ -14,6 +14,12 @@ import { color, space } from '../../theme/tokens';
 import { type } from '../../theme/type';
 
 /**
+ * The amount actually settled on Base Sepolia, from `proof-artifact.json`.
+ * Constrained by Circle's testnet faucet, not by the design.
+ */
+const PROOF_AMOUNT = '1.00';
+
+/**
  * 10 · Receipt
  *
  * The proof artifact. This is the screen that gets screenshotted and sent to the
@@ -105,10 +111,21 @@ export default function Receipt() {
           />
           <Row style={{ marginTop: 11 }}>
             <Text style={[type.label, { fontSize: 11 }]}>
-              Base Sepolia · 500.00 USDC · {CONFIRMATIONS_REQUIRED} confs
+              Base Sepolia · {PROOF_AMOUNT} USDC · {CONFIRMATIONS_REQUIRED}+ confs
             </Text>
             <Text style={{ fontSize: 11.5, color: color.goldBright }}>BaseScan ↗</Text>
           </Row>
+          {/*
+            The hash above is a real transaction, and it carries a different amount
+            from the figures on this receipt. Saying so here — rather than only in
+            the README — is the point: a receipt that implied a 500.00 settlement
+            over a 1.00 transaction would be the exact thing this project argues
+            against.
+          */}
+          <Text style={[type.label, { fontSize: 10, marginTop: 9, lineHeight: 15 }]}>
+            Transfer figures above are demo values. The on-chain transaction is{' '}
+            {PROOF_AMOUNT} USDC — testnet faucet limits, same contract and signing path.
+          </Text>
         </Card>
 
         <Row style={{ paddingVertical: 2, paddingBottom: space.md }}>

@@ -261,8 +261,8 @@ const WALLET_META: ProviderMeta = {
 };
 
 /** The locked demo address and hash — see the tracker's demo-data block. */
-const DEMO_ADDRESS = '0x7A3fE91c4D2b8a5F6e0C3d7B9a1E4f2C8d6B0a9E';
-const DEMO_TX = '0x8f2ae41d9c7b3f6a2e5d8c1b4a7f0e3d6c9b2a5f8e1d4c7b0a3f6e9d2c5bc19e';
+const DEMO_ADDRESS = '0x477Fb9fA92b264Fe8f636bA6EA5415dd21a392a3';
+const DEMO_TX = '0x551c67045ddfe8e8fb94fdad1ca0b5ffd078d3ca50f167531f0680722a55ba10';
 
 export class SimulatedWallet implements WalletProvider {
   readonly meta = WALLET_META;

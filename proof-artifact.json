@@ -1,0 +1,14 @@
+{
+  "hash": "0x551c67045ddfe8e8fb94fdad1ca0b5ffd078d3ca50f167531f0680722a55ba10",
+  "status": "success",
+  "chain": "base-sepolia",
+  "chainId": 84532,
+  "asset": "USDC",
+  "contract": "0x036CbD53842c5426634e7929541eC2318f3dCF7e",
+  "amount": "1.00",
+  "from": "0x477Fb9fA92b264Fe8f636bA6EA5415dd21a392a3",
+  "to": "0xEAe5a1715a414818a0e86043f2d608083Ccbd1C6",
+  "blockNumber": "45038683",
+  "explorer": "https://sepolia.basescan.org/tx/0x551c67045ddfe8e8fb94fdad1ca0b5ffd078d3ca50f167531f0680722a55ba10",
+  "producedAt": "2026-08-04T12:14:18.738Z"
+}

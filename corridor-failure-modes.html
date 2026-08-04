@@ -199,15 +199,23 @@ hr.rule{border:none;border-top:1px solid var(--line);margin:0;}
         </p>
       </div>
 
-      <div class="disc stop">
-        <div class="dt"><strong>The wallet, and the tx hash</strong><span class="badge mock">simulated</span></div>
+      <div class="disc">
+        <div class="dt"><strong>The wallet</strong><span class="badge mock">simulated</span></div>
         <p>
-          <b>The single most important disclosure in this document.</b> The case study's stated proof
-          artifact is one real Base Sepolia USDC transfer with a verifiable hash. <b>That transfer has
-          not been broadcast yet.</b> <code>SimulatedWallet.sendUsdc</code> returns a fixed hash; it is
-          not on chain and BaseScan will not resolve it. The signing path now exists as
-          <code>scripts/proof.mts</code> and is blocked only on captcha-gated faucets — see
-          <a href="#gaps">known gaps</a>.
+          <code>@privy-io/expo</code> requires native modules and therefore a development build, so the
+          in-app wallet is a fixture and the repo stays runnable with <code>npx expo start</code>. The
+          real Privy adapter binds in the same slot.
+        </p>
+      </div>
+
+      <div class="disc">
+        <div class="dt"><strong>The tx hash</strong><span class="badge real">real · verified</span></div>
+        <p>
+          <b>Discharged.</b> <code>0x551c···ba10</code> is a genuine ERC-20 transfer of 1.00 USDC on
+          Base Sepolia, block 45038683, against Circle's canonical contract — produced by
+          <code>scripts/proof.mts</code> and checkable on BaseScan without trusting this repo.
+          <b>The amount differs from the app's 500.00 demo figures</b> because Circle's testnet faucet
+          caps it; the receipt screen states that on the screen itself.
         </p>
       </div>
 
@@ -454,25 +462,25 @@ case <span class="s">'onramp_returned'</span>:
         <thead><tr><th>Gap</th><th>Why</th><th>Cost to close</th></tr></thead>
         <tbody>
           <tr>
-            <td><b>Testnet transaction not yet broadcast</b></td>
-            <td>
-              The machinery exists — <code>scripts/proof.mts</code> signs a real ERC-20 transfer on
-              Base Sepolia with <code>viem</code>, hard-coded to testnet, writing the hash and block to
-              <code>proof-artifact.json</code>. It has not been run because the sender address is funded
-              from captcha-gated public faucets that cannot be automated.
-              <b>Until it runs, the hash shown in-app resolves to nothing.</b>
-            </td>
-            <td>Two faucet claims, then <code>npm run proof -- --send</code></td>
-          </tr>
-          <tr>
             <td>Artifact amount ≠ demo amount</td>
             <td>
-              Circle's faucet caps at 20 USDC per address per 2 hours; the locked demo figure is 500.00
-              USDC. The artifact is produced at <b>20.00</b> rather than spending two days accumulating.
-              The mechanism is identical — same contract, same decimals, same signing path — the amount
-              is not, and pretending otherwise would be the exact failure this document exists to avoid.
+              The on-chain transaction is <b>1.00 USDC</b>; the app's demo figures are 500.00. Circle's
+              testnet faucet sets the ceiling, not the design. Same contract, same decimals, same
+              signing path — different amount. Stated on the receipt screen itself, not only here,
+              because a receipt implying a 500.00 settlement over a 1.00 transaction would be the exact
+              failure this document exists to avoid.
             </td>
             <td>Accepted and disclosed</td>
+          </tr>
+          <tr>
+            <td>Wallet does not sign in-app</td>
+            <td>
+              The verified transfer was produced by <code>scripts/proof.mts</code> using the same
+              contract and chain the app targets, not by tapping through the app itself — because
+              wiring Privy would force every reviewer through a development build.
+              <b>The transaction is real; the path to it was a script.</b>
+            </td>
+            <td>Privy adapter + EAS dev build</td>
           </tr>
           <tr>
             <td>Privy not wired</td>

@@ -14,7 +14,7 @@ import {
 } from './transfer.ts';
 
 const NOW = new Date('2026-08-03T14:22:00.000Z');
-const TX: Hex = '0x8f2ae41d9c7b3f6a2e5d8c1b4a7f0e3d6c9b2a5f8e1d4c7b0a3f6e9d2c5bc19e';
+const TX: Hex = '0x551c67045ddfe8e8fb94fdad1ca0b5ffd078d3ca50f167531f0680722a55ba10';
 
 const QUOTE: Quote = buildQuote({
   corridor: 'USD:TRY',
@@ -219,6 +219,6 @@ describe('foldTransfer — failure paths', () => {
 
 describe('display helpers', () => {
   test('shortens a hash to the phase 2 chip format', () => {
-    assert.equal(shortHash(TX), '0x8f2a···c19e');
+    assert.equal(shortHash(TX), '0x551c···ba10');
   });
 });
