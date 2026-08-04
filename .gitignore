@@ -1,1 +1,30 @@
+# Internal tracker — stays local, never public
 corridor-project.md
+
+# Dependencies
+node_modules/
+
+# Expo
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+
+# Native builds
+ios/
+android/
+*.orig.*
+
+# Env — provider credentials never enter the repo
+.env
+.env.local
+.env*.local
+
+# macOS
+.DS_Store
+
+# Logs
+*.log
+npm-debug.*
+yarn-debug.*
+yarn-error.*
