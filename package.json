@@ -8,7 +8,8 @@
     "ios": "expo start --ios",
     "android": "expo start --android",
     "typecheck": "tsc --noEmit",
-    "test": "node --test domain/*.test.ts"
+    "test": "node --test domain/*.test.ts",
+    "proof": "node scripts/proof.mts"
   },
   "dependencies": {
     "expo": "~57.0.9",
@@ -25,6 +26,7 @@
   "devDependencies": {
     "@types/node": "^26.1.2",
     "@types/react": "~19.2.2",
-    "typescript": "~6.0.3"
+    "typescript": "~6.0.3",
+    "viem": "^2.55.10"
   }
 }

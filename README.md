@@ -35,11 +35,20 @@ Four of the five rails are simulated, and every one is disclosed **on-screen** a
 | TRY payout | Simulated | **Bridge has no TRY route in either direction.** Not a gate — the product isn't sold |
 | Identity verification | Real flow, fixture verdict | Sequencing and retry are production-shaped; no documents are captured |
 
-### The honest caveat
+### The proof artifact
 
-The case study's stated proof artifact is one real Base Sepolia USDC transfer with a verifiable hash. **That transfer has not been made yet.** `SimulatedWallet.sendUsdc` returns a fixed hash — it is not on chain and BaseScan will not resolve it. Circle's faucet issues 20 USDC per address per 2 hours against a 500.00 USDC demo figure, so a matching transfer needs about two days of accumulation; sending a smaller amount would make the hash disagree with the receipt and destroy its value as evidence.
+The case study's central evidentiary claim is that the settlement leg is real. `scripts/proof.mts` discharges it — a genuine ERC-20 transfer on Base Sepolia, signed locally with `viem`, verifiable by anyone on BaseScan without taking this repo's word for anything.
 
-It is listed as an open gap rather than quietly omitted, which is the same rule the rest of the project runs on.
+```bash
+npm run proof              # status + funding needed
+npm run proof -- --send    # sign and broadcast
+```
+
+The chain is hard-coded and there is no flag to change it. Keys are generated into `.env` (gitignored) and never printed. A successful run writes `proof-artifact.json` with the hash, block number and explorer link.
+
+**Current state: not yet broadcast.** The sender address is funded from public faucets, which are captcha-gated and cannot be automated. Until it runs, `SimulatedWallet.sendUsdc` returns a fixed hash that BaseScan will not resolve.
+
+**On the amount.** Circle's faucet issues 20 USDC per address per 2 hours, and the locked demo figure is 500.00 USDC. Rather than spend two days accumulating, the artifact is produced at **20.00 USDC** and the discrepancy is stated here: the *mechanism* is identical — same contract, same decimals, same signing path — the *amount* is not. Quietly minting a 500.00 receipt over a 20.00 transaction would be exactly the kind of thing this project exists to argue against.
 
 ---
 
