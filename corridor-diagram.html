@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Corridor — architecture diagram</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --void:#14120F; --concrete:#1E1B16; --concrete-raised:#28241D; --line:#332E24;
+  --paper:#F6F3EC; --mist:#A39C8E; --gold:#C9A35C; --gold-bright:#E0BC7C;
+  --success:#8FA876; --warning:#C98A4B; --error:#B5695A;
+  --ff-display:'Bricolage Grotesque',sans-serif;
+  --ff-ui:'Inter',sans-serif;
+  --ff-mono:'IBM Plex Mono',monospace;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{background:var(--void);color:var(--paper);font-family:var(--ff-ui);-webkit-font-smoothing:antialiased;}
+.wrap{max-width:1120px;margin:0 auto;padding:60px 24px 120px;}
+.eyebrow{font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:var(--mist);margin:0 0 12px;display:flex;align-items:center;gap:8px;}
+.eyebrow::before{content:"";width:14px;height:1px;background:var(--gold);flex-shrink:0;}
+h1.display{font-family:var(--ff-display);font-weight:600;font-size:clamp(34px,5vw,50px);letter-spacing:-0.02em;margin:0 0 16px;line-height:1.04;}
+h2.sec{font-family:var(--ff-display);font-weight:600;font-size:clamp(22px,2.8vw,28px);letter-spacing:-0.015em;margin:0 0 12px;}
+p.note{font-size:14px;line-height:1.76;color:var(--mist);max-width:680px;margin:0 0 12px;}
+p.note b{color:var(--paper);font-weight:500;}
+p.note code{font-family:var(--ff-mono);font-size:12.5px;color:var(--gold-bright);}
+section{margin-top:80px;}
+
+.figure{
+  background:var(--concrete);border:1px solid var(--line);border-radius:24px;
+  padding:14px;margin-top:28px;overflow-x:auto;
+}
+.figure svg{display:block;min-width:900px;width:100%;height:auto;}
+.cap{font-size:11.5px;color:var(--mist);margin:14px 4px 0;font-family:var(--ff-mono);}
+
+.key{display:flex;flex-wrap:wrap;gap:18px;margin-top:20px;}
+.key div{display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--mist);}
+.key i{width:12px;height:12px;border-radius:3px;display:inline-block;flex-shrink:0;}
+.key i.real{background:rgba(143,168,118,0.18);border:1px solid var(--success);}
+.key i.sim{background:rgba(201,138,75,0.16);border:1px solid var(--warning);}
+.key i.hyb{background:rgba(201,163,92,0.16);border:1px solid var(--gold);}
+.key i.gone{background:rgba(181,105,90,0.14);border:1px dashed var(--error);}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="eyebrow">corridor — architecture diagram, phase 5</div>
+  <h1 class="display">USD → TRY,<br>end to end.</h1>
+  <p class="note">
+    One corridor, four rails, one trust boundary. Green is real and self-serve; amber is simulated and
+    disclosed on-screen; the dashed red route is the one Bridge does not sell, which is why payout is a
+    binding rather than a hard-coded call.
+  </p>
+
+  <div class="key">
+    <div><i class="real"></i> real · self-serve</div>
+    <div><i class="hyb"></i> real flow, fixture verdict</div>
+    <div><i class="sim"></i> simulated · disclosed in-app</div>
+    <div><i class="gone"></i> route does not exist</div>
+  </div>
+
+  <!-- ============ SYSTEM DIAGRAM ============ -->
+  <section>
+    <h2 class="sec">System</h2>
+    <p class="note">
+      The client holds no provider credentials and computes no quotes. Three outbound dependencies only:
+      the wallet SDK, a read-only chain RPC, and the Corridor API.
+    </p>
+
+    <div class="figure">
+      <svg viewBox="0 0 1000 620" role="img" aria-label="Corridor system architecture">
+        <defs>
+          <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M0 0 L10 5 L0 10 z" fill="#C9A35C"/>
+          </marker>
+          <marker id="arm" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M0 0 L10 5 L0 10 z" fill="#A39C8E"/>
+          </marker>
+        </defs>
+
+        <!-- ---------- CLIENT ---------- -->
+        <rect x="40" y="24" width="920" height="86" rx="14" fill="#1E1B16" stroke="#332E24"/>
+        <text x="60" y="50" font-family="Inter" font-size="10" letter-spacing="1.4" fill="#C9A35C">CLIENT · REACT NATIVE / EXPO</text>
+        <text x="60" y="74" font-family="Inter" font-size="14" font-weight="600" fill="#F6F3EC">11 screens · theme/tokens · component primitives</text>
+        <text x="60" y="94" font-family="Inter" font-size="11.5" fill="#A39C8E">Renders server state. Owns no money logic, no credentials, no quote arithmetic.</text>
+
+        <!-- client -> boundary -->
+        <line x1="500" y1="110" x2="500" y2="150" stroke="#C9A35C" stroke-width="1.5" marker-end="url(#ar)"/>
+        <text x="512" y="136" font-family="IBM Plex Mono" font-size="10" fill="#A39C8E">Privy JWT</text>
+
+        <!-- ---------- SIDE: on-device ---------- -->
+        <rect x="40" y="150" width="200" height="74" rx="12" fill="#28241D" stroke="#8FA876"/>
+        <text x="56" y="174" font-family="Inter" font-size="11.5" font-weight="600" fill="#F6F3EC">Wallet SDK</text>
+        <text x="56" y="192" font-family="Inter" font-size="10" fill="#A39C8E">on-device key shards</text>
+        <text x="56" y="208" font-family="IBM Plex Mono" font-size="9.5" fill="#E0BC7C">EIP-1193 · sign only</text>
+
+        <rect x="760" y="150" width="200" height="74" rx="12" fill="#28241D" stroke="#8FA876"/>
+        <text x="776" y="174" font-family="Inter" font-size="11.5" font-weight="600" fill="#F6F3EC">Base RPC</text>
+        <text x="776" y="192" font-family="Inter" font-size="10" fill="#A39C8E">read-only, no secret</text>
+        <text x="776" y="208" font-family="IBM Plex Mono" font-size="9.5" fill="#E0BC7C">balanceOf · receipts</text>
+
+        <line x1="140" y1="150" x2="140" y2="110" stroke="#A39C8E" stroke-width="1" stroke-dasharray="3 3"/>
+        <line x1="860" y1="150" x2="860" y2="110" stroke="#A39C8E" stroke-width="1" stroke-dasharray="3 3"/>
+
+        <!-- ---------- TRUST BOUNDARY ---------- -->
+        <rect x="260" y="150" width="480" height="150" rx="14" fill="rgba(201,138,75,0.05)" stroke="#C98A4B" stroke-dasharray="6 4"/>
+        <text x="280" y="176" font-family="Inter" font-size="10" letter-spacing="1.4" fill="#C98A4B">⎯ TRUST BOUNDARY ⎯ CORRIDOR API</text>
+
+        <rect x="280" y="190" width="132" height="42" rx="8" fill="#1E1B16" stroke="#332E24"/>
+        <text x="294" y="208" font-family="Inter" font-size="10.5" font-weight="600" fill="#F6F3EC">Quote service</text>
+        <text x="294" y="223" font-family="Inter" font-size="9" fill="#A39C8E">signs · expires</text>
+
+        <rect x="424" y="190" width="132" height="42" rx="8" fill="#1E1B16" stroke="#332E24"/>
+        <text x="438" y="208" font-family="Inter" font-size="10.5" font-weight="600" fill="#F6F3EC">Ledger</text>
+        <text x="438" y="223" font-family="Inter" font-size="9" fill="#A39C8E">append-only log</text>
+
+        <rect x="568" y="190" width="152" height="42" rx="8" fill="#1E1B16" stroke="#332E24"/>
+        <text x="582" y="208" font-family="Inter" font-size="10.5" font-weight="600" fill="#F6F3EC">Webhook ingress</text>
+        <text x="582" y="223" font-family="Inter" font-size="9" fill="#A39C8E">verify · normalise · seq</text>
+
+        <rect x="280" y="244" width="440" height="40" rx="8" fill="#1E1B16" stroke="#332E24"/>
+        <text x="294" y="262" font-family="Inter" font-size="10.5" font-weight="600" fill="#F6F3EC">Reconciler</text>
+        <text x="294" y="277" font-family="Inter" font-size="9" fill="#A39C8E">backoff poll — the floor under every dropped webhook</text>
+
+        <text x="280" y="316" font-family="Inter" font-size="10" fill="#C98A4B">Every provider secret and the quote-signing key live here, and only here.</text>
+
+        <!-- boundary -> providers -->
+        <line x1="500" y1="330" x2="500" y2="366" stroke="#C9A35C" stroke-width="1.5" marker-end="url(#ar)"/>
+        <text x="512" y="352" font-family="IBM Plex Mono" font-size="10" fill="#A39C8E">provider interfaces</text>
+
+        <!-- ---------- PROVIDERS ---------- -->
+        <rect x="40" y="366" width="215" height="96" rx="12" fill="rgba(201,138,75,0.06)" stroke="#C98A4B"/>
+        <text x="56" y="390" font-family="Inter" font-size="11.5" font-weight="600" fill="#F6F3EC">OnrampProvider</text>
+        <text x="56" y="408" font-family="IBM Plex Mono" font-size="9.5" fill="#E0BC7C">bridge.usd.ach</text>
+        <text x="56" y="426" font-family="Inter" font-size="10" fill="#A39C8E">Real product.</text>
+        <text x="56" y="442" font-family="Inter" font-size="10" fill="#A39C8E">Sandbox not self-serve.</text>
+
+        <rect x="271" y="366" width="215" height="96" rx="12" fill="rgba(201,138,75,0.06)" stroke="#C98A4B"/>
+        <text x="287" y="390" font-family="Inter" font-size="11.5" font-weight="600" fill="#F6F3EC">PayoutProvider</text>
+        <text x="287" y="408" font-family="IBM Plex Mono" font-size="9.5" fill="#E0BC7C">turkey.try.bank</text>
+        <text x="287" y="426" font-family="Inter" font-size="10" fill="#A39C8E">Owns IBAN mod-97.</text>
+        <text x="287" y="442" font-family="Inter" font-size="10" fill="#A39C8E">Corridor-specific partner.</text>
+
+        <rect x="502" y="366" width="215" height="96" rx="12" fill="rgba(201,163,92,0.06)" stroke="#C9A35C"/>
+        <text x="518" y="390" font-family="Inter" font-size="11.5" font-weight="600" fill="#F6F3EC">KycProvider</text>
+        <text x="518" y="408" font-family="IBM Plex Mono" font-size="9.5" fill="#E0BC7C">kyc.vendor</text>
+        <text x="518" y="426" font-family="Inter" font-size="10" fill="#A39C8E">Real state machine.</text>
+        <text x="518" y="442" font-family="Inter" font-size="10" fill="#A39C8E">Fixture verdict.</text>
+
+        <rect x="733" y="366" width="227" height="96" rx="12" fill="rgba(181,105,90,0.05)" stroke="#B5695A" stroke-dasharray="5 4"/>
+        <text x="749" y="390" font-family="Inter" font-size="11.5" font-weight="600" fill="#F6F3EC">PayoutProvider</text>
+        <text x="749" y="408" font-family="IBM Plex Mono" font-size="9.5" fill="#E0BC7C">bridge.mxn.spei</text>
+        <text x="749" y="426" font-family="Inter" font-size="10" fill="#A39C8E">Implemented, never called.</text>
+        <text x="749" y="442" font-family="Inter" font-size="10" fill="#B5695A">Bridge has no TRY route.</text>
+
+        <!-- ---------- SETTLEMENT ---------- -->
+        <line x1="378" y1="462" x2="378" y2="506" stroke="#C9A35C" stroke-width="1.5" marker-end="url(#ar)"/>
+
+        <rect x="40" y="506" width="920" height="80" rx="14" fill="rgba(143,168,118,0.05)" stroke="#8FA876"/>
+        <text x="60" y="530" font-family="Inter" font-size="10" letter-spacing="1.4" fill="#8FA876">SETTLEMENT · BASE SEPOLIA — THE ONE LEG THAT MOVES VALUE</text>
+        <text x="60" y="554" font-family="Inter" font-size="13" font-weight="600" fill="#F6F3EC">ERC-20 transfer() signed by the embedded wallet</text>
+        <text x="60" y="574" font-family="IBM Plex Mono" font-size="10.5" fill="#E0BC7C">USDC 0x036CbD53842c5426634e7929541eC2318f3dCF7e · 6 decimals · 12 confirmations</text>
+      </svg>
+    </div>
+    <p class="cap">fig 1 — trust boundary and provider seam. adding a corridor is a row in ROUTES plus an adapter.</p>
+  </section>
+
+  <!-- ============ FLOW DIAGRAM ============ -->
+  <section>
+    <h2 class="sec">One transfer, five rails</h2>
+    <p class="note">
+      The timeline screen 09 renders. Durations are real, not demo-compressed —
+      <b>ACH is the slow leg and the chain leg takes seconds</b>, which is the whole argument for
+      stablecoin rails and the reason the receipt reports time-in-transit rather than hiding it.
+    </p>
+
+    <div class="figure">
+      <svg viewBox="0 0 1000 300" role="img" aria-label="Transfer settlement timeline">
+        <defs>
+          <marker id="ar2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M0 0 L10 5 L0 10 z" fill="#C9A35C"/>
+          </marker>
+        </defs>
+
+        <line x1="70" y1="120" x2="930" y2="120" stroke="#332E24" stroke-width="1"/>
+        <line x1="70" y1="120" x2="760" y2="120" stroke="#C9A35C" stroke-width="2"/>
+
+        <!-- nodes -->
+        <g>
+          <circle cx="70" cy="120" r="8" fill="#C9A35C"/>
+          <text x="70" y="96" text-anchor="middle" font-family="Inter" font-size="11.5" font-weight="600" fill="#F6F3EC">ACH debit</text>
+          <text x="70" y="150" text-anchor="middle" font-family="IBM Plex Mono" font-size="9.5" fill="#A39C8E">T+0</text>
+          <text x="70" y="166" text-anchor="middle" font-family="Inter" font-size="9.5" fill="#A39C8E">$503.75</text>
+        </g>
+
+        <g>
+          <circle cx="300" cy="120" r="8" fill="#C9A35C"/>
+          <text x="300" y="96" text-anchor="middle" font-family="Inter" font-size="11.5" font-weight="600" fill="#F6F3EC">USD settled</text>
+          <text x="300" y="150" text-anchor="middle" font-family="IBM Plex Mono" font-size="9.5" fill="#C98A4B">T+2 banking days</text>
+          <text x="300" y="166" text-anchor="middle" font-family="Inter" font-size="9.5" fill="#A39C8E">funded_held</text>
+        </g>
+
+        <g>
+          <circle cx="500" cy="120" r="8" fill="#C9A35C"/>
+          <text x="500" y="96" text-anchor="middle" font-family="Inter" font-size="11.5" font-weight="600" fill="#F6F3EC">Minted</text>
+          <text x="500" y="150" text-anchor="middle" font-family="IBM Plex Mono" font-size="9.5" fill="#A39C8E">+1s</text>
+          <text x="500" y="166" text-anchor="middle" font-family="Inter" font-size="9.5" fill="#A39C8E">500.00 USDC</text>
+        </g>
+
+        <g>
+          <circle cx="650" cy="120" r="8" fill="#C9A35C"/>
+          <text x="650" y="96" text-anchor="middle" font-family="Inter" font-size="11.5" font-weight="600" fill="#F6F3EC">On chain</text>
+          <text x="650" y="150" text-anchor="middle" font-family="IBM Plex Mono" font-size="9.5" fill="#8FA876">~24s · 12 confs</text>
+          <text x="650" y="166" text-anchor="middle" font-family="Inter" font-size="9.5" fill="#A39C8E">tx hash exists here</text>
+        </g>
+
+        <g>
+          <circle cx="760" cy="120" r="8" fill="#C9A35C"/>
+          <text x="760" y="96" text-anchor="middle" font-family="Inter" font-size="11.5" font-weight="600" fill="#F6F3EC">Payout</text>
+          <text x="760" y="150" text-anchor="middle" font-family="IBM Plex Mono" font-size="9.5" fill="#A39C8E">&lt; 30 min</text>
+          <text x="760" y="166" text-anchor="middle" font-family="Inter" font-size="9.5" fill="#A39C8E">FAST / EFT</text>
+        </g>
+
+        <g>
+          <circle cx="930" cy="120" r="8" fill="#14120F" stroke="#8FA876" stroke-width="2"/>
+          <text x="930" y="96" text-anchor="middle" font-family="Inter" font-size="11.5" font-weight="600" fill="#8FA876">Delivered</text>
+          <text x="930" y="150" text-anchor="middle" font-family="Inter" font-size="9.5" fill="#A39C8E">₺26,420.00</text>
+          <text x="930" y="166" text-anchor="middle" font-family="Inter" font-size="9.5" fill="#A39C8E">credited, not submitted</text>
+        </g>
+
+        <!-- risk window -->
+        <rect x="300" y="212" width="630" height="52" rx="8" fill="rgba(181,105,90,0.06)" stroke="#B5695A" stroke-dasharray="5 4"/>
+        <text x="316" y="234" font-family="Inter" font-size="11" font-weight="600" fill="#B5695A">R10 unauthorised-return window — up to 60 days</text>
+        <text x="316" y="252" font-family="Inter" font-size="10" fill="#A39C8E">Opens when the debit settles and stays open long after the lira is spent. Priced, not solved.</text>
+        <line x1="300" y1="132" x2="300" y2="212" stroke="#B5695A" stroke-width="1" stroke-dasharray="3 3"/>
+
+        <!-- hold marker -->
+        <text x="185" y="196" text-anchor="middle" font-family="Inter" font-size="10" fill="#C98A4B">payout held across this gap</text>
+        <line x1="78" y1="182" x2="292" y2="182" stroke="#C98A4B" stroke-width="1" marker-start="url(#ar2)" marker-end="url(#ar2)"/>
+      </svg>
+    </div>
+    <p class="cap">fig 2 — settlement timeline. the hold is deliberate; the red window cannot be closed by holding.</p>
+  </section>
+
+  <p class="note" style="margin-top:60px;">
+    Full detail in
+    <a href="corridor-architecture.html">the integration architecture</a> and
+    <a href="corridor-failure-modes.html">the failure-modes writeup</a>.
+  </p>
+
+</div>
+</body>
+</html>

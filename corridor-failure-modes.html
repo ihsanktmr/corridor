@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Corridor — failure modes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --void:#14120F; --concrete:#1E1B16; --concrete-raised:#28241D; --line:#332E24;
+  --paper:#F6F3EC; --mist:#A39C8E; --gold:#C9A35C; --gold-bright:#E0BC7C;
+  --success:#8FA876; --warning:#C98A4B; --error:#B5695A;
+  --r-sm:8px; --r-md:14px; --r-lg:24px;
+  --ff-display:'Bricolage Grotesque',sans-serif;
+  --ff-ui:'Inter',sans-serif;
+  --ff-mono:'IBM Plex Mono',monospace;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{background:var(--void);color:var(--paper);font-family:var(--ff-ui);-webkit-font-smoothing:antialiased;}
+a{color:var(--gold-bright);}
+
+.wrap{max-width:940px;margin:0 auto;padding:0 24px 140px;}
+.eyebrow{font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:var(--mist);margin:0 0 12px;display:flex;align-items:center;gap:8px;}
+.eyebrow::before{content:"";width:14px;height:1px;background:var(--gold);flex-shrink:0;}
+h1.display{font-family:var(--ff-display);font-weight:600;font-size:clamp(36px,5.6vw,56px);letter-spacing:-0.02em;margin:0 0 18px;line-height:1.04;}
+h2.sec{font-family:var(--ff-display);font-weight:600;font-size:clamp(24px,3.1vw,32px);letter-spacing:-0.015em;margin:0 0 14px;}
+h3.sub{font-family:var(--ff-display);font-weight:600;font-size:18.5px;letter-spacing:-0.01em;margin:36px 0 10px;}
+.lede{font-family:var(--ff-display);font-weight:400;font-style:italic;font-size:clamp(18px,2.3vw,22px);color:var(--paper);max-width:620px;margin:0 0 14px;line-height:1.38;}
+p.note{font-size:14px;line-height:1.78;color:var(--mist);max-width:680px;margin:0 0 12px;}
+p.note b,p.note strong{color:var(--paper);font-weight:500;}
+p.note code,li code,td code{font-family:var(--ff-mono);font-size:12.5px;color:var(--gold-bright);}
+section.block{margin-top:92px;scroll-margin-top:70px;}
+ul.pts{margin:0 0 14px;padding:0;list-style:none;max-width:680px;}
+ul.pts li{font-size:14px;line-height:1.74;color:var(--mist);padding-left:17px;position:relative;margin-bottom:10px;}
+ul.pts li::before{content:"";position:absolute;left:0;top:10px;width:6px;height:1px;background:var(--gold);}
+ul.pts li b{color:var(--paper);font-weight:500;}
+
+.topnav{position:sticky;top:0;z-index:50;background:rgba(20,18,15,0.93);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line);}
+.topnav .inner{max-width:940px;margin:0 auto;padding:11px 24px;display:flex;align-items:center;gap:20px;overflow-x:auto;}
+.topnav .brand{display:flex;align-items:center;gap:8px;flex-shrink:0;margin-right:4px;}
+.topnav .brand svg{width:15px;height:15px;}
+.topnav .brand span{font-family:var(--ff-display);font-weight:600;font-size:14px;}
+.topnav a{font-size:12.5px;color:var(--mist);text-decoration:none;white-space:nowrap;padding:4px 0;border-bottom:1px solid transparent;transition:color .2s ease-out,border-color .2s ease-out;}
+.topnav a:hover{color:var(--paper);border-bottom-color:var(--gold);}
+
+.hero{padding:60px 0 0;}
+.meta-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px;}
+.meta-chip{font-size:11.5px;color:var(--mist);background:var(--concrete);border:1px solid var(--line);border-radius:999px;padding:6px 12px;}
+.meta-chip b{color:var(--paper);font-weight:500;}
+
+.badge{font-size:10px;letter-spacing:0.1em;text-transform:uppercase;font-weight:600;border-radius:999px;padding:4px 9px;border:1px solid;white-space:nowrap;display:inline-block;}
+.badge.real{color:var(--success);border-color:rgba(143,168,118,0.38);background:rgba(143,168,118,0.09);}
+.badge.mock{color:var(--warning);border-color:rgba(201,138,75,0.38);background:rgba(201,138,75,0.09);}
+.badge.hybrid{color:var(--gold);border-color:rgba(201,163,92,0.38);background:rgba(201,163,92,0.09);}
+.badge.gone{color:var(--error);border-color:rgba(181,105,90,0.38);background:rgba(181,105,90,0.09);}
+
+.table-scroll{overflow-x:auto;margin-top:22px;}
+table.t{width:100%;border-collapse:collapse;font-size:12.5px;min-width:660px;}
+table.t th{text-align:left;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--mist);font-weight:500;padding:0 13px 11px 0;border-bottom:1px solid var(--line);white-space:nowrap;vertical-align:bottom;}
+table.t td{padding:13px 13px 13px 0;border-bottom:1px solid var(--line);color:var(--mist);vertical-align:top;line-height:1.62;}
+table.t td:first-child{color:var(--paper);font-weight:500;}
+table.t td b{color:var(--paper);font-weight:500;}
+table.t .sev{white-space:nowrap;}
+
+.call{background:var(--concrete);border:1px solid var(--line);border-left:2px solid var(--gold);border-radius:0 var(--r-md) var(--r-md) 0;padding:16px 18px;margin:22px 0;max-width:680px;}
+.call .lbl{font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--gold);margin:0 0 8px;}
+.call p{margin:0 0 9px;font-size:13.5px;line-height:1.74;color:var(--mist);}
+.call p:last-child{margin-bottom:0;}
+.call p b{color:var(--paper);font-weight:500;}
+.call.warn{border-left-color:var(--warning);} .call.warn .lbl{color:var(--warning);}
+.call.bad{border-left-color:var(--error);} .call.bad .lbl{color:var(--error);}
+.call.good{border-left-color:var(--success);} .call.good .lbl{color:var(--success);}
+
+pre.code{background:var(--concrete);border:1px solid var(--line);border-radius:var(--r-md);padding:16px 18px;overflow-x:auto;margin:18px 0;font-family:var(--ff-mono);font-size:12.2px;line-height:1.7;color:var(--paper);}
+pre.code .c{color:var(--mist);}
+pre.code .s{color:var(--success);}
+
+/* disclosure cards */
+.disc-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-top:26px;}
+.disc{background:var(--concrete);border:1px solid var(--line);border-radius:var(--r-md);padding:18px;}
+.disc .dt{display:flex;align-items:center;gap:9px;margin-bottom:10px;flex-wrap:wrap;}
+.disc .dt strong{font-size:13.5px;font-weight:600;}
+.disc p{margin:0;font-size:12.5px;line-height:1.68;color:var(--mist);}
+.disc p b{color:var(--paper);font-weight:500;}
+.disc.stop{border-color:rgba(181,105,90,0.34);}
+
+/* severity dots */
+.sv{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;}
+.sv::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor;}
+.sv.hi{color:var(--error);}
+.sv.md{color:var(--warning);}
+.sv.lo{color:var(--success);}
+
+.footer-mark{display:flex;align-items:center;gap:12px;margin-top:56px;}
+.footer-mark p{font-size:12.5px;color:var(--mist);margin:0;}
+hr.rule{border:none;border-top:1px solid var(--line);margin:0;}
+</style>
+</head>
+<body>
+
+<svg style="display:none" aria-hidden="true">
+  <symbol id="mark" viewBox="0 0 100 100">
+    <line x1="30" y1="20" x2="30" y2="80" stroke="#C9A35C" stroke-width="7" stroke-linecap="round"/>
+    <line x1="66" y1="32" x2="66" y2="68" stroke="#C9A35C" stroke-width="7" stroke-linecap="round"/>
+    <line x1="30" y1="80" x2="66" y2="32" stroke="#E0BC7C" stroke-width="4.5" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="mark-lg" viewBox="0 0 100 100">
+    <line x1="30" y1="20" x2="30" y2="80" stroke="#C9A35C" stroke-width="4" stroke-linecap="round"/>
+    <line x1="66" y1="32" x2="66" y2="68" stroke="#C9A35C" stroke-width="4" stroke-linecap="round"/>
+    <line x1="30" y1="80" x2="66" y2="32" stroke="#E0BC7C" stroke-width="2.5" stroke-linecap="round"/>
+    <circle cx="66" cy="32" r="3.5" fill="#E0BC7C"/>
+  </symbol>
+</svg>
+
+<nav class="topnav">
+  <div class="inner">
+    <div class="brand"><svg><use href="#mark"/></svg><span>corridor</span></div>
+    <a href="#disclosure">Disclosure</a>
+    <a href="#register">Register</a>
+    <a href="#ach">Settlement</a>
+    <a href="#payout">Payout</a>
+    <a href="#delivery">Event delivery</a>
+    <a href="#gaps">Known gaps</a>
+    <a href="#scale">At scale</a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <header class="hero">
+    <div class="eyebrow">corridor — failure modes, phase 5</div>
+    <svg width="60" height="60" style="display:block;margin-bottom:24px;"><use href="#mark-lg"/></svg>
+    <h1 class="display">Everything that<br>goes wrong.</h1>
+    <p class="lede">And the one thing no design can fix.</p>
+    <p class="note" style="margin-top:14px;">
+      A remittance corridor is a chain of four systems that fail independently, on different
+      timescales, and mostly after the user has stopped looking. This document names each failure,
+      says how Corridor detects it, what the user sees, and — where the honest answer is "nothing" —
+      says that instead.
+    </p>
+    <p class="note">
+      It opens with what is simulated in this build, because a writeup that buried that would have
+      already failed its own test.
+    </p>
+    <div class="meta-row">
+      <span class="meta-chip">corridor <b>USD → TRY</b></span>
+      <span class="meta-chip">chain <b>Base Sepolia</b></span>
+      <span class="meta-chip">verified <b>Aug 2026</b></span>
+    </div>
+  </header>
+
+  <!-- ==================== DISCLOSURE ==================== -->
+  <section class="block" id="disclosure">
+    <div class="eyebrow">disclosure, first</div>
+    <h2 class="sec">What is not real here</h2>
+    <p class="note">
+      Four of the five rails in this build are simulated. Each is disclosed on-screen at the moment it
+      matters, and the badge text is read from the provider registry rather than written into the
+      screens — so a screen <em>cannot</em> claim a leg is real while a fixture is bound.
+    </p>
+
+    <div class="disc-grid">
+      <div class="disc stop">
+        <div class="dt"><strong>Bridge → TRY payout</strong><span class="badge gone">does not exist</span></div>
+        <p>
+          Bridge publishes USD (ACH/FedNow/Wire), EUR (SEPA), MXN (SPEI), BRL (Pix), GBP (FPS) and COP.
+          <b>There is no TRY route in either direction.</b> This is not a KYB gate that could be opened
+          — the product is not sold. Phases 1 and 2 named Bridge as the TRY payout provider and were
+          simply wrong; phase 3 caught it against the live route table.
+        </p>
+      </div>
+
+      <div class="disc">
+        <div class="dt"><strong>Bridge → USD on-ramp</strong><span class="badge mock">simulated</span></div>
+        <p>
+          A real Bridge product, but sandbox access is <b>not self-serve</b>: a Developer account must be
+          granted by Bridge support before an <code>sk-test</code> key can be generated. Modelled on
+          Bridge's documented transfer shape and real ACH timing.
+        </p>
+      </div>
+
+      <div class="disc">
+        <div class="dt"><strong>TRY payout partner</strong><span class="badge mock">simulated</span></div>
+        <p>
+          No USDC→TRY bank settlement is available self-serve. The adapter is written against a
+          documented partner's API shape, owns the IBAN validation, and is bound per corridor so a real
+          partner replaces it in one file.
+        </p>
+      </div>
+
+      <div class="disc">
+        <div class="dt"><strong>Identity verification</strong><span class="badge hybrid">real flow, fixture verdict</span></div>
+        <p>
+          Sequencing, retry, reason-code mapping and the resubmit path are production-shaped. The vendor
+          verdict is a fixture. <b>No documents are captured or transmitted.</b>
+        </p>
+      </div>
+
+      <div class="disc stop">
+        <div class="dt"><strong>The wallet, and the tx hash</strong><span class="badge mock">simulated</span></div>
+        <p>
+          <b>The single most important disclosure in this document.</b> The case study's stated proof
+          artifact is one real Base Sepolia USDC transfer with a verifiable hash. <b>That transfer has
+          not been made.</b> <code>SimulatedWallet.sendUsdc</code> returns a fixed hash; it is not on
+          chain and BaseScan will not resolve it. See <a href="#gaps">known gaps</a>.
+        </p>
+      </div>
+
+      <div class="disc">
+        <div class="dt"><strong>FX rate feed</strong><span class="badge mock">fixed</span></div>
+        <p>
+          Pinned at <code>52.84 TRY/USD</code>. The rate <em>machinery</em> is real — rationals, signed
+          quotes, server-side expiry — but no live feed is attached, so rate-movement failures are
+          modelled rather than observed.
+        </p>
+      </div>
+    </div>
+
+    <div class="call bad">
+      <p class="lbl">the honest summary</p>
+      <p>
+        <b>No money moves in this build, and no blockchain transaction exists.</b> What is real is the
+        design, the domain logic, the provider seam, and the failure handling — all of which are
+        exercised on every run because the simulated adapters go through the same ingress, signature
+        check and state fold that a real vendor would.
+      </p>
+    </div>
+  </section>
+
+  <!-- ==================== REGISTER ==================== -->
+  <section class="block" id="register">
+    <div class="eyebrow">register</div>
+    <h2 class="sec">The full list</h2>
+    <p class="note">
+      Every failure mode the corridor produces, with what the user sees and what residual risk remains
+      after mitigation. <b>Residual is the column that matters</b> — a register where everything is
+      fully mitigated is a register that has not been thought about.
+    </p>
+
+    <div class="table-scroll">
+      <table class="t">
+        <thead>
+          <tr><th>Failure</th><th>Detection</th><th>User sees</th><th>Mitigation</th><th>Residual</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>ACH return <code>R01</code>/<code>R08</code></td>
+            <td>Bridge webhook, ~2 banking days</td>
+            <td>Transfer parks at <code>funding</code>, then refunds</td>
+            <td>Payout held until ACH settles (<code>funded_held</code>)</td>
+            <td class="sev"><span class="sv lo">none</span></td>
+          </tr>
+          <tr>
+            <td>ACH return <code>R10</code> unauthorised</td>
+            <td>Bridge webhook, <b>up to 60 days</b></td>
+            <td>Nothing — lira already delivered</td>
+            <td>Priced into fee; velocity limits until settled history</td>
+            <td class="sev"><span class="sv hi">unclosable</span></td>
+          </tr>
+          <tr>
+            <td>Rate lock expires mid-flow</td>
+            <td>Server clock at submit</td>
+            <td>11a — old vs new rate, delta in lira</td>
+            <td>Explicit re-accept, fresh lock, never silent reprice</td>
+            <td class="sev"><span class="sv lo">none</span></td>
+          </tr>
+          <tr>
+            <td>Payout name mismatch</td>
+            <td>Partner webhook, minutes to hours</td>
+            <td>11c — "Your money is safe", funds returned</td>
+            <td>Warned at entry; USDC returns to balance; fee refunded</td>
+            <td class="sev"><span class="sv md">2–3 day delay</span></td>
+          </tr>
+          <tr>
+            <td>IBAN typo / transposition</td>
+            <td>Local mod-97, on keystroke</td>
+            <td>Inline rejection before any network call</td>
+            <td>ISO 7064 + TR length + bank-code echo</td>
+            <td class="sev"><span class="sv lo">none</span></td>
+          </tr>
+          <tr>
+            <td>Valid IBAN, wrong person</td>
+            <td>Not detectable — no TR name-check service</td>
+            <td>11c after the fact</td>
+            <td>Cannot prevent; made cheap and reversible</td>
+            <td class="sev"><span class="sv hi">unclosable</span></td>
+          </tr>
+          <tr>
+            <td>Chain reorg on settlement leg</td>
+            <td>Confirmation count regresses</td>
+            <td>Step stays <code>live</code>, never regresses visually</td>
+            <td>Resubmit under stable <code>{id}:chain</code> idempotency key</td>
+            <td class="sev"><span class="sv lo">low on Base</span></td>
+          </tr>
+          <tr>
+            <td>Webhook dropped</td>
+            <td>Reconciler backoff poll</td>
+            <td>Step expectation copy, then stall escalation</td>
+            <td>Push is fast path, polling is the floor</td>
+            <td class="sev"><span class="sv lo">latency only</span></td>
+          </tr>
+          <tr>
+            <td>Webhook duplicated / out of order</td>
+            <td><code>seq</code> assigned on ingress</td>
+            <td>Nothing — fold is idempotent</td>
+            <td>Sort by seq, drop duplicates, monotonic steps</td>
+            <td class="sev"><span class="sv lo">none</span></td>
+          </tr>
+          <tr>
+            <td>Unknown vendor event type</td>
+            <td><code>parseWebhook</code> returns <code>null</code></td>
+            <td>Nothing</td>
+            <td>Logged and dropped; ingress stays total</td>
+            <td class="sev"><span class="sv lo">none</span></td>
+          </tr>
+          <tr>
+            <td>Quote tampered client-side</td>
+            <td>Signature verify at submit</td>
+            <td>Submission refused</td>
+            <td>Server-signed quote; client submits <code>quoteId</code> only</td>
+            <td class="sev"><span class="sv lo">none</span></td>
+          </tr>
+          <tr>
+            <td>Double submit on flaky network</td>
+            <td>Idempotency key minted at screen mount</td>
+            <td>Second attempt returns the first result</td>
+            <td>Per-leg keys, stable across process restart</td>
+            <td class="sev"><span class="sv lo">none</span></td>
+          </tr>
+          <tr>
+            <td>KYC provider outage</td>
+            <td>Session creation fails</td>
+            <td>Verification unavailable, transfer parks</td>
+            <td><b>Hard stop.</b> No bypass, no degraded mode</td>
+            <td class="sev"><span class="sv md">funnel loss</span></td>
+          </tr>
+          <tr>
+            <td>KYC document rejected</td>
+            <td>Vendor <code>reasonCode</code></td>
+            <td>11b — scoped, specific, retake one item</td>
+            <td>Ledger of passed items preserved; quote parked</td>
+            <td class="sev"><span class="sv lo">none</span></td>
+          </tr>
+          <tr>
+            <td>Turkish bank holiday / closed</td>
+            <td>Partner queues payout</td>
+            <td>Step expectation, not an error</td>
+            <td>Delivered means credited, never merely submitted</td>
+            <td class="sev"><span class="sv md">delay</span></td>
+          </tr>
+          <tr>
+            <td>Sanctions / compliance hold</td>
+            <td>Screening at recipient add and submit</td>
+            <td>Transfer blocked, support route</td>
+            <td>Fail closed</td>
+            <td class="sev"><span class="sv md">false positives</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ==================== ACH ==================== -->
+  <section class="block" id="ach">
+    <div class="eyebrow">settlement risk</div>
+    <h2 class="sec">The 60-day problem</h2>
+    <p class="note">
+      This is the failure that shaped the product. Everything else on this page is engineering; this one
+      is a balance sheet wearing an engineering costume.
+    </p>
+
+    <ul class="pts">
+      <li><b>The shape of it.</b> ACH is pull-based and reversible. Corridor debits the sender's bank, mints USDC, sends it on Base, and a Turkish bank credits lira. The lira is irreversible. The ACH debit is not.</li>
+      <li><b>Holding to settlement covers the common cases.</b> <code>R01</code> insufficient funds and <code>R08</code> stop payment surface within about two banking days. Waiting for settlement before releasing the payout eliminates both — which is exactly why screen 09 shows "USD received" as a discrete, timestamped step rather than hiding a two-day wait inside a spinner.</li>
+      <li><b>It does not cover <code>R10</code>.</b> An unauthorised-debit return can arrive up to <b>60 days</b> later. By then the recipient has spent the lira. No holding period a customer would tolerate closes this window.</li>
+      <li><b>So it is priced, not solved.</b> Residual exposure sits in the $3.75 fee and is bounded by per-user velocity limits that rise with <em>settled history</em> rather than elapsed time. First transfer capped low; limits earned, not aged into.</li>
+      <li><b>The alternative is a real product, not a mistake.</b> Fronting the funds buys same-day delivery and requires working capital plus fraud scoring. That is the right call at scale and the wrong one for a first corridor.</li>
+    </ul>
+
+    <div class="call warn">
+      <p class="lbl">stated plainly</p>
+      <p>
+        <b>Anyone operating this for real needs a funded reserve against R10 returns and a written policy
+        for the <code>clawback</code> state.</b> The state machine models the event; it does not pay for
+        it. A design document that implied otherwise would be lying about the only number that could
+        close the business.
+      </p>
+    </div>
+
+<pre class="code"><span class="c">// The distinction the fold has to make, and why `clawback` exists.</span>
+<span class="c">// An ACH return before value leaves is a clean refund.</span>
+<span class="c">// The same return after payout is a loss event.</span>
+case <span class="s">'onramp_returned'</span>:
+  achReturn = e.code;
+  state = state === <span class="s">'funding'</span> ? <span class="s">'refunded'</span> : <span class="s">'clawback'</span>;
+  break;</pre>
+  </section>
+
+  <!-- ==================== PAYOUT ==================== -->
+  <section class="block" id="payout">
+    <div class="eyebrow">the payout leg</div>
+    <h2 class="sec">What Turkey cannot tell you</h2>
+    <p class="note">
+      Local IBAN validation catches typos, transpositions, wrong-country pastes and bad lengths — all
+      before a network call, on every keystroke. It cannot catch a structurally perfect IBAN belonging
+      to the wrong person, and <b>Turkey has no name-check service to resolve that</b>.
+    </p>
+    <ul class="pts">
+      <li><b>Markets that offer confirmation-of-payee</b> (UK CoP, and increasingly the EU) let you verify the account holder's name before debit. Turkey does not, so name mismatch is discovered by the receiving bank after the money is already in flight.</li>
+      <li><b>The design absorbs what it cannot prevent.</b> Warn loudly at entry with the real consequence and the real delay; mark previously-successful recipients <code>verified</code> and default to them; make the returned-payout path non-catastrophic.</li>
+      <li><b>Screen 11c leads with "Your money is safe"</b> above any explanation, because a user watching ₺26,420 fail needs the location of their funds in the first second, not the third paragraph.</li>
+      <li><b>The timeline stays visible with the failure in place</b>, so the return reads as a completed round trip rather than a hole. Fees for the leg that did not happen are refunded.</li>
+    </ul>
+
+    <div class="call">
+      <p class="lbl">the general rule this is an instance of</p>
+      <p><b>When you cannot prevent a failure, make it cheap.</b> Most of the design work on this corridor went into the second half of that sentence.</p>
+    </div>
+  </section>
+
+  <!-- ==================== DELIVERY ==================== -->
+  <section class="block" id="delivery">
+    <div class="eyebrow">event delivery</div>
+    <h2 class="sec">Three clocks, one story</h2>
+    <p class="note">
+      Bridge, the payout partner and the chain all report independently. They will deliver late, twice,
+      and out of order. None of that is exceptional — a design that only handles the happy path stalls
+      silently in production.
+    </p>
+    <ul class="pts">
+      <li><b>Push is the fast path, polling is the floor.</b> Any transfer not in a terminal state is re-polled on exponential backoff. Dropped webhooks are expected, not escalated.</li>
+      <li><b><code>seq</code> is assigned by Corridor on ingress</b>, never taken from the provider. A vendor's ordering guarantees are that vendor's business.</li>
+      <li><b>State is a fold over an append-only log.</b> Redelivery is idempotent because duplicates are dropped by <code>seq</code>; reordering is corrected by sorting before folding. Both are covered by tests.</li>
+      <li><b>Steps are monotonic in the UI.</b> A late event that would move a completed step backwards is recorded in the log but not reflected on screen. A user watching a completed step un-complete has just learned not to trust the screen, and they would be right.</li>
+      <li><b><code>parseWebhook</code> returns <code>null</code> rather than throwing</b> on unknown or badly-signed payloads. A provider shipping a feature you have not heard of should never be an outage.</li>
+    </ul>
+  </section>
+
+  <!-- ==================== GAPS ==================== -->
+  <section class="block" id="gaps">
+    <div class="eyebrow">known gaps</div>
+    <h2 class="sec">What this build does not do</h2>
+    <p class="note">
+      Distinct from the simulated rails above: these are gaps in the artifact itself, not in the design.
+    </p>
+
+    <div class="table-scroll">
+      <table class="t">
+        <thead><tr><th>Gap</th><th>Why</th><th>Cost to close</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><b>No real testnet transaction</b></td>
+            <td>The stated proof artifact does not yet exist. Circle's faucet issues 20 USDC per address per 2 hours; the locked demo sends 500.00 USDC, so a matching transfer needs roughly two days of accumulation. Sending a smaller amount would make the hash disagree with the receipt and destroy its value as evidence.</td>
+            <td>~2 days of faucet accumulation, then one signed transfer</td>
+          </tr>
+          <tr>
+            <td>Privy not wired</td>
+            <td><code>@privy-io/expo</code> requires native modules and therefore a development build — a reviewer could not <code>npx expo start</code> the repo. The wallet sits behind <code>WalletProvider</code> so the real adapter binds in the same slot.</td>
+            <td>One adapter + an EAS dev build</td>
+          </tr>
+          <tr>
+            <td>No web target</td>
+            <td>Privy's Expo SDK is iOS/Android only. There is no browser fallback demo, so the app cannot be linked as a live URL the way the documents can.</td>
+            <td>Not closable with this stack</td>
+          </tr>
+          <tr>
+            <td>Six screens visually unverified</td>
+            <td>04, 06, 08, 09, 10 and the edge states need in-memory flow state that a deep link cannot construct, and the simulator could not be tapped programmatically from the build environment.</td>
+            <td>One manual pass, or accessibility permissions</td>
+          </tr>
+          <tr>
+            <td>Brand fonts not bundled</td>
+            <td>Bricolage Grotesque, Inter and IBM Plex Mono are specified in <code>theme/type.ts</code> but the app renders with system faces. The type <em>scale</em> and hierarchy are correct; the faces are not.</td>
+            <td><code>expo-font</code> + three families</td>
+          </tr>
+          <tr>
+            <td>Quote signing is not HMAC</td>
+            <td><code>services/signing.ts</code> is a keyed FNV-1a standing in for HMAC-SHA256, labelled as such. The <em>shape</em> is right — signed at issue, verified before a transfer is created — but it is not a security boundary.</td>
+            <td>One dependency, server-side</td>
+          </tr>
+          <tr>
+            <td>No persistence</td>
+            <td>State is in-memory and resets on reload. The ledger is modelled correctly as an event log; it is simply not written anywhere.</td>
+            <td>Any store that appends</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ==================== SCALE ==================== -->
+  <section class="block" id="scale">
+    <div class="eyebrow">at scale</div>
+    <h2 class="sec">What breaks first</h2>
+    <p class="note">
+      If this corridor took real volume tomorrow, in the order I would expect things to hurt:
+    </p>
+    <ul class="pts">
+      <li><b>1 — Fraud, not engineering.</b> A US-outbound corridor to a high-inflation market is an attractive laundering route. Velocity limits and settled-history tiers are a start; real operation needs transaction monitoring, device fingerprinting and a SAR process. Nothing on the screens hints at how much of this exists behind them, which is correct.</li>
+      <li><b>2 — The R10 reserve.</b> Unauthorised-return exposure scales linearly with volume and lands 60 days behind it. Growth makes this worse in a way that feels fine right up until it doesn't.</li>
+      <li><b>3 — Payout partner concentration.</b> One Turkish partner is a single point of failure for the entire corridor. The <code>PayoutProvider</code> seam makes a second one cheap to add, which is most of the argument for having built it.</li>
+      <li><b>4 — Rate risk on the lock.</b> A 15-minute lock is a free option written to the customer. At volume, in a currency that moves like TRY, that needs hedging or a shorter window.</li>
+      <li><b>5 — Reconciliation.</b> Three providers, three clocks, and a ledger that must balance daily against all of them. The event log makes this tractable; it does not make it small.</li>
+    </ul>
+
+    <div class="call good">
+      <p class="lbl">what this document is claiming</p>
+      <p>
+        Not that Corridor handles all of the above. It is a case study, and it moves no money. The claim
+        is narrower and, I think, more useful: <b>that the failures were enumerated before the happy path
+        was designed, and that the design visibly changed because of them</b> — <code>funded_held</code>
+        exists because of ACH returns, the <code>PayoutProvider</code> seam exists because Bridge has no
+        TRY route, and screen 11c leads with the location of the money because that is what a frightened
+        user needs first.
+      </p>
+    </div>
+
+    <hr class="rule" style="margin:56px 0 0;">
+
+    <div class="footer-mark">
+      <svg style="width:20px;height:20px;"><use href="#mark"/></svg>
+      <p>corridor · phase 5 · failure modes · provider facts verified August 2026</p>
+    </div>
+  </section>
+
+</div>
+</body>
+</html>
