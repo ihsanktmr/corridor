@@ -23,6 +23,12 @@ export default function Demo() {
   const { scene } = useLocalSearchParams<{ scene?: string }>();
 
   useEffect(() => {
+    // `useLocalSearchParams` yields undefined on the first render before the route
+    // param resolves. Acting on that redirects to /home and unmounts this screen,
+    // so the re-run with the real value never happens — the scene silently never
+    // loads. Wait for it.
+    if (scene === undefined) return;
+
     const target = seedDemo(scene as DemoScene);
     if (!target) {
       router.replace('/home');

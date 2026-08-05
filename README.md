@@ -3,16 +3,23 @@
 Stablecoin remittance case study — **USD → USDC → TRY payout**, built to demonstrate product design and integration architecture for consumer fintech.
 
 <p align="center">
-  <img src="docs/screens/01-welcome.png" width="160" alt="Welcome — email or passkey, no seed phrase">
-  <img src="docs/screens/03-amount.png" width="160" alt="Amount — mid-market rate, fee breakdown, rate lock">
-  <img src="docs/screens/07-recipient.png" width="160" alt="Recipient — local IBAN validation, name-match warning">
-  <img src="docs/screens/09-in-flight.png" width="160" alt="In flight — five rails, live tx hash">
-  <img src="docs/screens/10-receipt.png" width="160" alt="Receipt — verifiable on-chain proof">
-  <img src="docs/screens/11-payout-returned.png" width="160" alt="Payout returned — your money is safe">
+  <img src="docs/screens/01-welcome.png" width="150" alt="Welcome — email or passkey, no seed phrase">
+  <img src="docs/screens/03-amount.png" width="150" alt="Amount — mid-market rate, rate lock, fee breakdown">
+  <img src="docs/screens/04-add-usd.png" width="150" alt="Add USD — speed vs cost, a date not a duration">
+  <img src="docs/screens/05-kyc-gate.png" width="150" alt="KYC gate — explain before demanding">
+  <img src="docs/screens/07-recipient.png" width="150" alt="Recipient — local IBAN validation, name-match warning">
+</p>
+<p align="center">
+  <img src="docs/screens/08-review.png" width="150" alt="Review — everything open, slide to send">
+  <img src="docs/screens/09-in-flight.png" width="150" alt="In flight — five rails, live tx hash">
+  <img src="docs/screens/10-receipt.png" width="150" alt="Receipt — verifiable on-chain proof">
+  <img src="docs/screens/11a-rate-expired.png" width="150" alt="Rate expired — nothing was sent">
+  <img src="docs/screens/11c-payout-returned.png" width="150" alt="Payout returned — your money is safe">
 </p>
 
 <p align="center">
-  <sub>Welcome · Amount · Recipient · In flight · Receipt · Payout returned — iPhone 16 Pro, Expo Go</sub>
+  <sub>Welcome · Amount · Add USD · KYC gate · Recipient — then Review · In flight · Receipt · Rate expired · Payout returned<br>
+  iPhone 16 Pro, Expo Go. Every figure on screen is computed by the domain layer, not mocked into the view.</sub>
 </p>
 
 One corridor, one flow: on-ramp → KYC gate → USDC send → Turkish lira payout. Turkey was chosen deliberately rather than as a generic demo pair — it is a genuine high-inflation, high-stablecoin-adoption market, which is what makes the corridor worth designing.
@@ -133,7 +140,9 @@ Phases 1–5 complete: identity → design system → integration architecture �
 
 Typecheck clean, 42/42 tests, iOS bundle succeeds.
 
-Brand faces (Bricolage Grotesque, Inter, IBM Plex Mono) are bundled via `expo-font` and held behind the splash until loaded. Screens 01, 03, 05, 07, 09, 10 and 11c are verified on an iPhone 16 Pro simulator — the screenshots above are that build. Screens 04, 06, 08 and edge states 11a/11b are built and typechecked but not yet visually confirmed.
+Brand faces (Bricolage Grotesque, Inter, IBM Plex Mono) are bundled via `expo-font` and held behind the splash until loaded.
+
+**All eleven screens are verified on an iPhone 16 Pro simulator** — every image above is that build, and the two not shown (ID capture, KYC resubmit) are in [`docs/screens/`](docs/screens).
 
 ## Licence
 

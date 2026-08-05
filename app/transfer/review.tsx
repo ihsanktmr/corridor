@@ -1,5 +1,5 @@
 import { router, useLocalSearchParams } from 'expo-router';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Text, View } from 'react-native';
 
 import { Button, Dock } from '../../components/Button';
@@ -10,6 +10,7 @@ import { Amount, Card, FeeLineRow, MarkDivider, Row } from '../../components/pri
 import { format } from '../../domain/money';
 import { msRemaining, quoteStatus } from '../../domain/quote';
 import { convert, formatRate } from '../../domain/rate';
+import { ACTIVE_CORRIDOR, onrampFor } from '../../providers/registry';
 import { createQuote, currentRate, recipientById, submitTransfer } from '../../services/corridor';
 import { useCorridor } from '../../state/useCorridor';
 import { color, space } from '../../theme/tokens';
@@ -35,6 +36,18 @@ export default function Review() {
   }, []);
 
   const recipient = recipientById(params.recipientId ?? '') ?? recipients[0] ?? null;
+
+  // Same source as screen 04 — one estimate, quoted once.
+  const arrival = useMemo(() => {
+    const rail = quote?.rail ?? 'ach';
+    if (rail === 'card') return 'Today';
+    const date = onrampFor(ACTIVE_CORRIDOR).estimateSettlement(rail, new Date());
+    return `${date.toLocaleDateString('en-US', {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric',
+    })} · by 14:00`;
+  }, [quote?.rail]);
 
   if (!quote) {
     return (
@@ -104,7 +117,13 @@ export default function Review() {
         <Card tight style={{ marginBottom: space.md }}>
           <Row style={{ marginBottom: space.base }}>
             <Text style={[type.label, { fontSize: 12 }]}>Estimated arrival</Text>
-            <Text style={[type.bodyStrong, { fontSize: 12.5 }]}>Wed, Aug 5 · by 14:00</Text>
+            {/*
+              Computed from the same provider method screen 04 used, not written
+              here. Hardcoding it meant a user could pick ACH, read "arrives Fri,
+              Aug 7", and then be told "Wed, Aug 5" one screen later — which
+              defeats the whole point of promising a date instead of a duration.
+            */}
+            <Text style={[type.bodyStrong, { fontSize: 12.5 }]}>{arrival}</Text>
           </Row>
           {/* The user has already seen the map before they watch the dot move. */}
           <RouteMini labels={['ACH', 'USDC', 'Base', 'TRY']} filled={1} />
