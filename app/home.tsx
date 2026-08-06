@@ -3,6 +3,7 @@ import { Text, View } from 'react-native';
 
 import { Button } from '../components/Button';
 import { Body, DemoStrip, Screen, Wordmark } from '../components/chrome';
+import { Account } from '../components/icons';
 import { Amount, Card, Chip, CorridorStrip, ListRow, Pill, Row } from '../components/primitives';
 import { format } from '../domain/money';
 import { formatRate } from '../domain/rate';
@@ -37,7 +38,7 @@ export default function Home() {
         }}
       >
         <Wordmark />
-        <Text style={{ fontSize: 15, color: color.mist }}>◍</Text>
+        <Account />
       </View>
 
       <Body>

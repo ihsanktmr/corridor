@@ -6,6 +6,7 @@ import { formatCountdown, type QuoteStatus } from '../domain/quote';
 import { demoStripLabel } from '../providers/registry';
 import { color, radius, space } from '../theme/tokens';
 import { face, type } from '../theme/type';
+import { ChevronLeft, Close, Lock as LockIcon } from './icons';
 import { Mark } from './Mark';
 
 /** Every screen sits on the void with safe-area insets honoured. */
@@ -80,9 +81,7 @@ export function Nav({
           justifyContent: 'center',
         }}
       >
-        <Text style={{ fontSize: 15, fontFamily: face.semibold, color: color.paper, lineHeight: 18 }}>
-          {close ? '×' : '‹'}
-        </Text>
+        {close ? <Close /> : <ChevronLeft />}
       </Pressable>
 
       {title ? (
@@ -168,7 +167,7 @@ export function RateStrip({
       </Text>
 
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
-        <LockGlyph color={warn ? color.warning : color.goldBright} />
+        <LockIcon color={warn ? color.warning : color.goldBright} />
         <Text style={[type.mono, { fontSize: 11, color: warn ? color.warning : color.goldBright }]}>
           {status === 'expired' ? 'expired' : formatCountdown(remainingMs)}
         </Text>
@@ -203,7 +202,13 @@ function LockGlyph({ color: stroke }: { color: string }) {
 }
 
 /** Success / warning / failure bloom — screens 05, 10, 11. */
-export function Bloom({ tone, glyph }: { tone: 'success' | 'warning' | 'error'; glyph: string }) {
+export function Bloom({
+  tone,
+  children,
+}: {
+  tone: 'success' | 'warning' | 'error';
+  children: React.ReactNode;
+}) {
   const palette = {
     success: { bg: 'rgba(143,168,118,0.12)', border: 'rgba(143,168,118,0.34)', fg: color.success },
     warning: { bg: 'rgba(201,138,75,0.12)', border: 'rgba(201,138,75,0.34)', fg: color.warning },
@@ -223,7 +228,7 @@ export function Bloom({ tone, glyph }: { tone: 'success' | 'warning' | 'error'; 
         justifyContent: 'center',
       }}
     >
-      <Text style={{ fontSize: 30, color: palette.fg, lineHeight: 36 }}>{glyph}</Text>
+      {children}
     </View>
   );
 }

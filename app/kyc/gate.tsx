@@ -4,6 +4,7 @@ import { Text, View } from 'react-native';
 import { Button, Dock } from '../../components/Button';
 import { Bloom, Body, Nav, Screen } from '../../components/chrome';
 import { Card, Disclose, ListRow, Pill } from '../../components/primitives';
+import { Alert, Check, Verified } from '../../components/icons';
 import { providers } from '../../providers/registry';
 import { startKyc } from '../../services/corridor';
 import { useCorridor } from '../../state/useCorridor';
@@ -36,7 +37,7 @@ export default function KycGate() {
       <Body>
         <View style={{ paddingTop: space.base, paddingBottom: space.lg }}>
           <View style={{ marginBottom: space.lg }}>
-            <Bloom tone="warning" glyph="⌾" />
+            <Bloom tone="warning"><Verified /></Bloom>
           </View>
 
           <Text style={[type.display, { marginBottom: space.sm }]}>
@@ -96,9 +97,12 @@ function Resubmit() {
     <Screen>
       <Nav title="Verify identity" />
 
-      <Body>
+      {/* Short screen — centre it, so it reads as a deliberate stop rather than a
+          page that ran out of content. Matches 11a. */}
+      <Body scroll={false}>
+        <View style={{ flex: 1, justifyContent: 'center', paddingBottom: space.xl }}>
         <View style={{ alignItems: 'center', paddingTop: space.base, paddingBottom: space.lg }}>
-          <Bloom tone="warning" glyph="!" />
+          <Bloom tone="warning"><Alert size={30} /></Bloom>
           <Text style={[type.title, { marginTop: space.base, textAlign: 'center' }]}>
             We need one photo again
           </Text>
@@ -108,14 +112,30 @@ function Resubmit() {
         </View>
 
         <Card tight style={{ marginBottom: space.md }}>
+          {/* Lead colour carries the verdict: gold is the brand accent and would
+              have read as "fine" on the one row that isn't. */}
           <ListRow
-            lead="!"
+            leadNode={<Alert size={15} color={color.warning} />}
+            leadTone="warning"
             title="ID — front"
             subtitle="Low light · retake needed"
             meta={<Pill tone="fail" label="retake" />}
           />
-          <ListRow lead="✓" title="ID — back" subtitle="Accepted" meta={<Pill tone="done" label="ok" />} />
-          <ListRow lead="✓" title="Selfie" subtitle="Matched" meta={<Pill tone="done" label="ok" />} last />
+          <ListRow
+            leadNode={<Check size={13} color={color.success} />}
+            leadTone="success"
+            title="ID — back"
+            subtitle="Accepted"
+            meta={<Pill tone="done" label="ok" />}
+          />
+          <ListRow
+            leadNode={<Check size={13} color={color.success} />}
+            leadTone="success"
+            title="Selfie"
+            subtitle="Matched"
+            meta={<Pill tone="done" label="ok" />}
+            last
+          />
         </Card>
 
         <Card tight>
@@ -124,6 +144,7 @@ function Resubmit() {
             Your rate is re-quoted when you're verified — no money has moved.
           </Text>
         </Card>
+        </View>
       </Body>
 
       <Dock>

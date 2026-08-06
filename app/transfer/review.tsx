@@ -10,6 +10,7 @@ import { Amount, Card, FeeLineRow, MarkDivider, Row } from '../../components/pri
 import { format } from '../../domain/money';
 import { msRemaining, quoteStatus } from '../../domain/quote';
 import { convert, formatRate } from '../../domain/rate';
+import { Refresh } from '../../components/icons';
 import { ACTIVE_CORRIDOR, onrampFor } from '../../providers/registry';
 import { createQuote, currentRate, recipientById, submitTransfer } from '../../services/corridor';
 import { useCorridor } from '../../state/useCorridor';
@@ -165,9 +166,12 @@ function RateExpired() {
     <Screen>
       <Nav title="Review" />
 
-      <Body>
+      <Body scroll={false}>
+        {/* Short screen: distribute rather than top-load, or the dock floats under
+            a large dead void. */}
+        <View style={{ flex: 1, justifyContent: 'center', paddingBottom: space.xl }}>
         <View style={{ alignItems: 'center', paddingTop: space.base, paddingBottom: space.base }}>
-          <Bloom tone="warning" glyph="↻" />
+          <Bloom tone="warning"><Refresh size={30} /></Bloom>
           <Text style={[type.title, { marginTop: space.base }]}>Your rate expired</Text>
           <Text style={[type.body, { textAlign: 'center', marginTop: 6 }]}>
             Nothing was sent. Here's the current rate.
@@ -198,6 +202,7 @@ function RateExpired() {
         </Card>
 
         <RateStrip rate={formatRate(worse)} remainingMs={15 * 60_000} status="live" showSource={false} />
+        </View>
       </Body>
 
       <Dock>

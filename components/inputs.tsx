@@ -9,6 +9,7 @@ import {
   type ViewStyle,
 } from 'react-native';
 
+import { ChevronRight } from './icons';
 import { color, radius, space } from '../theme/tokens';
 import { face, tabular, type } from '../theme/type';
 
@@ -256,7 +257,7 @@ export function ConfirmSlider({
           transform: [{ translateX: x }],
         }}
       >
-        <Text style={{ fontSize: 17, fontFamily: face.semibold, color: color.void }}>›</Text>
+        <ChevronRight size={17} color={color.void} />
       </Animated.View>
     </View>
   );

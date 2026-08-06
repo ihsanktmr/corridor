@@ -3,6 +3,7 @@ import { Linking, Text, View } from 'react-native';
 
 import { Button, Dock } from '../../components/Button';
 import { Bloom, Body, Nav, Screen } from '../../components/chrome';
+import { Check, ExternalLink, Share } from '../../components/icons';
 import { Amount, Card, Chip, FeeLineRow, Row } from '../../components/primitives';
 import { format } from '../../domain/money';
 import { formatRate } from '../../domain/rate';
@@ -60,12 +61,12 @@ export default function Receipt() {
         title="Receipt"
         close
         onBack={() => router.replace('/home')}
-        right={<Text style={{ fontSize: 15, color: color.mist }}>↑</Text>}
+        right={<Share />}
       />
 
       <Body>
         <View style={{ alignItems: 'center', paddingTop: space.base, paddingBottom: space.lg }}>
-          <Bloom tone="success" glyph="✓" />
+          <Bloom tone="success"><Check size={32} color={color.success} strokeWidth={2.4} /></Bloom>
           <Text style={[type.micro, { marginTop: space.lg, marginBottom: 10 }]}>delivered</Text>
           {/* Delivered amount is the hero, in the recipient's currency — the
               sender's mental model ends at "did she get the lira". */}
@@ -113,7 +114,10 @@ export default function Receipt() {
             <Text style={[type.label, { fontSize: 11 }]}>
               Base Sepolia · {PROOF_AMOUNT} USDC · {CONFIRMATIONS_REQUIRED}+ confs
             </Text>
-            <Text style={{ fontSize: 11.5, color: color.goldBright }}>BaseScan ↗</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
+              <Text style={{ fontSize: 11.5, color: color.goldBright }}>BaseScan</Text>
+              <ExternalLink />
+            </View>
           </Row>
           {/*
             The hash above is a real transaction, and it carries a different amount
@@ -123,8 +127,8 @@ export default function Receipt() {
             against.
           */}
           <Text style={[type.label, { fontSize: 10, marginTop: 9, lineHeight: 15 }]}>
-            Transfer figures above are demo values. The on-chain transaction is{' '}
-            {PROOF_AMOUNT} USDC — testnet faucet limits, same contract and signing path.
+            Figures above are demo values; the transaction is {PROOF_AMOUNT} USDC — faucet-capped,
+            same contract and signing path.
           </Text>
         </Card>
 

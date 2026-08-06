@@ -384,6 +384,8 @@ export function CorridorStrip({ right }: { right?: React.ReactNode }) {
 
 export function ListRow({
   lead,
+  leadNode,
+  leadTone,
   title,
   subtitle,
   value,
@@ -391,12 +393,25 @@ export function ListRow({
   last = false,
 }: {
   lead?: string;
+  /** Overrides `lead` when the row's verdict should be carried by an icon. */
+  leadNode?: React.ReactNode;
+  /** Tints the lead well. Gold is the brand accent — it reads as "fine", so a
+   *  row that failed must not wear it. */
+  leadTone?: 'success' | 'warning' | 'error';
   title: string;
   subtitle?: string;
   value?: string;
   meta?: React.ReactNode;
   last?: boolean;
 }) {
+  const leadBg =
+    leadTone === 'success'
+      ? 'rgba(143,168,118,0.14)'
+      : leadTone === 'warning'
+        ? 'rgba(201,138,75,0.14)'
+        : leadTone === 'error'
+          ? 'rgba(181,105,90,0.14)'
+          : color.concreteRaised;
   return (
     <View
       style={{
@@ -407,18 +422,20 @@ export function ListRow({
         ...(last ? {} : { borderBottomWidth: 1, borderBottomColor: color.line }),
       }}
     >
-      {lead ? (
+      {lead !== undefined || leadNode !== undefined ? (
         <View
           style={{
             width: 38,
             height: 38,
             borderRadius: 19,
-            backgroundColor: color.concreteRaised,
+            backgroundColor: leadBg,
             alignItems: 'center',
             justifyContent: 'center',
           }}
         >
-          <Text style={{ fontSize: 11.5, fontFamily: face.semibold, color: color.gold }}>{lead}</Text>
+          {leadNode ?? (
+            <Text style={{ fontSize: 11.5, fontFamily: face.semibold, color: color.gold }}>{lead}</Text>
+          )}
         </View>
       ) : null}
 

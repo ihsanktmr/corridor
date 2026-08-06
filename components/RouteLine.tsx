@@ -4,6 +4,7 @@ import { Animated, Text, View } from 'react-native';
 import type { Step, StepStatus } from '../domain/transfer';
 import { color, radius, space } from '../theme/tokens';
 import { face, type } from '../theme/type';
+import { Close } from './icons';
 import { Pill } from './primitives';
 
 /**
@@ -112,7 +113,7 @@ function Node({ status }: { status: StepStatus }) {
     >
       {status === 'done' ? <Tick /> : null}
       {status === 'failed' ? (
-        <Text style={{ fontSize: 8, fontFamily: face.semibold, color: color.void, lineHeight: 9 }}>×</Text>
+        <Close size={8} color={color.void} strokeWidth={3.2} />
       ) : null}
       {status === 'live' ? (
         <Animated.View
