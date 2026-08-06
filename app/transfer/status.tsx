@@ -76,7 +76,12 @@ export default function Status() {
           <Text style={[type.label, { fontSize: 11.5 }]}>
             Ref <Text style={[type.mono, { color: color.paper }]}>CRD-8F2A-4417</Text>
           </Text>
-          <Button label="Get help" variant="secondary" style={{ minHeight: 38, paddingHorizontal: 16 }} />
+          <Button
+            label="Get help"
+            variant="secondary"
+            onPress={() => router.push('/help')}
+            style={{ minHeight: 38, paddingHorizontal: 16 }}
+          />
         </Row>
       </Dock>
     </Screen>
@@ -210,7 +215,7 @@ function PayoutReturned({ transfer }: { transfer: Transfer }) {
       <Dock>
         {/* One tap, preserving everything already entered. */}
         <Button label="Fix name & retry" onPress={() => router.replace('/transfer/recipient')} />
-        <Button label="Get help" variant="ghost" />
+        <Button label="Get help" variant="ghost" onPress={() => router.push('/help')} />
       </Dock>
     </Screen>
   );

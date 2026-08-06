@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 
 import { Button } from '../components/Button';
 import { Body, DemoStrip, Screen, Wordmark } from '../components/chrome';
@@ -38,7 +38,14 @@ export default function Home() {
         }}
       >
         <Wordmark />
-        <Account />
+        <Pressable
+          onPress={() => router.push('/help')}
+          hitSlop={12}
+          accessibilityRole="button"
+          accessibilityLabel="Help and about"
+        >
+          <Account />
+        </Pressable>
       </View>
 
       <Body>
@@ -74,10 +81,9 @@ export default function Home() {
           style={{ marginTop: space.base, marginBottom: space.lg }}
         />
 
-        <Row style={{ marginBottom: 2 }}>
-          <Text style={type.micro}>activity</Text>
-          <Text style={[type.label, { fontSize: 11.5 }]}>See all</Text>
-        </Row>
+        {/* No "See all" — this list is already everything. An affordance that
+            implies more content teaches the user the controls are decorative. */}
+        <Text style={[type.micro, { marginBottom: 2 }]}>activity</Text>
 
         {transfers.length === 0 ? (
           <Text style={[type.label, { paddingVertical: space.lg }]}>
