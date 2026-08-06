@@ -1,5 +1,5 @@
 import { router, useLocalSearchParams } from 'expo-router';
-import { Linking, Text, View } from 'react-native';
+import { Linking, Pressable, Share as RNShare, Text, View } from 'react-native';
 
 import { Button, Dock } from '../../components/Button';
 import { Bloom, Body, Nav, Screen } from '../../components/chrome';
@@ -50,6 +50,15 @@ export default function Receipt() {
   const { quote } = transfer;
   const explorer = `https://sepolia.basescan.org/tx/${transfer.txHash ?? ''}`;
 
+  /** Real, and the most common next action — the sender forwards this. */
+  const onShare = () => {
+    void RNShare.share({
+      message:
+        `Corridor — ${format(quote.receive)} delivered to ${recipient?.holderName ?? 'recipient'}\n` +
+        `Ref CRD-8F2A-4417\n${explorer}`,
+    });
+  };
+
   const firstAt = transfer.events[0]?.at;
   const lastAt = transfer.events[transfer.events.length - 1]?.at;
   const transit =
@@ -61,7 +70,11 @@ export default function Receipt() {
         title="Receipt"
         close
         onBack={() => router.replace('/home')}
-        right={<Share />}
+        right={
+          <Pressable onPress={onShare} hitSlop={12} accessibilityLabel="Share receipt">
+            <Share />
+          </Pressable>
+        }
       />
 
       <Body>
@@ -142,7 +155,7 @@ export default function Receipt() {
         {/* Remittance is a habit — most senders are on a monthly cycle to the same
             person, so "Send again" beats "Done". */}
         <Button label="Send again" onPress={() => router.replace('/transfer/amount')} />
-        <Button label="Download receipt" variant="ghost" />
+        <Button label="Share receipt" variant="ghost" onPress={onShare} />
       </Dock>
     </Screen>
   );
