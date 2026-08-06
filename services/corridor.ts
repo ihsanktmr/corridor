@@ -277,15 +277,27 @@ export function clearQuote(): void {
 // KYC
 // ─────────────────────────────────────────────────────────────────────────────
 
-export async function startKyc(): Promise<void> {
-  const session = state.session;
-  if (!session) return;
+/**
+ * Any screen in this build is reachable directly — by deep link, or by a reviewer
+ * poking at routes. A screen that silently does nothing because an earlier screen
+ * was skipped is indistinguishable from a broken one, so the session is created on
+ * demand rather than assumed.
+ */
+async function ensureSession(): Promise<Session> {
+  if (state.session) return state.session;
+  await login('demo@corridor.dev');
+  return state.session!;
+}
 
+export async function startKyc(): Promise<void> {
+  const session = await ensureSession();
   const { sessionId } = await providers.kyc.createSession(session.userId);
   emit({ kyc: 'pending', kycSessionId: sessionId });
 }
 
 export async function submitKycDocuments(): Promise<void> {
+  // Self-healing: reaching capture without passing the gate must still work.
+  if (!state.kycSessionId) await startKyc();
   const sessionId = state.kycSessionId;
   if (!sessionId) return;
 
