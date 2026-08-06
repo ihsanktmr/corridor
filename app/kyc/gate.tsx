@@ -2,7 +2,7 @@ import { router } from 'expo-router';
 import { Text, View } from 'react-native';
 
 import { Button, Dock } from '../../components/Button';
-import { Bloom, Body, Nav, Screen } from '../../components/chrome';
+import { Bloom, Body, Nav, Screen, goBack } from '../../components/chrome';
 import { Card, Disclose, ListRow, Pill } from '../../components/primitives';
 import { Alert, Check, Verified } from '../../components/icons';
 import { providers } from '../../providers/registry';
@@ -79,7 +79,7 @@ export default function KycGate() {
       <Dock>
         <Button label="Start verification" onPress={onStart} />
         {/* A real exit — the quote survives, the transfer parks. */}
-        <Button label="Not now" variant="ghost" onPress={() => router.back()} />
+        <Button label="Not now" variant="ghost" onPress={() => goBack('/transfer/fund')} />
       </Dock>
     </Screen>
   );

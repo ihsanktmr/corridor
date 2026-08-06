@@ -9,6 +9,21 @@ import { face, type } from '../theme/type';
 import { ChevronLeft, Close, Lock as LockIcon } from './icons';
 import { Mark } from './Mark';
 
+/**
+ * Back, without the crash.
+ *
+ * `router.back()` throws when there is no history — which happens on any screen
+ * reached by deep link, by `replace`, or as the app's first route. Every back
+ * affordance in a finished app has to go somewhere.
+ */
+export function goBack(fallback: string = '/home'): void {
+  if (router.canGoBack()) {
+    router.back();
+    return;
+  }
+  router.replace(fallback as '/home');
+}
+
 /** Every screen sits on the void with safe-area insets honoured. */
 export function Screen({ children }: { children: React.ReactNode }) {
   return (
@@ -52,7 +67,7 @@ export function Nav({
   close?: boolean;
   right?: React.ReactNode;
 }) {
-  const back = onBack ?? (() => router.back());
+  const back = onBack ?? (() => goBack());
 
   return (
     <View
