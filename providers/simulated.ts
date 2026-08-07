@@ -34,7 +34,7 @@ import type {
  * takes. The distinction matters — a reviewer should be able to read the true
  * durations off the code even while watching them play out in seconds.
  */
-export const DEMO_SPEED = 900;
+export const DEMO_SPEED = 20_000;
 
 /** True settlement timings, before compression. */
 export const SETTLEMENT = {
@@ -48,8 +48,12 @@ export const SETTLEMENT = {
   payout: 30 * 60 * 1000,
 } as const;
 
+/**
+ * The floor matters as much as the divisor: a step that resolves in 40ms is a step
+ * nobody saw. 1.5s is long enough to read the label and watch the node fill.
+ */
 export function demoDelay(realMs: number): number {
-  return Math.max(400, Math.round(realMs / DEMO_SPEED));
+  return Math.max(1500, Math.round(realMs / DEMO_SPEED));
 }
 
 const BUSINESS_DAY_MS = 24 * 60 * 60 * 1000;
