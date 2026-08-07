@@ -313,8 +313,8 @@ export async function submitKycDocuments(): Promise<void> {
   }, demoDelay(45_000));
 }
 
-export function setKycOutcome(outcome: 'approve' | 'resubmit'): void {
-  (providers.kyc as unknown as { outcome: 'approve' | 'resubmit' }).outcome = outcome;
+export function setKycOutcome(outcome: 'approved' | 'resubmit'): void {
+  (providers.kyc as unknown as { outcome: 'approved' | 'resubmit' }).outcome = outcome;
 }
 
 export function retryKyc(): void {
