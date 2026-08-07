@@ -18,7 +18,7 @@ import type { AchReturnCode, PayoutReturnReason, TransferEvent } from '../domain
 
 export type ProviderId =
   | 'bridge.usd.ach'
-  | 'turkey.try.bank'
+  | 'turkiye.try.bank'
   | 'bridge.mxn.spei'
   | 'kyc.vendor'
   | 'privy.wallet';

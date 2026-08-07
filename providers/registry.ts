@@ -21,7 +21,7 @@ import {
   SimulatedBridgePayout,
   SimulatedKyc,
   SimulatedOnramp,
-  SimulatedTurkeyPayout,
+  SimulatedTurkiyePayout,
   SimulatedWallet,
 } from './simulated.ts';
 
@@ -43,7 +43,7 @@ export const ROUTES: Record<CorridorId, RouteBinding> = {
   'USD:TRY': {
     onramp: 'bridge.usd.ach',
     settlement: 'base-sepolia',
-    payout: 'turkey.try.bank',
+    payout: 'turkiye.try.bank',
   },
   'USD:MXN': {
     onramp: 'bridge.usd.ach',
@@ -73,7 +73,7 @@ function selectProviders(env: Env) {
   return {
     onramp: (env.BRIDGE_KEY ? new SimulatedOnramp() : new SimulatedOnramp()) as OnrampProvider,
     payouts: {
-      'turkey.try.bank': new SimulatedTurkeyPayout() as PayoutProvider,
+      'turkiye.try.bank': new SimulatedTurkiyePayout() as PayoutProvider,
       'bridge.mxn.spei': new SimulatedBridgePayout() as PayoutProvider,
     },
     kyc: new SimulatedKyc() as KycProvider,
@@ -87,7 +87,7 @@ export const providers = selectProviders(env);
 
 export function payoutFor(corridor: CorridorId): PayoutProvider {
   const binding = ROUTES[corridor];
-  const provider = providers.payouts[binding.payout as 'turkey.try.bank' | 'bridge.mxn.spei'];
+  const provider = providers.payouts[binding.payout as 'turkiye.try.bank' | 'bridge.mxn.spei'];
   if (!provider.supports(corridor)) {
     throw new Error(`${binding.payout} does not support ${corridor}`);
   }

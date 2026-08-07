@@ -126,7 +126,7 @@ export class SimulatedOnramp implements OnrampProvider {
 // ─────────────────────────────────────────────────────────────────────────────
 
 const PAYOUT_META: ProviderMeta = {
-  id: 'turkey.try.bank',
+  id: 'turkiye.try.bank',
   label: 'TRY payout partner',
   fidelity: 'simulated',
   disclosure:
@@ -135,7 +135,7 @@ const PAYOUT_META: ProviderMeta = {
     'against a documented partner’s API shape.',
 };
 
-export class SimulatedTurkeyPayout implements PayoutProvider {
+export class SimulatedTurkiyePayout implements PayoutProvider {
   readonly meta = PAYOUT_META;
 
   supports(corridor: CorridorId): boolean {

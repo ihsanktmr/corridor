@@ -454,7 +454,7 @@ async function runTimeline(transferId: string, recipientId: string): Promise<voi
   await wait(demoDelay(SETTLEMENT.payout));
 
   if (payoutOutcome === 'deliver') {
-    ingest(transferId, 'turkey.try.bank', { event: 'payout.delivered' }, LOCAL_WEBHOOK_SECRET);
+    ingest(transferId, 'turkiye.try.bank', { event: 'payout.delivered' }, LOCAL_WEBHOOK_SECRET);
     if (recipient && !recipient.verified) {
       emit({
         recipients: state.recipients.map((r) =>
@@ -465,7 +465,7 @@ async function runTimeline(transferId: string, recipientId: string): Promise<voi
   } else {
     ingest(
       transferId,
-      'turkey.try.bank',
+      'turkiye.try.bank',
       { event: 'payout.returned', reason: 'name_mismatch' },
       LOCAL_WEBHOOK_SECRET,
     );

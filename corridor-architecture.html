@@ -301,7 +301,7 @@ pre.code .h{color:var(--gold-bright);}
         </div>
         <div class="node off">
           <p class="nt">PayoutProvider <span class="badge mock">mock</span></p>
-          <p class="nd"><code>turkey.try.bank</code><br>USDC → TRY over FAST/EFT. Owns IBAN validation.</p>
+          <p class="nd"><code>turkiye.try.bank</code><br>USDC → TRY over FAST/EFT. Owns IBAN validation.</p>
         </div>
         <div class="node off">
           <p class="nt">KycProvider <span class="badge hybrid">hybrid</span></p>
@@ -341,7 +341,7 @@ const ROUTES: Record&lt;CorridorId, RouteBinding&gt; = {
   <span class="s">'USD:TRY'</span>: {
     onramp:     <span class="s">'bridge.usd.ach'</span>,
     settlement: <span class="s">'base'</span>,
-    payout:     <span class="s">'turkey.try.bank'</span>,  <span class="c">// ← Bridge has no TRY route</span>
+    payout:     <span class="s">'turkiye.try.bank'</span>,  <span class="c">// ← Bridge has no TRY route</span>
     limits:     TIER_LIMITS.basic,
   },
   <span class="s">'USD:MXN'</span>: {
@@ -466,7 +466,7 @@ interface KycProvider {
 
 <span class="c">// Every provider normalises its own vendor payload into Corridor's event vocabulary.</span>
 <span class="c">// The orchestrator never sees a vendor-shaped object. This is the entire point:</span>
-<span class="c">// swapping turkey.try.bank for a different partner touches one file.</span></pre>
+<span class="c">// swapping turkiye.try.bank for a different partner touches one file.</span></pre>
 
     <div class="call good">
       <p class="lbl">what <code>parseWebhook</code> buys</p>
@@ -664,7 +664,7 @@ const txHash = await provider.request({
 <pre class="code"><span class="c">// providers/registry.ts</span>
 const PROVIDERS: Record&lt;ProviderId, Provider&gt; = {
   <span class="s">'bridge.usd.ach'</span>:  env.BRIDGE_KEY ? new BridgeOnramp(env)  : new SimulatedOnramp(fixtures.ach),
-  <span class="s">'turkey.try.bank'</span>: env.TRY_KEY    ? new TurkeyPayout(env)  : new SimulatedPayout(fixtures.try),
+  <span class="s">'turkiye.try.bank'</span>: env.TRY_KEY    ? new TurkiyePayout(env)  : new SimulatedPayout(fixtures.try),
   <span class="s">'kyc.fixture'</span>:     env.KYC_KEY    ? new VendorKyc(env)     : new SimulatedKyc(fixtures.kyc),
 };
 
