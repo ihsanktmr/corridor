@@ -1,4 +1,5 @@
 import { router } from 'expo-router';
+import { useEffect } from 'react';
 import { Text, View } from 'react-native';
 
 import { Button, Dock } from '../../components/Button';
@@ -22,6 +23,12 @@ import { face, type } from '../../theme/type';
  */
 export default function KycGate() {
   const { kyc } = useCorridor();
+
+  // The screen's own promise is "Once. Not every transfer." Routing an already
+  // verified user back through it would make the copy a lie.
+  useEffect(() => {
+    if (kyc === 'approved') router.replace('/transfer/recipient');
+  }, [kyc]);
 
   if (kyc === 'resubmit') return <Resubmit />;
 
