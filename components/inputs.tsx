@@ -111,7 +111,7 @@ const KEYS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '.', '0', '⌫'] as c
  * the viewport and make the two amounts jump. It also lets us reject a second
  * decimal point at input rather than validating after the fact.
  *
- * Keys run 52 tall — above the 44pt floor, because this is used under time pressure
+ * Keys run 52 tall, above the 44pt floor, because this is used under time pressure
  * with a rate lock counting down.
  */
 export function Keypad({ value, onChange }: { value: string; onChange: (next: string) => void }) {
@@ -125,7 +125,7 @@ export function Keypad({ value, onChange }: { value: string; onChange: (next: st
       onChange(value === '' ? '0.' : `${value}.`);
       return;
     }
-    // Two decimal places is all USD carries — reject the third keystroke.
+    // Two decimal places is all USD carries, so reject the third keystroke.
     const [, fraction] = value.split('.');
     if (fraction !== undefined && fraction.length >= 2) return;
     if (value === '0') {
@@ -179,7 +179,7 @@ const KNOB_WIDTH = 64;
  * Slide to send, not tap to send.
  *
  * Deliberate friction proportional to irreversibility. Exactly one of these exists
- * in the app, on screen 08 — if a second ever appears, the first has stopped meaning
+ * in the app, on screen 08. If a second ever appears, the first has stopped meaning
  * anything.
  */
 export function ConfirmSlider({

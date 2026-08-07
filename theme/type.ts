@@ -6,16 +6,16 @@ import { color } from './tokens';
  * Type scale.
  *
  * Phase 2 resolved the one ambiguity the identity spec left open: the spec says
- * "display — headlines, amounts, wordmark", but its own applied preview set the
+ * "display: headlines, amounts, wordmark", but its own applied preview set the
  * amount in Inter with tabular figures. The resolution, and the rule enforced here:
  *
- *   Bricolage for *display moments*  — amount entry, receipt hero, screen titles
- *   Inter + tabular-nums             — wherever numbers stack and must align
- *   Mono                             — machine-produced values only
+ *   Bricolage for *display moments*  → amount entry, receipt hero, screen titles
+ *   Inter + tabular-nums             → wherever numbers stack and must align
+ *   Mono                             → machine-produced values only
  *
  * A fee breakdown has to align on the decimal, so it is never display type.
  *
- * NOTE ON WEIGHTS — React Native does not synthesise weight for custom fonts.
+ * NOTE ON WEIGHTS: React Native does not synthesise weight for custom fonts.
  * `fontWeight: '600'` against a bundled family is silently ignored; the weight has
  * to come from the family name itself. Every style below therefore names an exact
  * face, and `face` is exported so inline emphasis elsewhere can do the same.
@@ -25,7 +25,7 @@ import { color } from './tokens';
 export const face = {
   /** headlines, amounts, wordmark */
   display: 'BricolageGrotesque_600SemiBold',
-  /** the positioning line — set italic, which Bricolage has no true cut for */
+  /** the positioning line, set italic, which Bricolage has no true cut for */
   displayRegular: 'BricolageGrotesque_400Regular',
 
   regular: 'Inter_400Regular',
@@ -88,7 +88,7 @@ export const type = {
     lineHeight: 17,
     color: color.mist,
   },
-  /** section eyebrows — uppercase, tracked out */
+  /** section eyebrows: uppercase, tracked out */
   micro: {
     fontFamily: face.medium,
     fontSize: 10.5,
@@ -104,6 +104,6 @@ export const type = {
   },
 } as const satisfies Record<string, TextStyle>;
 
-/** Inline emphasis inside a run of body text — pairs with `type.body`/`type.label`. */
+/** Inline emphasis inside a run of body text. Pairs with `type.body`/`type.label`. */
 export const strong: TextStyle = { fontFamily: face.medium, color: color.paper };
 export const strongest: TextStyle = { fontFamily: face.semibold, color: color.paper };

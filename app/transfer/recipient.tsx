@@ -16,7 +16,7 @@ import { face, type } from '../../theme/type';
 /**
  * 07 · Recipient
  *
- * Catch the failure here, where it costs a retype — not at payout, where it costs
+ * Catch the failure here, where it costs a retype, rather than at payout, where it costs
  * three days.
  *
  * The IBAN is validated locally (TR length + ISO 7064 mod-97) before any network
@@ -83,7 +83,7 @@ export default function RecipientScreen() {
         {/* "Exactly as their bank has it" tells the user what correctness means
             here, which is not what it means anywhere else in the app. */}
         <Field
-          label="Full name — exactly as their bank has it"
+          label="Full name, exactly as their bank has it"
           value={name}
           onChangeText={(v) => {
             setName(v);
@@ -125,7 +125,7 @@ export default function RecipientScreen() {
               <Text style={{ color: color.paper, fontFamily: face.medium }}>
                 Turkish banks reject on name mismatch.{' '}
               </Text>
-              If the name doesn't match the account holder exactly, the payout bounces — and takes 2–3
+              If the name doesn't match the account holder exactly, the payout bounces, and takes 2-3
               days to come back.
             </Text>
           </View>

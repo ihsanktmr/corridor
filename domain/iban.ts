@@ -1,18 +1,18 @@
 /**
- * IBAN validation — ISO 13616 structure + ISO 7064 mod-97 checksum.
+ * IBAN validation: ISO 13616 structure + ISO 7064 mod-97 checksum.
  *
  * This runs locally, synchronously, before any network call. Screen 07 gives the
  * user an answer as they type, offline, with zero round trips.
  *
  * What it catches: typos, transpositions, wrong-country pastes, wrong length.
  * What it cannot catch: a structurally valid IBAN belonging to the wrong person.
- * Turkey has no name-check service to resolve that, which is why screen 07 warns
+ * Türkiye has no name-check service to resolve that, which is why screen 07 warns
  * about name matching up front and screen 11c makes the returned payout cheap.
  */
 
 export const TR_IBAN_LENGTH = 26;
 
-/** Turkish bank codes — digits 5–8 of the IBAN. Enough to echo the bank back. */
+/** Turkish bank codes: digits 5-8 of the IBAN. Enough to echo the bank back. */
 const TR_BANKS: Record<string, string> = {
   '0010': 'Ziraat Bankası',
   '0012': 'Halkbank',
@@ -43,12 +43,12 @@ export function normaliseIban(input: string): string {
   return input.replace(/[\s -]/g, '').toUpperCase();
 }
 
-/** `TR64 0062 0001 2345 6789 0123 45` — grouped in fours for display. */
+/** `TR64 0062 0001 2345 6789 0123 45`, grouped in fours for display. */
 export function formatIban(input: string): string {
   return normaliseIban(input).replace(/(.{4})/g, '$1 ').trim();
 }
 
-/** `TR64 ···· 2345` — the masked form shown after a recipient is saved. */
+/** `TR64 ···· 2345`, the masked form shown after a recipient is saved. */
 export function maskIban(input: string): string {
   const n = normaliseIban(input);
   if (n.length < 8) return n;
@@ -58,8 +58,8 @@ export function maskIban(input: string): string {
 /**
  * ISO 7064 mod-97-10.
  *
- * Computed in a streaming fashion rather than by building one enormous BigInt —
- * an IBAN expands to ~30 digits, and chunking keeps this in Number range and fast
+ * Computed in a streaming fashion rather than by building one enormous BigInt.
+ * An IBAN expands to ~30 digits, and chunking keeps this in Number range and fast
  * enough to run on every keystroke.
  */
 export function mod97(rearranged: string): number {
@@ -99,7 +99,7 @@ export function validateTurkishIban(input: string): IbanResult {
 }
 
 /**
- * Compute the correct check digits for an account portion — used to build valid
+ * Compute the correct check digits for an account portion, used to build valid
  * fixtures rather than hand-guessing them, and to explain a `bad_checksum` result
  * ("did you mean TR64…?") instead of only rejecting it.
  */
@@ -114,9 +114,9 @@ export function turkishCheckDigits(bodyAfterCheckDigits: string): string {
 /** Copy for each failure, in the phase 2 error voice: what happened, what to do. */
 export const IBAN_MESSAGES: Record<IbanProblem, string> = {
   empty: 'Enter the recipient’s IBAN',
-  wrong_country: 'This corridor pays out to Turkish accounts — the IBAN must start with TR',
+  wrong_country: 'This corridor pays out to Turkish accounts, so the IBAN must start with TR',
   bad_length: 'A Turkish IBAN is 26 characters',
   bad_charset: 'IBANs contain only letters and numbers',
-  bad_checksum: 'That IBAN isn’t valid — check for a mistyped digit',
+  bad_checksum: 'That IBAN isn’t valid. Check for a mistyped digit',
   unsupported_bank: 'We don’t pay out to that bank yet',
 };

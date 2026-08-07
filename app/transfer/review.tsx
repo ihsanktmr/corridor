@@ -21,7 +21,7 @@ import { tabular, type } from '../../theme/type';
  * 08 · Review & confirm  ·  and 11a · rate expired
  *
  * The last screen where anything can be changed. Every number that will be charged
- * is visible without tapping anything — on screen 03 the breakdown collapses because
+ * is visible without tapping anything. On screen 03 the breakdown collapses because
  * the user is still exploring; here they are committing, so it is all open. Same
  * data, different disclosure, because the stakes changed.
  */
@@ -38,7 +38,7 @@ export default function Review() {
 
   const recipient = recipientById(params.recipientId ?? '') ?? recipients[0] ?? null;
 
-  // Same source as screen 04 — one estimate, quoted once.
+  // Same source as screen 04: one estimate, quoted once.
   const arrival = useMemo(() => {
     const rail = quote?.rail ?? 'ach';
     if (rail === 'card') return 'Today';
@@ -121,7 +121,7 @@ export default function Review() {
             {/*
               Computed from the same provider method screen 04 used, not written
               here. Hardcoding it meant a user could pick ACH, read "arrives Fri,
-              Aug 7", and then be told "Wed, Aug 5" one screen later — which
+              Aug 7", and then be told "Wed, Aug 5" one screen later, which
               defeats the whole point of promising a date instead of a duration.
             */}
             <Text style={[type.bodyStrong, { fontSize: 12.5 }]}>{arrival}</Text>
@@ -132,7 +132,7 @@ export default function Review() {
       </Body>
 
       <Dock bordered>
-        {/* Slide, not tap. Deliberate friction proportional to irreversibility —
+        {/* Slide, not tap. Deliberate friction proportional to irreversibility;
             this is the moment money leaves. */}
         <ConfirmSlider
           label={`Slide to send ${format(quote.totalCharged)}`}
@@ -148,7 +148,7 @@ export default function Review() {
  * 11a · Rate expired
  *
  * "Nothing was sent" is the first line, because that is the user's first fear. Then
- * the delta — old, new, and what it costs in the currency the recipient cares about.
+ * the delta: old, new, and what it costs in the currency the recipient cares about.
  * Re-accepting is an explicit choice with a fresh lock, never a silent re-quote: an
  * app that quietly repriced would be indistinguishable from one that skimmed.
  */

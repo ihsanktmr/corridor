@@ -3,7 +3,7 @@
  *
  * A deployed Corridor API would sign with HMAC-SHA256 over the canonical payload,
  * using a key that exists only on the server. This build runs the "server"
- * in-process, so the key is not secret and the primitive below is a stand-in — but
+ * in-process, so the key is not secret and the primitive below is a stand-in, but
  * the *shape* is real: the quote is signed at issue, the signature travels with it,
  * and it is verified before a transfer is created.
  *
@@ -34,7 +34,7 @@ export function sign(payload: string): string {
 
 export function verify(payload: string, signature: string): boolean {
   const expected = sign(payload);
-  // Constant-time-ish comparison. Habit, not theatre — the real one matters.
+  // Constant-time-ish comparison. Habit, not theatre; the real one matters.
   if (expected.length !== signature.length) return false;
   let diff = 0;
   for (let i = 0; i < expected.length; i += 1) {

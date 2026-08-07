@@ -2,7 +2,7 @@
  * Simulated providers.
  *
  * These implement the same interfaces as the real adapters and emit the same event
- * vocabulary. Nothing above the registry knows they exist — there is no `isMock`
+ * vocabulary. Nothing above the registry knows they exist; there is no `isMock`
  * branch in the orchestrator, the services, or any screen.
  *
  * Fixtures encode *timing*, not just payloads. The ACH leg settles at T+2 in
@@ -31,7 +31,7 @@ import type {
  * Wall-clock compression for the demo.
  *
  * Real timings live in `SETTLEMENT`; this only scales how long the walkthrough
- * takes. The distinction matters — a reviewer should be able to read the true
+ * takes. The distinction matters: a reviewer should be able to read the true
  * durations off the code even while watching them play out in seconds.
  */
 export const DEMO_SPEED = 20_000;
@@ -58,7 +58,7 @@ export function demoDelay(realMs: number): number {
 
 const BUSINESS_DAY_MS = 24 * 60 * 60 * 1000;
 
-/** Skips weekends — an ACH estimate that lands on a Sunday is a wrong estimate. */
+/** Skips weekends: an ACH estimate that lands on a Sunday is a wrong estimate. */
 function addBankingDays(from: Date, days: number): Date {
   const d = new Date(from.getTime());
   let remaining = days;
@@ -71,7 +71,7 @@ function addBankingDays(from: Date, days: number): Date {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// On-ramp — Bridge USD/ACH
+// On-ramp: Bridge USD/ACH
 // ─────────────────────────────────────────────────────────────────────────────
 
 const ONRAMP_META: ProviderMeta = {
@@ -80,7 +80,7 @@ const ONRAMP_META: ProviderMeta = {
   fidelity: 'simulated',
   disclosure:
     'Simulated leg. Bridge’s on-ramp is a real product, but sandbox keys are not ' +
-    'self-serve — timing and fees here are modelled on Bridge’s live behaviour.',
+    'self-serve, so timing and fees here are modelled on Bridge’s live behaviour.',
 };
 
 export class SimulatedOnramp implements OnrampProvider {
@@ -118,7 +118,7 @@ export class SimulatedOnramp implements OnrampProvider {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Payout — Turkish bank, TRY over FAST/EFT
+// Payout: Turkish bank, TRY over FAST/EFT
 //
 // Bridge has no TRY route in either direction, so this leg is a corridor-specific
 // partner rather than the same vendor as the on-ramp. That gap is the reason this
@@ -131,7 +131,7 @@ const PAYOUT_META: ProviderMeta = {
   fidelity: 'simulated',
   disclosure:
     'Simulated leg. Bridge does not support TRY in either direction, and no ' +
-    'USDC→TRY bank payout is available self-serve — this adapter is written ' +
+    'USDC→TRY bank payout is available self-serve; this adapter is written ' +
     'against a documented partner’s API shape.',
 };
 
@@ -172,7 +172,7 @@ export class SimulatedTurkiyePayout implements PayoutProvider {
 }
 
 /**
- * Bridge's MXN/SPEI payout — implemented, registered, never called.
+ * Bridge's MXN/SPEI payout: implemented, registered, never called.
  *
  * It exists so the seam can be seen to be real rather than retrofitted: `USD:TRY`
  * and `USD:MXN` differ by one binding in `ROUTES`, and this is the other side of
@@ -207,7 +207,7 @@ export class SimulatedBridgePayout implements PayoutProvider {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// KYC — real flow and state machine, fixture verdicts
+// KYC: real flow and state machine, fixture verdicts
 // ─────────────────────────────────────────────────────────────────────────────
 
 const KYC_META: ProviderMeta = {
@@ -221,8 +221,16 @@ const KYC_META: ProviderMeta = {
 
 export class SimulatedKyc implements KycProvider {
   readonly meta = KYC_META;
-  /** Flip to exercise screen 11b instead of the happy path. */
-  outcome: 'approve' | 'resubmit' = 'approve';
+  /**
+   * Flip to exercise screen 11b instead of the happy path.
+   *
+   * These are the vendor's own status strings, deliberately; the adapter's job is
+   * to translate them. An earlier version used 'approve' here while `parseWebhook`
+   * matched 'approved', so the verdict silently parsed to null and the flow hung on
+   * "Checking your documents" forever. Exactly the drop the architecture warns
+   * about, landing on the happy path instead of an edge case.
+   */
+  outcome: 'approved' | 'resubmit' = 'approved';
 
   async createSession(userId: string): Promise<{ sessionId: string; uploadUrl: string }> {
     const sessionId = `kyc_${userId}_${Date.now().toString(36)}`;
@@ -251,7 +259,7 @@ export class SimulatedKyc implements KycProvider {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Wallet — stands in for Privy's embedded wallet
+// Wallet: stands in for Privy's embedded wallet
 // ─────────────────────────────────────────────────────────────────────────────
 
 const WALLET_META: ProviderMeta = {
@@ -264,7 +272,7 @@ const WALLET_META: ProviderMeta = {
     'Privy adapter binds in the same slot.',
 };
 
-/** The locked demo address and hash — see the tracker's demo-data block. */
+/** The locked demo address and hash. See the tracker's demo-data block. */
 const DEMO_ADDRESS = '0x477Fb9fA92b264Fe8f636bA6EA5415dd21a392a3';
 const DEMO_TX = '0x551c67045ddfe8e8fb94fdad1ca0b5ffd078d3ca50f167531f0680722a55ba10';
 
@@ -299,7 +307,7 @@ export class SimulatedWallet implements WalletProvider {
 /**
  * Signature used by the simulated providers when they POST to the real webhook
  * ingress. The ingress path, signature check, normalisation and ordering logic are
- * therefore exercised on every run — when a real key arrives, the untested surface
+ * therefore exercised on every run; when a real key arrives, the untested surface
  * is one adapter, not the whole pipeline.
  */
 export const LOCAL_WEBHOOK_SECRET = 'sim_local_secret';

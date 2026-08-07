@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Corridor — integration architecture</title>
+<title>Corridor: integration architecture</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-/* tokens — inherited verbatim from phase 1 */
+/* tokens: inherited verbatim from phase 1 */
 :root{
   --void:#14120F; --concrete:#1E1B16; --concrete-raised:#28241D; --line:#332E24;
   --paper:#F6F3EC; --mist:#A39C8E; --gold:#C9A35C; --gold-bright:#E0BC7C;
@@ -169,12 +169,12 @@ pre.code .h{color:var(--gold-bright);}
 <div class="wrap">
 
   <header class="hero">
-    <div class="eyebrow">corridor — integration architecture, phase 3</div>
+    <div class="eyebrow">corridor · integration architecture, phase 3</div>
     <svg width="60" height="60" style="display:block;margin-bottom:24px;"><use href="#mark-lg"/></svg>
     <h1 class="display">The seam is<br>the architecture.</h1>
     <p class="lede">Three providers, one of which doesn't sell this route.</p>
     <p class="note" style="margin-top:14px;">
-      Phase 2 designed the flow. This document specifies what actually sits behind it — the provider
+      Phase 2 designed the flow. This document specifies what actually sits behind it: the provider
       audit, the interfaces, the money types, the transfer state machine, and the reconciliation that
       keeps three systems with three different clocks telling the same story. It is also the document
       that says plainly which parts of the named stack exist and which don't.
@@ -203,25 +203,25 @@ pre.code .h{color:var(--gold-bright);}
         <tbody>
           <tr>
             <td>Privy</td>
-            <td><code>@privy-io/expo</code> + <code>@privy-io/expo-native-extensions</code>. <code>useLoginWithEmail</code> → <code>sendCode</code>/<code>loginWithCode</code>; <code>useEmbeddedEthereumWallet()</code> → <code>getProvider()</code> → EIP-1193. <b>iOS and Android only — no web target.</b></td>
+            <td><code>@privy-io/expo</code> + <code>@privy-io/expo-native-extensions</code>. <code>useLoginWithEmail</code> → <code>sendCode</code>/<code>loginWithCode</code>; <code>useEmbeddedEthereumWallet()</code> → <code>getProvider()</code> → EIP-1193. <b>iOS and Android only, no web target.</b></td>
             <td>Yes</td>
             <td><span class="badge real">real</span></td>
           </tr>
           <tr>
             <td>Circle USDC</td>
-            <td>Base Sepolia <code>0x036CbD53842c5426634e7929541eC2318f3dCF7e</code> — FiatTokenV2_2, 6 decimals. Public faucet issues 20 USDC per address per chain every 2 hours.</td>
+            <td>Base Sepolia <code>0x036CbD53842c5426634e7929541eC2318f3dCF7e</code>: FiatTokenV2_2, 6 decimals. Public faucet issues 20 USDC per address per chain every 2 hours.</td>
             <td>Yes</td>
             <td><span class="badge real">real</span></td>
           </tr>
           <tr>
-            <td>Bridge — USD on-ramp</td>
+            <td>Bridge · USD on-ramp</td>
             <td>ACH, FedNow and Wire are genuinely supported routes. Sandbox keys are <b>not self-serve</b>: a Developer account must be granted by Bridge support before an <code>sk-test</code> key can be generated.</td>
             <td>No</td>
             <td><span class="badge mock">simulated</span></td>
           </tr>
           <tr>
-            <td>Bridge — TRY payout</td>
-            <td>Bridge supports USD (ACH/FedNow/Wire), EUR (SEPA), MXN (SPEI), BRL (Pix), GBP (Faster Payments) and COP. <b>TRY is not a supported currency in either direction.</b> This is not a gate — the route does not exist.</td>
+            <td>Bridge · TRY payout</td>
+            <td>Bridge supports USD (ACH/FedNow/Wire), EUR (SEPA), MXN (SPEI), BRL (Pix), GBP (Faster Payments) and COP. <b>TRY is not a supported currency in either direction.</b> This is not a gate; the route does not exist.</td>
             <td>—</td>
             <td><span class="badge gone">unavailable</span></td>
           </tr>
@@ -252,7 +252,7 @@ pre.code .h{color:var(--gold-bright);}
         The honest framing is better anyway: <b>Bridge covers the US side, which is its real product.
         The TRY leg is a corridor-specific partner.</b> A stablecoin remittance app that assumed one
         vendor covered every destination would be a worse piece of architecture than one that planned
-        for the opposite — because the opposite is what always happens.
+        for the opposite, because the opposite is what always happens.
       </p>
     </div>
   </section>
@@ -327,7 +327,7 @@ pre.code .h{color:var(--gold-bright);}
       it binds to a Bridge payout provider instead of the Turkish one and nothing else changes.
     </p>
 
-<pre class="code"><span class="c">// corridor/routes.ts — the whole multi-corridor story, without building multi-corridor</span>
+<pre class="code"><span class="c">// corridor/routes.ts: the whole multi-corridor story, without building multi-corridor</span>
 type CorridorId = <span class="s">'USD:TRY'</span> | <span class="s">'USD:MXN'</span>;
 
 interface RouteBinding {
@@ -359,7 +359,7 @@ const ROUTES: Record&lt;CorridorId, RouteBinding&gt; = {
         Every remittance business eventually discovers that no single vendor covers its destination
         map. The ones that hard-coded a vendor rewrite their settlement layer; the ones that put an
         interface there add a file. <b>The Bridge TRY gap is the proof that this seam is doing work
-        rather than being decorative</b> — it was discovered during integration, and the design
+        rather than being decorative</b>. It was discovered during integration, and the design
         absorbed it without touching a screen.
       </p>
     </div>
@@ -409,7 +409,7 @@ function rescale(m: Money, to: Currency): Money {
     <h3 class="sub">Quotes are signed server-side</h3>
     <p class="note">
       Screen 03 submits a <code>quoteId</code>, never amounts. The client's numbers are a rendering of
-      the quote, never the source of it — which is what stops a stale countdown or a patched binary
+      the quote, never the source of it, which is what stops a stale countdown or a patched binary
       from reaching settlement.
     </p>
 
@@ -417,9 +417,9 @@ function rescale(m: Money, to: Currency): Money {
 interface Quote {
   readonly id: QuoteId;
   readonly corridor: CorridorId;
-  readonly send: Money;          <span class="c">// USD 50_000n            — what the user typed</span>
-  readonly receive: Money;       <span class="c">// TRY 2_642_000n         — ₺26,420.00</span>
-  readonly totalCharged: Money;  <span class="c">// USD 50_375n            — $503.75</span>
+  readonly send: Money;          <span class="c">// USD 50_000n            → what the user typed</span>
+  readonly receive: Money;       <span class="c">// TRY 2_642_000n         → ₺26,420.00</span>
+  readonly totalCharged: Money;  <span class="c">// USD 50_375n            → $503.75</span>
   readonly rate: Rate;
   readonly fees: readonly FeeLine[];
   readonly expiresAt: string;    <span class="c">// server clock, always</span>
@@ -431,12 +431,12 @@ interface FeeLine {
   readonly label: string;        <span class="c">// 'On-ramp · ACH → USDC'</span>
   readonly amount: Money;        <span class="c">// USD 125n → $1.25</span>
 }</pre>
-    <p class="code-cap">fees are named after the rail that consumes them — the breakdown on screen 03 is this array, rendered</p>
+    <p class="code-cap">fees are named after the rail that consumes them; the breakdown on screen 03 is this array, rendered</p>
 
     <h3 class="sub">The provider interfaces</h3>
     <p class="note">
       Three interfaces, each implemented once per rail. <code>validateDestination</code> is where
-      Turkey's IBAN mod-97 check lives and where Mexico's CLABE check would — destination correctness
+      Türkiye's IBAN mod-97 check lives and where Mexico's CLABE check would; destination correctness
       is a property of the payout rail, not of the app.
     </p>
 
@@ -471,7 +471,7 @@ interface KycProvider {
     <div class="call good">
       <p class="lbl">what <code>parseWebhook</code> buys</p>
       <p>
-        Returning <code>null</code> for an unrecognised or badly-signed payload — rather than throwing —
+        Returning <code>null</code> for an unrecognised or badly-signed payload, rather than throwing,
         makes webhook ingress <b>total</b>. Unknown event types from a vendor's new release get dropped
         and logged instead of crashing the ingress endpoint and stalling every in-flight transfer
         behind them. <b>A provider shipping a feature you haven't heard of should never be an outage.</b>
@@ -523,7 +523,7 @@ interface KycProvider {
       </div>
     </div>
 
-<pre class="code"><span class="c">// transfer/events.ts — the log. State is fold(events).</span>
+<pre class="code"><span class="c">// transfer/events.ts: the log. State is fold(events).</span>
 type TransferEvent =
   | { t: <span class="s">'quote_accepted'</span>;   quoteId: QuoteId }
   | { t: <span class="s">'onramp_initiated'</span>; ref: ProviderRef; rail: FiatRail }
@@ -537,7 +537,7 @@ type TransferEvent =
   | { t: <span class="s">'payout_returned'</span>;  reason: PayoutReturnReason }
   | { t: <span class="s">'refunded'</span>;         amount: Money };
 
-<span class="c">// Every event carries these. seq is assigned by Corridor on ingress —</span>
+<span class="c">// Every event carries these. seq is assigned by Corridor on ingress,</span>
 <span class="c">// never taken from the provider, whose ordering guarantees are its own business.</span>
 interface Envelope {
   readonly seq: number;
@@ -556,7 +556,7 @@ interface Envelope {
           <tr><td><b><code>funded_held</code></b></td><td><b>USD settled. Payout deliberately not yet released.</b></td><td>09 step 1 ✓</td><td>chain_pending · clawback</td></tr>
           <tr><td><code>chain_pending</code></td><td>USDC transfer submitted to Base</td><td>09 step 3</td><td>chain_confirmed · chain_pending (reorg)</td></tr>
           <tr><td><code>payout_pending</code></td><td>With the Turkish partner, awaiting bank</td><td>09 step 4</td><td>delivered · payout_returned</td></tr>
-          <tr><td><code>delivered</code></td><td>Partner confirmed credited — not merely submitted</td><td>10</td><td>terminal</td></tr>
+          <tr><td><code>delivered</code></td><td>Partner confirmed credited, not merely submitted</td><td>10</td><td>terminal</td></tr>
           <tr><td><code>payout_returned</code></td><td>Bank rejected, most often name mismatch</td><td>11c</td><td>refunded</td></tr>
           <tr><td><code>clawback</code></td><td>ACH returned after value already left</td><td>—</td><td>manual</td></tr>
         </tbody>
@@ -574,9 +574,9 @@ interface Envelope {
     </p>
 
     <ul class="pts">
-      <li><b>Holding to settlement covers the common returns.</b> <code>R01</code> insufficient funds and <code>R08</code> stop payment surface within roughly two banking days. Waiting for settlement before releasing the payout eliminates both — which is precisely why screen 09 shows "USD received" as a discrete, timestamped step instead of hiding a two-day wait inside a spinner.</li>
+      <li><b>Holding to settlement covers the common returns.</b> <code>R01</code> insufficient funds and <code>R08</code> stop payment surface within roughly two banking days. Waiting for settlement before releasing the payout eliminates both, which is precisely why screen 09 shows "USD received" as a discrete, timestamped step instead of hiding a two-day wait inside a spinner.</li>
       <li><b>It does not cover <code>R10</code>.</b> An unauthorised-debit return can arrive up to <b>60 days</b> later. By then the lira has been spent. No holding period that a customer would tolerate closes this window, so it cannot be designed away.</li>
-      <li><b>So it gets priced and bounded instead.</b> Residual R10 exposure is carried in the $3.75 fee, and constrained by per-user velocity limits until an account has settled history — first transfer capped low, limit rising with successful settlements rather than with elapsed time.</li>
+      <li><b>So it gets priced and bounded instead.</b> Residual R10 exposure is carried in the $3.75 fee, and constrained by per-user velocity limits until an account has settled history: first transfer capped low, limit rising with successful settlements rather than with elapsed time.</li>
       <li><b>The alternative is a real product, not a mistake.</b> Fronting the funds buys same-day delivery and needs working capital plus fraud scoring. It's the right call at scale and the wrong one for a first corridor, and a design doc that pretended the choice didn't exist would be the actual error.</li>
     </ul>
 
@@ -593,8 +593,8 @@ interface Envelope {
     <h3 class="sub">Idempotency and reconciliation</h3>
     <ul class="pts">
       <li><b>Keys are minted client-side when screen 08 mounts</b>, not at submit. A user who taps through a flaky connection retries with the same key, and the second request returns the first result rather than a second transfer.</li>
-      <li><b>Provider calls carry the transfer's key, scoped per leg</b> — <code>{transferId}:onramp</code>, <code>{transferId}:payout</code>. A reorg-driven chain resubmit reuses <code>{transferId}:chain</code>, so a duplicate submission is impossible even across process restarts.</li>
-      <li><b>Webhooks are the fast path; polling is the floor.</b> Any transfer not in a terminal state is re-polled on exponential backoff. Dropped webhooks are normal, not exceptional — a design that only handles the push path is a design that stalls silently in production.</li>
+      <li><b>Provider calls carry the transfer's key, scoped per leg</b>: <code>{transferId}:onramp</code>, <code>{transferId}:payout</code>. A reorg-driven chain resubmit reuses <code>{transferId}:chain</code>, so a duplicate submission is impossible even across process restarts.</li>
+      <li><b>Webhooks are the fast path; polling is the floor.</b> Any transfer not in a terminal state is re-polled on exponential backoff. Dropped webhooks are normal, not exceptional; a design that only handles the push path is a design that stalls silently in production.</li>
       <li><b>Steps are monotonic in the UI.</b> An out-of-order webhook that would move a step backwards is recorded in the log but not reflected on screen 09. A user watching a completed step un-complete has just learned not to trust the screen, and they're right to.</li>
     </ul>
   </section>
@@ -634,13 +634,13 @@ const txHash = await provider.request({
 
     <ul class="pts">
       <li><b>The hash appears mid-flight, not on success.</b> Screen 09 shows it as soon as the transaction is submitted. Proof that is only revealed once everything worked is not proof of much.</li>
-      <li><b>Testnet is disclosed everywhere it appears</b> — the persistent demo strip on screen 02, and "Base Sepolia" next to the hash on screen 10. A testnet hash presented as mainnet would be the one genuinely dishonest thing in the project.</li>
-      <li><b>Confirmations are read from the chain, not simulated.</b> The <code>2 / 12</code> counter on screen 09 is a real subscription — it's the one number in the whole in-flight screen that nothing could fake.</li>
-      <li><b>Funded from Circle's public faucet</b> — 20 USDC per address every 2 hours, so the demo amount of 500.00 USDC needs either accumulation across intervals or a smaller headline figure for the recorded walkthrough.</li>
+      <li><b>Testnet is disclosed everywhere it appears</b>: the persistent demo strip on screen 02, and "Base Sepolia" next to the hash on screen 10. A testnet hash presented as mainnet would be the one genuinely dishonest thing in the project.</li>
+      <li><b>Confirmations are read from the chain, not simulated.</b> The <code>2 / 12</code> counter on screen 09 is a real subscription: it's the one number in the whole in-flight screen that nothing could fake.</li>
+      <li><b>Funded from Circle's public faucet</b>: 20 USDC per address every 2 hours, so the demo amount of 500.00 USDC needs either accumulation across intervals or a smaller headline figure for the recorded walkthrough.</li>
     </ul>
 
     <div class="call warn">
-      <p class="lbl">unresolved — needs a decision in phase 4</p>
+      <p class="lbl">unresolved, needs a decision in phase 4</p>
       <p>
         The locked demo data sends <b>500.00 USDC</b>, but the faucet issues <b>20 USDC per 2 hours</b>.
         Either the walkthrough accumulates a balance over about two days, or the real testnet leg moves
@@ -675,7 +675,7 @@ const PROVIDERS: Record&lt;ProviderId, Provider&gt; = {
     <ul class="pts">
       <li><b>Simulated providers advance on a timer and POST to the real webhook endpoint</b>, signed with a local secret. The ingress path, the signature check, the <code>parseWebhook</code> normalisation, the ordering logic and the reconciler are all exercised identically. When a real key arrives, the untested surface is one adapter.</li>
       <li><b>Fixtures encode timing, not just payloads.</b> The ACH fixture settles at T+2 in wall-clock terms, compressed for demos by an env-controlled factor. A mock that returns instantly would have hidden the entire <code>funded_held</code> design.</li>
-      <li><b>Failure fixtures are first-class.</b> <code>fixtures.try.nameMismatch</code> drives screen 11c end to end — payout rejected, USDC returned to balance, fees for the failed leg refunded. The unhappy paths are exercised on every run, not written once and left to rot.</li>
+      <li><b>Failure fixtures are first-class.</b> <code>fixtures.try.nameMismatch</code> drives screen 11c end to end: payout rejected, USDC returned to balance, fees for the failed leg refunded. The unhappy paths are exercised on every run, not written once and left to rot.</li>
       <li><b>Disclosure is derived, not authored.</b> The demo strip and the per-screen simulated badges read from the same registry that selects the providers, so a screen cannot claim a leg is real while the server is running a simulation. <b>The honesty rule is enforced by construction rather than by remembering.</b></li>
     </ul>
   </section>
@@ -688,10 +688,10 @@ const PROVIDERS: Record&lt;ProviderId, Provider&gt; = {
       <table class="t">
         <thead><tr><th>Asset</th><th>Location</th><th>Rationale</th></tr></thead>
         <tbody>
-          <tr><td>Wallet key shards</td><td>Device + Privy + recovery</td><td>Never reconstructed server-side. Corridor cannot move a user's USDC — it can only ask the app to.</td></tr>
+          <tr><td>Wallet key shards</td><td>Device + Privy + recovery</td><td>Never reconstructed server-side. Corridor cannot move a user's USDC; it can only ask the app to.</td></tr>
           <tr><td>Provider API secrets</td><td>Corridor server only</td><td>A mobile bundle is a public artifact. Anything shipped in it is disclosed, and a leaked Bridge key is a payments incident.</td></tr>
           <tr><td>Quote signing key</td><td>Corridor server only</td><td>Client-side quoting means client-authored rates.</td></tr>
-          <tr><td>Session auth</td><td>Privy JWT, verified against Privy's JWKS</td><td>Corridor mints no identity of its own — one fewer credential store to breach.</td></tr>
+          <tr><td>Session auth</td><td>Privy JWT, verified against Privy's JWKS</td><td>Corridor mints no identity of its own, so one fewer credential store to breach.</td></tr>
           <tr><td>KYC document images</td><td>Client → provider, direct</td><td>Signed short-lived upload URL. Corridor stores only <code>{sessionId, status, reasonCode}</code>. This is the technical fact behind the promise on screen 05.</td></tr>
           <tr><td>Recipient IBANs</td><td>Corridor server, encrypted</td><td>Displayed masked (<code>TR20 ···· 2345</code>); full value never returned to the client after creation.</td></tr>
           <tr><td>Base RPC</td><td>Public endpoint</td><td>Reads only. No secret, no signing.</td></tr>
@@ -720,14 +720,14 @@ const PROVIDERS: Record&lt;ProviderId, Provider&gt; = {
         <span class="cb"></span>
         <div class="cx">
           <p class="c1">Testnet USDC <span class="badge real">real · self-serve</span></p>
-          <p class="c2">Fund the wallet from <code>faucet.circle.com</code> on Base Sepolia — 20 USDC per address per 2 hours. Also needs Base Sepolia ETH for gas from a public faucet. <b style="color:var(--paper);">Start early — the 500.00 USDC demo figure takes about two days to accumulate.</b></p>
+          <p class="c2">Fund the wallet from <code>faucet.circle.com</code> on Base Sepolia: 20 USDC per address per 2 hours. Also needs Base Sepolia ETH for gas from a public faucet. <b style="color:var(--paper);">Start early: the 500.00 USDC demo figure takes about two days to accumulate.</b></p>
         </div>
       </div>
       <div class="ci">
         <span class="cb"></span>
         <div class="cx">
           <p class="c1">Bridge sandbox <span class="badge mock">blocked</span></p>
-          <p class="c2">Requires emailing <code>support@bridge.xyz</code> for a Developer account before an <code>sk-test</code> key can be generated. Worth sending — a reply either way is itself a documentable finding for the writeup. <b style="color:var(--paper);">Not on the critical path; the simulated adapter ships regardless.</b></p>
+          <p class="c2">Requires emailing <code>support@bridge.xyz</code> for a Developer account before an <code>sk-test</code> key can be generated. Worth sending; a reply either way is itself a documentable finding for the writeup. <b style="color:var(--paper);">Not on the critical path; the simulated adapter ships regardless.</b></p>
         </div>
       </div>
       <div class="ci">
@@ -741,14 +741,14 @@ const PROVIDERS: Record&lt;ProviderId, Provider&gt; = {
         <span class="cb"></span>
         <div class="cx">
           <p class="c1">Corridor API <span class="badge real">code</span></p>
-          <p class="c2">Quote signing, ledger, webhook ingress, reconciler. Small — the interesting parts are the state fold and the provider registry, not the transport.</p>
+          <p class="c2">Quote signing, ledger, webhook ingress, reconciler. Small: the interesting parts are the state fold and the provider registry, not the transport.</p>
         </div>
       </div>
       <div class="ci">
         <span class="cb"></span>
         <div class="cx">
           <p class="c1">Expo app <span class="badge real">code</span></p>
-          <p class="c2"><code>@privy-io/expo</code> + native extensions + polyfills. Tokens port from phase 1 unchanged; screens port from phase 2. <b style="color:var(--paper);">No web target — Privy's Expo SDK is iOS/Android only, so a web demo is not available as a fallback.</b></p>
+          <p class="c2"><code>@privy-io/expo</code> + native extensions + polyfills. Tokens port from phase 1 unchanged; screens port from phase 2. <b style="color:var(--paper);">No web target: Privy's Expo SDK is iOS/Android only, so a web demo is not available as a fallback.</b></p>
         </div>
       </div>
     </div>
@@ -762,8 +762,8 @@ const PROVIDERS: Record&lt;ProviderId, Provider&gt; = {
           <tr><td>02 Home</td><td><code>balanceOf</code> · <code>GET /transfers</code> · rate feed</td><td><span class="badge real">chain</span> <span class="badge mock">rate</span></td></tr>
           <tr><td>03 Amount</td><td><code>POST /quotes</code> → signed <code>Quote</code></td><td><span class="badge hybrid">corridor</span></td></tr>
           <tr><td>04 Add USD</td><td><code>OnrampProvider.estimateSettlement</code> · <code>createDeposit</code></td><td><span class="badge mock">bridge</span></td></tr>
-          <tr><td>05–06 KYC</td><td><code>KycProvider.createSession</code> · direct upload</td><td><span class="badge hybrid">fixture</span></td></tr>
-          <tr><td>07 Recipient</td><td><code>PayoutProvider.validateDestination</code> — local mod-97</td><td><span class="badge real">local</span></td></tr>
+          <tr><td>05-06 KYC</td><td><code>KycProvider.createSession</code> · direct upload</td><td><span class="badge hybrid">fixture</span></td></tr>
+          <tr><td>07 Recipient</td><td><code>PayoutProvider.validateDestination</code>, local mod-97</td><td><span class="badge real">local</span></td></tr>
           <tr><td>08 Review</td><td><code>POST /transfers</code> with <code>quoteId</code> + idem key</td><td><span class="badge hybrid">corridor</span></td></tr>
           <tr><td>09 In flight</td><td>Event stream + backoff poll · chain subscription</td><td><span class="badge real">chain</span> <span class="badge mock">fiat</span></td></tr>
           <tr><td>10 Receipt</td><td>Immutable settled record · BaseScan link</td><td><span class="badge real">hash</span></td></tr>

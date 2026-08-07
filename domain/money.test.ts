@@ -49,7 +49,7 @@ describe('arithmetic', () => {
   });
 });
 
-describe('rescale — the USD/USDC precision boundary', () => {
+describe('rescale: the USD/USDC precision boundary', () => {
   test('scales up exactly across 10^4', () => {
     const usd = parseAmount('USD', '500.00');
     assert.equal(rescale(usd, 'USDC').minor, 500_000_000n);
@@ -86,7 +86,7 @@ describe('format', () => {
   });
 });
 
-describe('rate — rationals, never floats', () => {
+describe('rate: rationals, never floats', () => {
   test('parses a decimal rate losslessly', () => {
     const r = rateFromDecimal('USD', 'TRY', '52.84', NOW);
     assert.equal(r.num, 5284n);

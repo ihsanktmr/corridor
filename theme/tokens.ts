@@ -1,5 +1,5 @@
 /**
- * Design tokens — ported verbatim from phase 1 (`corridor-identity.html`).
+ * Design tokens, ported verbatim from phase 1 (`corridor-identity.html`).
  *
  * Values are not to be edited here. If a token needs to change, it changes in the
  * identity spec first and is ported down. That direction is the whole point of
@@ -16,12 +16,12 @@ export const color = {
   /** hairline borders, dividers */
   line: '#332E24',
 
-  /** primary text — warm off-white, never pure white */
+  /** primary text: warm off-white, never pure white */
   paper: '#F6F3EC',
   /** secondary / muted text */
   mist: '#A39C8E',
 
-  /** the one brand color — mark, primary CTA, route lines */
+  /** the one brand color: mark, primary CTA, route lines */
   gold: '#C9A35C',
   /** hover / active / verifiable-artifact states */
   goldBright: '#E0BC7C',
@@ -61,7 +61,7 @@ export const font = {
 
 /**
  * No drop shadows on dark. Depth comes from surface luminance plus a hairline
- * border — see the elevation block in the identity spec. This helper exists so
+ * border. See the elevation block in the identity spec. This helper exists so
  * that "elevate a surface" is a single call and can never become a shadow.
  */
 export const elevation = {
@@ -75,7 +75,7 @@ export const motion = {
   quick: 140,
   standard: 200,
   screen: 250,
-  /** the gold dot travelling a completed route segment — the one long one */
+  /** the gold dot travelling a completed route segment: the one long one */
   signature: 640,
   pulse: 1800,
 } as const;

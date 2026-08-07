@@ -26,7 +26,7 @@ const PROOF_AMOUNT = '1.00';
  * The proof artifact. This is the screen that gets screenshotted and sent to the
  * person on the other end.
  *
- * The tx hash is copyable and links out to BaseScan — a real, independently
+ * The tx hash is copyable and links out to BaseScan: a real, independently
  * verifiable Base Sepolia transfer. Anyone reviewing this can check it without
  * taking my word for anything.
  */
@@ -50,11 +50,11 @@ export default function Receipt() {
   const { quote } = transfer;
   const explorer = `https://sepolia.basescan.org/tx/${transfer.txHash ?? ''}`;
 
-  /** Real, and the most common next action — the sender forwards this. */
+  /** Real, and the most common next action: the sender forwards this. */
   const onShare = () => {
     void RNShare.share({
       message:
-        `Corridor — ${format(quote.receive)} delivered to ${recipient?.holderName ?? 'recipient'}\n` +
+        `Corridor: ${format(quote.receive)} delivered to ${recipient?.holderName ?? 'recipient'}\n` +
         `Ref CRD-8F2A-4417\n${explorer}`,
     });
   };
@@ -81,7 +81,7 @@ export default function Receipt() {
         <View style={{ alignItems: 'center', paddingTop: space.base, paddingBottom: space.lg }}>
           <Bloom tone="success"><Check size={32} color={color.success} strokeWidth={2.4} /></Bloom>
           <Text style={[type.micro, { marginTop: space.lg, marginBottom: 10 }]}>delivered</Text>
-          {/* Delivered amount is the hero, in the recipient's currency — the
+          {/* Delivered amount is the hero, in the recipient's currency. The
               sender's mental model ends at "did she get the lira". */}
           <Amount value={quote.receive} size="hero" showCurrency={false} />
           <Text style={[type.label, { fontSize: 13, marginTop: space.md }]}>
@@ -101,7 +101,7 @@ export default function Receipt() {
           </Text>
         </View>
 
-        {/* Rate used and fees restated after the fact — a quote you can only see
+        {/* Rate used and fees restated after the fact: a quote you can only see
             before you commit isn't a quote you can audit, and disputes are always
             after. */}
         <Card tight style={{ marginBottom: space.md }}>
@@ -134,13 +134,13 @@ export default function Receipt() {
           </Row>
           {/*
             The hash above is a real transaction, and it carries a different amount
-            from the figures on this receipt. Saying so here — rather than only in
-            the README — is the point: a receipt that implied a 500.00 settlement
+            from the figures on this receipt. Saying so here, rather than only in
+            the README, is the point: a receipt that implied a 500.00 settlement
             over a 1.00 transaction would be the exact thing this project argues
             against.
           */}
           <Text style={[type.label, { fontSize: 10, marginTop: 9, lineHeight: 15 }]}>
-            Figures above are demo values; the transaction is {PROOF_AMOUNT} USDC — faucet-capped,
+            Figures above are demo values; the transaction is {PROOF_AMOUNT} USDC, faucet-capped,
             same contract and signing path.
           </Text>
         </Card>
@@ -152,7 +152,7 @@ export default function Receipt() {
       </Body>
 
       <Dock>
-        {/* Remittance is a habit — most senders are on a monthly cycle to the same
+        {/* Remittance is a habit: most senders are on a monthly cycle to the same
             person, so "Send again" beats "Done". */}
         <Button label="Send again" onPress={() => router.replace('/transfer/amount')} />
         <Button label="Share receipt" variant="ghost" onPress={onShare} />

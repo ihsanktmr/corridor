@@ -1,4 +1,4 @@
-# Internal tracker and session notes — stay local, never public
+# Internal tracker and session notes: stay local, never public
 corridor-project.md
 NOTES.md
 
@@ -16,7 +16,7 @@ ios/
 android/
 *.orig.*
 
-# Env — provider credentials never enter the repo
+# Env: provider credentials never enter the repo
 .env
 .env.local
 .env*.local

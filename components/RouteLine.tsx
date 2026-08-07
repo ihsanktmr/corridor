@@ -10,7 +10,7 @@ import { Pill } from './primitives';
 /**
  * The identity mark, unrolled.
  *
- * Gold behind the current step, hairline ahead of it — the boundary is always where
+ * Gold behind the current step, hairline ahead of it; the boundary is always where
  * the transfer actually is. Five discrete rails, not a progress bar pretending to
  * know something it can't.
  */
@@ -139,7 +139,7 @@ function Tick() {
   );
 }
 
-/** The horizontal preview on screens 04 and 08 — sets the expectation 09 fulfils. */
+/** The horizontal preview on screens 04 and 08. Sets the expectation 09 fulfils. */
 export function RouteMini({ labels, filled }: { labels: readonly string[]; filled: number }) {
   return (
     <View>
@@ -183,7 +183,7 @@ export function RouteMini({ labels, filled }: { labels: readonly string[]; fille
   );
 }
 
-/** Progress rail — segments, not a percentage. How much is left, not how much is done. */
+/** Progress rail: segments, not a percentage. How much is left, not how much is done. */
 export function Rail({ total, complete }: { total: number; complete: number }) {
   return (
     <View style={{ flexDirection: 'row', gap: 5, marginBottom: space.base }}>

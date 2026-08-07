@@ -75,7 +75,7 @@ export default function KycGate() {
             <Text style={{ color: color.paper, fontFamily: face.medium }}>
               Corridor never stores your documents.{' '}
             </Text>
-            Images go straight to our verification provider. We keep the result and a reference — never
+            Images go straight to our verification provider. We keep the result and a reference, never
             the file.
           </Text>
         </Card>
@@ -85,7 +85,7 @@ export default function KycGate() {
 
       <Dock>
         <Button label="Start verification" onPress={onStart} />
-        {/* A real exit — the quote survives, the transfer parks. */}
+        {/* A real exit: the quote survives, the transfer parks. */}
         <Button label="Not now" variant="ghost" onPress={() => goBack('/transfer/fund')} />
       </Dock>
     </Screen>
@@ -95,7 +95,7 @@ export default function KycGate() {
 /**
  * 11b · KYC resubmit
  *
- * Rejection is scoped, not total — one item failed, two passed, and the ledger is
+ * Rejection is scoped, not total: one item failed, two passed, and the ledger is
  * shown so the user doesn't fear starting over. The reason is specific and
  * actionable ("too dark to read", not "could not be verified").
  */
@@ -104,7 +104,7 @@ function Resubmit() {
     <Screen>
       <Nav title="Verify identity" />
 
-      {/* Short screen — centre it, so it reads as a deliberate stop rather than a
+      {/* Short screen: centre it, so it reads as a deliberate stop rather than a
           page that ran out of content. Matches 11a. */}
       <Body scroll={false}>
         <View style={{ flex: 1, justifyContent: 'center', paddingBottom: space.xl }}>
@@ -124,14 +124,14 @@ function Resubmit() {
           <ListRow
             leadNode={<Alert size={15} color={color.warning} />}
             leadTone="warning"
-            title="ID — front"
+            title="ID · front"
             subtitle="Low light · retake needed"
             meta={<Pill tone="fail" label="retake" />}
           />
           <ListRow
             leadNode={<Check size={13} color={color.success} />}
             leadTone="success"
-            title="ID — back"
+            title="ID · back"
             subtitle="Accepted"
             meta={<Pill tone="done" label="ok" />}
           />
@@ -148,7 +148,7 @@ function Resubmit() {
         <Card tight>
           <Text style={[type.label, { fontSize: 11.5, lineHeight: 18 }]}>
             <Text style={{ color: color.paper, fontFamily: face.medium }}>Your transfer is saved. </Text>
-            Your rate is re-quoted when you're verified — no money has moved.
+            Your rate is re-quoted when you're verified. No money has moved.
           </Text>
         </Card>
         </View>

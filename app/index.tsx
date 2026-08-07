@@ -17,7 +17,7 @@ import { tabular, type } from '../theme/type';
  * 01 · Welcome & auth
  *
  * Get someone to a funded, non-custodial wallet without them ever learning they now
- * have one. Email or passkey, nothing else — no seed phrase, no extension, no
+ * have one. Email or passkey, nothing else: no seed phrase, no extension, no
  * "connect wallet".
  *
  * The word "wallet" appears once, in the footnote, as reassurance rather than as a
@@ -46,7 +46,7 @@ export default function Welcome() {
             corridor
           </Text>
 
-          {/* The positioning line is the hero — a remittance sender's real fear is
+          {/* The positioning line is the hero. A remittance sender's real fear is
               that value shrinks in transit, answered in one sentence, no jargon. */}
           <Text
             style={{

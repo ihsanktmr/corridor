@@ -16,7 +16,7 @@ import { type } from '../../theme/type';
  *
  * The interesting screens sit three or four steps into a flow that takes real time
  * to walk. This route builds the state a reviewer would have arrived with and jumps
- * straight there — using the same event log the real timeline produces, so nothing
+ * straight there, using the same event log the real timeline produces, so nothing
  * here is a special case the screens know about.
  */
 export default function Demo() {
@@ -25,7 +25,7 @@ export default function Demo() {
   useEffect(() => {
     // `useLocalSearchParams` yields undefined on the first render before the route
     // param resolves. Acting on that redirects to /home and unmounts this screen,
-    // so the re-run with the real value never happens — the scene silently never
+    // so the re-run with the real value never happens and the scene silently never
     // loads. Wait for it.
     if (scene === undefined) return;
 

@@ -1,5 +1,5 @@
 /**
- * Produce the proof artifact — one real, verifiable USDC transfer on Base Sepolia.
+ * Produce the proof artifact: one real, verifiable USDC transfer on Base Sepolia.
  *
  * The case study's central evidentiary claim is that the corridor's settlement leg
  * is real. This script is how that claim gets discharged, reproducibly: anyone can
@@ -30,7 +30,7 @@ import {
 import { privateKeyToAccount } from 'viem/accounts';
 import { baseSepolia } from 'viem/chains';
 
-/** Circle's canonical USDC on Base Sepolia — FiatTokenV2_2, 6 decimals. */
+/** Circle's canonical USDC on Base Sepolia: FiatTokenV2_2, 6 decimals. */
 const USDC: Address = '0x036CbD53842c5426634e7929541eC2318f3dCF7e';
 const USDC_DECIMALS = 6;
 
@@ -94,7 +94,7 @@ function ensureKeys(): { senderKey: Hex; treasury: Address } {
   }
 
   if (created.length > 0) {
-    const header = existsSync(ENV_PATH) ? '\n' : '# Corridor testnet keys — gitignored, never commit\n';
+    const header = existsSync(ENV_PATH) ? '\n' : '# Corridor testnet keys: gitignored, never commit\n';
     appendFileSync(ENV_PATH, `${header}${created.join('\n')}\n`);
     console.log(`  generated ${created.length} value(s) → .env (gitignored)\n`);
   }
@@ -107,7 +107,7 @@ function ensureKeys(): { senderKey: Hex; treasury: Address } {
 const args = process.argv.slice(2);
 const shouldSend = args.includes('--send');
 const amountArg = args[args.indexOf('--amount') + 1];
-/** One Circle faucet claim. Deliberately the default — see the note printed below. */
+/** One Circle faucet claim. Deliberately the default; see the note printed below. */
 const amountDecimal = args.includes('--amount') && amountArg ? amountArg : '20.00';
 
 async function main(): Promise<void> {
@@ -145,12 +145,12 @@ async function main(): Promise<void> {
   if (needsUsdc || needsGas) {
     console.log('  ⚠  not fundable yet\n');
     if (needsGas) {
-      console.log('     Base Sepolia ETH (gas) — any of:');
+      console.log('     Base Sepolia ETH (gas), any of:');
       console.log('       https://www.alchemy.com/faucets/base-sepolia');
       console.log('       https://faucet.quicknode.com/base/sepolia\n');
     }
     if (needsUsdc) {
-      console.log(`     Testnet USDC — need ${amountDecimal}, have ${usdcHuman}:`);
+      console.log(`     Testnet USDC: need ${amountDecimal}, have ${usdcHuman}:`);
       console.log('       https://faucet.circle.com  (Base Sepolia, 20 USDC / 2h / address)\n');
     }
     console.log(`     Fund the sender address above, then:  npm run proof -- --send\n`);
@@ -158,7 +158,7 @@ async function main(): Promise<void> {
   }
 
   if (!shouldSend) {
-    console.log(`  ✓  fundable — ${amountDecimal} USDC available`);
+    console.log(`  ✓  fundable: ${amountDecimal} USDC available`);
     console.log('     Broadcast with:  npm run proof -- --send\n');
     return;
   }

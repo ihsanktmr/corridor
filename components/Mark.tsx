@@ -3,18 +3,18 @@ import Svg, { Circle, Line } from 'react-native-svg';
 import { color } from '../theme/tokens';
 
 /**
- * The Corridor mark — a one-point-perspective passage: near wall, far wall, and a
+ * The Corridor mark is a one-point-perspective passage: near wall, far wall, and a
  * single sightline joining them.
  *
  * Geometry is lifted verbatim from the phase 1 identity spec's 100×100 viewBox.
  * An earlier version drew this with rotated Views and got it wrong: a View rotates
  * about its own centre, so the sightline's endpoints landed nowhere near the two
- * walls. The mark is the brand — it gets real vectors.
+ * walls. The mark is the brand, so it gets real vectors.
  */
 export function Mark({ size = 20, dot = false }: { size?: number; dot?: boolean }) {
   /**
    * Stroke weight is specified in *rendered pixels*, then converted into the
-   * 100-unit viewBox — so the mark carries the same optical weight at 17px in a
+   * 100-unit viewBox, so the mark carries the same optical weight at 17px in a
    * divider as it does at 60px on the welcome screen.
    *
    * The identity spec draws it at 72px with a 4-unit wall, i.e. ~2.9 rendered

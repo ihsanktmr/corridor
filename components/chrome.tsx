@@ -12,7 +12,7 @@ import { Mark } from './Mark';
 /**
  * Back, without the crash.
  *
- * `router.back()` throws when there is no history — which happens on any screen
+ * `router.back()` throws when there is no history, which happens on any screen
  * reached by deep link, by `replace`, or as the app's first route. Every back
  * affordance in a finished app has to go somewhere.
  */
@@ -117,7 +117,7 @@ export function Nav({
 /**
  * The persistent demo strip.
  *
- * Text comes from the provider registry, not from a string in this file — if a real
+ * Text comes from the provider registry, not from a string in this file. If a real
  * key were bound, this would change without anyone editing a screen. Chrome, never
  * a dismissible toast.
  */
@@ -146,7 +146,7 @@ export function DemoStrip() {
  *
  * The countdown is mono because it is a machine-owned number the user is watching,
  * and mono makes it read as authoritative rather than decorative. It turns amber
- * below 60s — the warning arrives before the failure, not as it.
+ * below 60s, so the warning arrives before the failure, not as it.
  */
 export function RateStrip({
   rate,
@@ -195,7 +195,7 @@ export function RateStrip({
  * A drawn padlock rather than the 🔒 emoji.
  *
  * Emoji render in the system's own colour and weight, which fights a palette this
- * restrained — and they resize unpredictably next to mono digits.
+ * restrained, and they resize unpredictably next to mono digits.
  */
 function LockGlyph({ color: stroke }: { color: string }) {
   return (
@@ -216,7 +216,7 @@ function LockGlyph({ color: stroke }: { color: string }) {
   );
 }
 
-/** Success / warning / failure bloom — screens 05, 10, 11. */
+/** Success / warning / failure bloom: screens 05, 10, 11. */
 export function Bloom({
   tone,
   children,

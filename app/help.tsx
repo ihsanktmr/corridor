@@ -19,7 +19,7 @@ const REPO = 'https://github.com/ihsanktmr/corridor';
  * Help & about.
  *
  * Every "Get help" and the account control resolve here. A support affordance that
- * goes nowhere is worse than none at all — it teaches the user that the app's
+ * goes nowhere is worse than none at all: it teaches the user that the app's
  * controls are decorative, which is precisely the wrong lesson on a screen where
  * their money is in flight.
  *
@@ -48,7 +48,7 @@ export default function Help() {
             <ListRow
               key={p.id}
               title={p.label}
-              subtitle={p.disclosure ?? 'Real — no simulation on this leg.'}
+              subtitle={p.disclosure ?? 'Real. No simulation on this leg.'}
               meta={
                 <Text
                   style={{

@@ -6,7 +6,7 @@
  * signing, the transfer ledger, webhook ingress, and the reconciler.
  *
  * Screens never reach past this module to a provider. That constraint is what makes
- * the seam meaningful rather than decorative — and it is why swapping a simulated
+ * the seam meaningful rather than decorative, and it is why swapping a simulated
  * adapter for a real one changes nothing above this file.
  */
 
@@ -47,7 +47,7 @@ import { sign, verify } from './signing.ts';
 
 /**
  * The locked demo rate. A real feed streams from an FX provider; the important
- * property preserved here is that it is *mid-market and unmarked-up* — Corridor's
+ * property preserved here is that it is *mid-market and unmarked-up*; Corridor's
  * margin is the explicit fee, which is what screen 03 says out loud.
  */
 const DEMO_RATE = '52.84';
@@ -100,7 +100,7 @@ export interface CorridorState {
 const INITIAL_RECIPIENT: Recipient = {
   id: 'r_elif',
   holderName: 'Elif Yıldız',
-  // Checksum-valid — verified by `domain/iban.test.ts`, not by eye.
+  // Checksum-valid, verified by `domain/iban.test.ts`, not by eye.
   iban: 'TR200062000123456789012345',
   masked: 'TR20 ···· 2345',
   bank: 'Garanti BBVA',
@@ -148,7 +148,7 @@ export function getState(): CorridorState {
   return state;
 }
 
-/** Test seam — resets the in-process ledger between walkthroughs. */
+/** Test seam: resets the in-process ledger between walkthroughs. */
 export function reset(): void {
   records.clear();
   seq = 0;
@@ -186,7 +186,7 @@ export function ingest(
     providerId === 'bridge.usd.ach' ? onrampFor(ACTIVE_CORRIDOR) : payoutFor(ACTIVE_CORRIDOR);
 
   const event = provider.parseWebhook(rawBody, signature);
-  // `null` means unrecognised or badly signed. Logged and dropped — never thrown,
+  // `null` means unrecognised or badly signed. Logged and dropped, never thrown,
   // or one unknown vendor event would stall every transfer behind it.
   if (event === null) return false;
 
@@ -278,7 +278,7 @@ export function clearQuote(): void {
 // ─────────────────────────────────────────────────────────────────────────────
 
 /**
- * Any screen in this build is reachable directly — by deep link, or by a reviewer
+ * Any screen in this build is reachable directly: by deep link, or by a reviewer
  * poking at routes. A screen that silently does nothing because an earlier screen
  * was skipped is indistinguishable from a broken one, so the session is created on
  * demand rather than assumed.
@@ -357,7 +357,7 @@ export type SubmitResult =
  * Create a transfer from a quote.
  *
  * The quote's signature is verified and its expiry re-checked against the server's
- * own clock — a client with a frozen countdown still gets rejected here.
+ * own clock, so a client with a frozen countdown still gets rejected here.
  */
 export function submitTransfer(recipientId: string): SubmitResult {
   const quote = state.quote;
@@ -396,8 +396,8 @@ const wait = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
 /**
  * The simulated settlement timeline.
  *
- * Delays derive from `SETTLEMENT`, which holds the *real* durations — ACH at T+2,
- * Base to 12 confirmations, Turkish FAST inside banking hours — compressed only for
+ * Delays derive from `SETTLEMENT`, which holds the *real* durations: ACH at T+2,
+ * Base to 12 confirmations, Turkish FAST inside banking hours, compressed only for
  * the walkthrough. Every provider result enters through `ingest`, signed, so the
  * ingress path is the one under test.
  */
@@ -469,7 +469,7 @@ async function runTimeline(transferId: string, recipientId: string): Promise<voi
       { event: 'payout.returned', reason: 'name_mismatch' },
       LOCAL_WEBHOOK_SECRET,
     );
-    // Funds return to the user's balance and the failed leg's fee is refunded —
+    // Funds return to the user's balance and the failed leg's fee is refunded;
     // screen 11c leads with "your money is safe" because this actually happens.
     await wait(demoDelay(2 * 60_000));
     append(transferId, { t: 'refunded', amount: parseAmount('USDC', '500.00') });
@@ -495,7 +495,7 @@ export function recipientById(id: string): Recipient | null {
 // Demo scenes
 //
 // Deep links that construct a given state and jump straight to the screen that
-// renders it — `corridor://demo/inflight`, `corridor://demo/returned`, and so on.
+// renders it: `corridor://demo/inflight`, `corridor://demo/returned`, and so on.
 //
 // This exists because the interesting screens are three or four steps into a flow
 // that takes real time to walk, and both a reviewer opening the repo and a

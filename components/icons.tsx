@@ -5,7 +5,7 @@ import { color as tokens } from '../theme/tokens';
 /**
  * Icons.
  *
- * Drawn, not typed. Every one of these was a text glyph — `‹`, `×`, `◍`, `↑`, `›` —
+ * Drawn, not typed. Every one of these was a text glyph (`‹`, `×`, `◍`, `↑`, `›`),
  * which meant the icon set inherited the system font's weight, optical size and
  * vertical alignment, none of which match a bundled display face. On a screen this
  * restrained that reads as unfinished faster than almost anything else.
@@ -120,7 +120,7 @@ export function Refresh({ size = 26, color = tokens.warning, strokeWidth = 2 }: 
   );
 }
 
-/** The KYC gate's shield — a check inside a guard, not a padlock. Verification, not a wall. */
+/** The KYC gate's shield: a check inside a guard, not a padlock. Verification, not a wall. */
 export function Verified({ size = 30, color = tokens.warning, strokeWidth = 1.9 }: IconProps) {
   return (
     <Icon size={size}>

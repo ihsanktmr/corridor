@@ -2,7 +2,7 @@
  * Quotes.
  *
  * A quote is issued and signed by the server. The client renders it and submits its
- * `id` — never the amounts. That is what stops a frozen countdown, a patched binary
+ * `id`, never the amounts. That is what stops a frozen countdown, a patched binary
  * or a replayed response from reaching settlement with numbers of its own choosing.
  *
  * In this build the "server" runs in-process (see `services/corridor.ts`), but the
@@ -17,7 +17,7 @@ export type FiatRail = 'ach' | 'wire' | 'card';
 
 export interface FeeLine {
   readonly kind: 'onramp' | 'network' | 'payout';
-  /** User-facing, named after the rail that consumes it — see screen 03. */
+  /** User-facing, named after the rail that consumes it. See screen 03. */
   readonly label: string;
   readonly amount: Money;
 }
@@ -29,7 +29,7 @@ export interface Quote {
   readonly send: Money;
   /** What the recipient gets. */
   readonly receive: Money;
-  /** send + fees — what actually leaves the funding source. */
+  /** send + fees: what actually leaves the funding source. */
   readonly totalCharged: Money;
   readonly rate: Rate;
   readonly fees: readonly FeeLine[];
@@ -50,7 +50,7 @@ export const QUOTE_WARN_MS = 60 * 1000;
  *
  * Flat per rail for a single fixed corridor, which is what makes the breakdown on
  * screen 03 legible: three lines, each named after the rail it pays for. A real
- * book would tier these by amount and by user history — the shape here is the
+ * book would tier these by amount and by user history; the shape here is the
  * schedule, not the pricing strategy.
  */
 export const FEE_SCHEDULE = {
@@ -155,7 +155,7 @@ export function msRemaining(q: Quote, now: Date): number {
   return Math.max(0, Date.parse(q.expiresAt) - now.getTime());
 }
 
-/** `14:52` — the lock countdown, in mono, on screens 03 and 08. */
+/** `14:52`, the lock countdown, in mono, on screens 03 and 08. */
 export function formatCountdown(ms: number): string {
   const total = Math.max(0, Math.ceil(ms / 1000));
   const minutes = Math.floor(total / 60);
@@ -163,7 +163,7 @@ export function formatCountdown(ms: number): string {
   return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 }
 
-/** Transfer limits by KYC tier — screen 03 rejects above these before quoting. */
+/** Transfer limits by KYC tier. Screen 03 rejects above these before quoting. */
 export const TIER_LIMITS = {
   none: { perTransfer: money('USD', 0n) },
   basic: { perTransfer: parseAmount('USD', '2999.00') },

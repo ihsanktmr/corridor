@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Corridor — architecture diagram</title>
+<title>Corridor: architecture diagram</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -48,7 +48,7 @@ section{margin-top:80px;}
 <body>
 <div class="wrap">
 
-  <div class="eyebrow">corridor — architecture diagram, phase 5</div>
+  <div class="eyebrow">corridor · architecture diagram, phase 5</div>
   <h1 class="display">USD → TRY,<br>end to end.</h1>
   <p class="note">
     One corridor, four rails, one trust boundary. Green is real and self-serve; amber is simulated and
@@ -124,7 +124,7 @@ section{margin-top:80px;}
 
         <rect x="280" y="244" width="440" height="40" rx="8" fill="#1E1B16" stroke="#332E24"/>
         <text x="294" y="262" font-family="Inter" font-size="10.5" font-weight="600" fill="#F6F3EC">Reconciler</text>
-        <text x="294" y="277" font-family="Inter" font-size="9" fill="#A39C8E">backoff poll — the floor under every dropped webhook</text>
+        <text x="294" y="277" font-family="Inter" font-size="9" fill="#A39C8E">backoff poll, the floor under every dropped webhook</text>
 
         <text x="280" y="316" font-family="Inter" font-size="10" fill="#C98A4B">Every provider secret and the quote-signing key live here, and only here.</text>
 
@@ -161,19 +161,19 @@ section{margin-top:80px;}
         <line x1="378" y1="462" x2="378" y2="506" stroke="#C9A35C" stroke-width="1.5" marker-end="url(#ar)"/>
 
         <rect x="40" y="506" width="920" height="80" rx="14" fill="rgba(143,168,118,0.05)" stroke="#8FA876"/>
-        <text x="60" y="530" font-family="Inter" font-size="10" letter-spacing="1.4" fill="#8FA876">SETTLEMENT · BASE SEPOLIA — THE ONE LEG THAT MOVES VALUE</text>
+        <text x="60" y="530" font-family="Inter" font-size="10" letter-spacing="1.4" fill="#8FA876">SETTLEMENT · BASE SEPOLIA · THE ONE LEG THAT MOVES VALUE</text>
         <text x="60" y="554" font-family="Inter" font-size="13" font-weight="600" fill="#F6F3EC">ERC-20 transfer() signed by the embedded wallet</text>
         <text x="60" y="574" font-family="IBM Plex Mono" font-size="10.5" fill="#E0BC7C">USDC 0x036CbD53842c5426634e7929541eC2318f3dCF7e · 6 decimals · 12 confirmations</text>
       </svg>
     </div>
-    <p class="cap">fig 1 — trust boundary and provider seam. adding a corridor is a row in ROUTES plus an adapter.</p>
+    <p class="cap">fig 1 · trust boundary and provider seam. adding a corridor is a row in ROUTES plus an adapter.</p>
   </section>
 
   <!-- ============ FLOW DIAGRAM ============ -->
   <section>
     <h2 class="sec">One transfer, five rails</h2>
     <p class="note">
-      The timeline screen 09 renders. Durations are real, not demo-compressed —
+      The timeline screen 09 renders. Durations are real, not demo-compressed:
       <b>ACH is the slow leg and the chain leg takes seconds</b>, which is the whole argument for
       stablecoin rails and the reason the receipt reports time-in-transit rather than hiding it.
     </p>
@@ -234,7 +234,7 @@ section{margin-top:80px;}
 
         <!-- risk window -->
         <rect x="300" y="212" width="630" height="52" rx="8" fill="rgba(181,105,90,0.06)" stroke="#B5695A" stroke-dasharray="5 4"/>
-        <text x="316" y="234" font-family="Inter" font-size="11" font-weight="600" fill="#B5695A">R10 unauthorised-return window — up to 60 days</text>
+        <text x="316" y="234" font-family="Inter" font-size="11" font-weight="600" fill="#B5695A">R10 unauthorised-return window, up to 60 days</text>
         <text x="316" y="252" font-family="Inter" font-size="10" fill="#A39C8E">Opens when the debit settles and stays open long after the lira is spent. Priced, not solved.</text>
         <line x1="300" y1="132" x2="300" y2="212" stroke="#B5695A" stroke-width="1" stroke-dasharray="3 3"/>
 
@@ -243,7 +243,7 @@ section{margin-top:80px;}
         <line x1="78" y1="182" x2="292" y2="182" stroke="#C98A4B" stroke-width="1" marker-start="url(#ar2)" marker-end="url(#ar2)"/>
       </svg>
     </div>
-    <p class="cap">fig 2 — settlement timeline. the hold is deliberate; the red window cannot be closed by holding.</p>
+    <p class="cap">fig 2 · settlement timeline. the hold is deliberate; the red window cannot be closed by holding.</p>
   </section>
 
   <p class="note" style="margin-top:60px;">

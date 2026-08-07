@@ -41,7 +41,7 @@ export interface Envelope {
   readonly seq: number;
   /** Corridor's clock. */
   readonly at: string;
-  /** The vendor's clock — retained for forensics, never used for ordering. */
+  /** The vendor's clock, retained for forensics, never used for ordering. */
   readonly providerAt?: string;
   readonly idem: string;
 }
@@ -108,7 +108,7 @@ interface Seed {
  *
  * Events are sorted by `seq` first, so an out-of-order delivery is corrected here
  * rather than being allowed to corrupt the result. Duplicate `seq` values are
- * dropped — providers retry, and a retried webhook must be a no-op.
+ * dropped: providers retry, and a retried webhook must be a no-op.
  */
 export function foldTransfer(seed: Seed, log: readonly LoggedEvent[]): Transfer {
   const seen = new Set<number>();
@@ -219,7 +219,7 @@ export function foldTransfer(seed: Seed, log: readonly LoggedEvent[]): Transfer 
   };
 }
 
-/** `0x551c···ba10` — the hash chip on screens 09 and 10. */
+/** `0x551c···ba10`, the hash chip on screens 09 and 10. */
 export function shortHash(hash: string): string {
   return hash.length <= 12 ? hash : `${hash.slice(0, 6)}···${hash.slice(-4)}`;
 }

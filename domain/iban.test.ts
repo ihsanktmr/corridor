@@ -8,7 +8,7 @@ import {
   validateTurkishIban,
 } from './iban.ts';
 
-/** The locked demo recipient — Elif Yıldız, Garanti BBVA. */
+/** The locked demo recipient: Elif Yıldız, Garanti BBVA. */
 const LOCKED = 'TR20 0062 0001 2345 6789 0123 45';
 
 describe('validateTurkishIban', () => {

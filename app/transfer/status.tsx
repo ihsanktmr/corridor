@@ -20,7 +20,7 @@ import { face, type } from '../../theme/type';
  * something. Every completed step carries a timestamp; pending steps carry their
  * expectation, so silence never reads as failure.
  *
- * The hash appears the instant it exists — mid-flight, not on the receipt. Proof
+ * The hash appears the instant it exists: mid-flight, not on the receipt. Proof
  * that is only revealed once everything worked is not proof of much.
  */
 export default function Status() {
@@ -173,7 +173,7 @@ function buildSteps(transfer: Transfer) {
  * 11c · Payout returned
  *
  * The one that matters. "Your money is safe" appears above the fold, before any
- * explanation — a user watching ₺26,420 fail needs the location of their funds in
+ * explanation. A user watching ₺26,420 fail needs the location of their funds in
  * the first second, not the third paragraph.
  *
  * The timeline stays visible with the failure in place, so the return reads as a

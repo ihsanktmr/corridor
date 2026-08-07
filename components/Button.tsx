@@ -17,7 +17,7 @@ interface Props {
 /**
  * One primary per screen, always gold.
  *
- * `ghost` is reserved for exits — "Not now", "Cancel". It is never used for an
+ * `ghost` is reserved for exits: "Not now", "Cancel". It is never used for an
  * action that costs money, which is a rule the phase 2 component library states and
  * this variant list enforces by not offering a fifth option.
  */
@@ -83,7 +83,7 @@ export function Button({
   );
 }
 
-/** The dock at the bottom of a screen — sits above the home indicator. */
+/** The dock at the bottom of a screen. Sits above the home indicator. */
 export function Dock({ children, bordered = false }: { children: React.ReactNode; bordered?: boolean }) {
   return (
     <View

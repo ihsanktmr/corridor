@@ -11,7 +11,7 @@ import { Mark } from './Mark';
 // ─────────────────────────────────────────────────────────────────────────────
 
 /**
- * Depth is surface luminance plus a hairline border. Never a shadow — the identity
+ * Depth is surface luminance plus a hairline border. Never a shadow: the identity
  * spec is explicit about this and dark UI with drop shadows reads as cheap.
  */
 export function Card({
@@ -67,7 +67,7 @@ export function Row({
   );
 }
 
-/** The mark, doubling as the divider between two currencies — phase 1's own pattern. */
+/** The mark, doubling as the divider between two currencies. Phase 1's own pattern. */
 export function MarkDivider() {
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.md, marginVertical: space.base }}>
@@ -124,7 +124,7 @@ export function Pill({ tone, label }: { tone: PillTone; label: string }) {
   );
 }
 
-/** Mono for anything a machine produced — hashes, addresses, references. */
+/** Mono for anything a machine produced: hashes, addresses, references. */
 export function Chip({
   value,
   muted = false,
@@ -294,7 +294,7 @@ export function FeeLineRow({
 // ─────────────────────────────────────────────────────────────────────────────
 
 /**
- * Two-letter mono tokens rather than flag emoji — flags render inconsistently
+ * Two-letter mono tokens rather than flag emoji, which render inconsistently
  * across platforms and carry political weight a payment rail should not.
  */
 export function CountryToken({ code, active = true }: { code: string; active?: boolean }) {
@@ -316,7 +316,7 @@ export function CountryToken({ code, active = true }: { code: string; active?: b
   );
 }
 
-/** The gold dot travelling the route — the identity's motion signature. */
+/** The gold dot travelling the route: the identity's motion signature. */
 export function CorridorStrip({ right }: { right?: React.ReactNode }) {
   const travel = useRef(new Animated.Value(0)).current;
 
@@ -395,7 +395,7 @@ export function ListRow({
   lead?: string;
   /** Overrides `lead` when the row's verdict should be carried by an icon. */
   leadNode?: React.ReactNode;
-  /** Tints the lead well. Gold is the brand accent — it reads as "fine", so a
+  /** Tints the lead well. Gold is the brand accent and reads as "fine", so a
    *  row that failed must not wear it. */
   leadTone?: 'success' | 'warning' | 'error';
   title: string;
@@ -452,7 +452,7 @@ export function ListRow({
   );
 }
 
-/** Selection is a gold border *and* a raised surface — two signals, not one. */
+/** Selection is a gold border *and* a raised surface: two signals, not one. */
 export function Option({
   selected,
   title,

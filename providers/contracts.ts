@@ -3,7 +3,7 @@
  *
  * Each interface is implemented once per rail. Every implementation normalises its
  * own vendor payload into Corridor's event vocabulary, so the orchestrator never
- * sees a vendor-shaped object — swapping the Turkish payout partner for another one
+ * sees a vendor-shaped object; swapping the Turkish payout partner for another one
  * touches exactly one file.
  *
  * `parseWebhook` returns `null` rather than throwing on an unrecognised or
@@ -32,7 +32,7 @@ export interface ProviderMeta {
   readonly fidelity: Fidelity;
   /**
    * Why this leg is simulated, in one sentence, shown verbatim on-screen.
-   * Non-null exactly when `fidelity !== 'real'` — the UI reads this rather than
+   * Non-null exactly when `fidelity !== 'real'`. The UI reads this rather than
    * carrying its own copy, so a screen cannot claim a leg is real while the
    * registry is running a fixture.
    */
@@ -42,7 +42,7 @@ export interface ProviderMeta {
 export interface OnrampProvider {
   readonly meta: ProviderMeta;
   supports(rail: FiatRail): boolean;
-  /** Feeds "arrives Wed, Aug 5" on screen 04 — a date, never a vague duration. */
+  /** Feeds "arrives Wed, Aug 5" on screen 04: a date, never a vague duration. */
   estimateSettlement(rail: FiatRail, from: Date): Date;
   createDeposit(req: DepositRequest, idem: string): Promise<string>;
   parseWebhook(raw: unknown, sig: string): TransferEvent | null;
@@ -66,7 +66,7 @@ export type ValidationResult =
 export interface PayoutProvider {
   readonly meta: ProviderMeta;
   supports(corridor: CorridorId): boolean;
-  /** Local and synchronous where the rail permits — screen 07 answers as you type. */
+  /** Local and synchronous where the rail permits, so screen 07 answers as you type. */
   validateDestination(d: Destination): ValidationResult;
   submit(req: PayoutRequest, idem: string): Promise<string>;
   parseWebhook(raw: unknown, sig: string): TransferEvent | null;

@@ -22,7 +22,7 @@ A stablecoin remittance case study: **USD → USDC → TRY payout**, built to de
   iPhone 16 Pro, Expo Go. Every figure on screen is computed by the domain layer, not mocked into the view.</sub>
 </p>
 
-One corridor, one flow: on-ramp → KYC gate → USDC send → Turkish lira payout. Turkey wasn't picked as a generic demo pair. It's a genuine high-inflation, high-stablecoin-adoption market, which is what makes the corridor worth designing.
+One corridor, one flow: on-ramp → KYC gate → USDC send → Turkish lira payout. Türkiye wasn't picked as a generic demo pair. It's a genuine high-inflation, high-stablecoin-adoption market, which is what makes the corridor worth designing.
 
 **No money moves here.** See [What's real](#whats-real) before reading anything else.
 
@@ -136,7 +136,7 @@ app/          expo-router file routes, the 11 screens
 
 ## Status
 
-Phases 1–5 complete: identity → design system → integration architecture → build → packaging.
+Phases 1-5 complete: identity → design system → integration architecture → build → packaging.
 
 Typecheck clean, 42/42 tests, iOS bundle succeeds.
 

@@ -24,7 +24,7 @@ import { color } from '../theme/tokens';
  * Hold the splash until the brand faces are ready.
  *
  * Rendering a frame in the system font and swapping it a beat later is worse than
- * waiting — the whole first impression of a design-led app is its typography, and
+ * waiting. The whole first impression of a design-led app is its typography, and
  * a visible reflow is the one thing guaranteed to be noticed.
  */
 void SplashScreen.preventAutoHideAsync();
@@ -41,7 +41,7 @@ export default function RootLayout() {
   });
 
   useEffect(() => {
-    // Hide on error too — a missing face should degrade to system type, never to
+    // Hide on error too: a missing face should degrade to system type, never to
     // an app that never appears.
     if (fontsLoaded || fontError) void SplashScreen.hideAsync();
   }, [fontsLoaded, fontError]);
@@ -55,7 +55,7 @@ export default function RootLayout() {
         screenOptions={{
           headerShown: false,
           contentStyle: { backgroundColor: color.void },
-          // Horizontal push, native stack defaults — 250ms ease-out.
+          // Horizontal push, native stack defaults: 250ms ease-out.
           animation: 'slide_from_right',
         }}
       >

@@ -3,7 +3,7 @@
  *
  * This is the only file that knows whether a leg is real or simulated. It decides
  * once, at module load, from the environment. There is no `isMock` branch anywhere
- * above this line — not in the orchestrator, not in a service, not in a screen.
+ * above this line: not in the orchestrator, not in a service, not in a screen.
  *
  * Adding a corridor is a row in `ROUTES` plus an adapter. Not a release.
  */
@@ -34,7 +34,7 @@ export interface RouteBinding {
 /**
  * Two corridors, differing by one binding.
  *
- * `USD:MXN` is a genuinely Bridge-native route — SPEI is on Bridge's supported
+ * `USD:MXN` is a genuinely Bridge-native route; SPEI is on Bridge's supported
  * list. `USD:TRY` is not: Bridge publishes USD, EUR, MXN, BRL, GBP and COP, with
  * no TRY in either direction. That asymmetry is why `payout` is a binding rather
  * than a hard-coded vendor call.

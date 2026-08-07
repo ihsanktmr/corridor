@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Corridor — UI/UX system &amp; screens</title>
+<title>Corridor: UI/UX system &amp; screens</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 /* ============================================================
-   TOKENS — inherited verbatim from phase 1 (corridor-identity.html)
+   TOKENS: inherited verbatim from phase 1 (corridor-identity.html)
    ============================================================ */
 :root{
   --void:#14120F;
@@ -137,7 +137,7 @@ hr.rule{border:none;border-top:1px solid var(--line);margin:0;}
 .flow-tail .dash{width:34px;border-top:1px dashed var(--line);}
 
 /* ============================================================
-   SCREEN LAYOUT — device left, annotation right
+   SCREEN LAYOUT: device left, annotation right
    ============================================================ */
 .screen-row{
   display:flex;gap:56px;align-items:flex-start;
@@ -398,7 +398,7 @@ hr.rule{border:none;border-top:1px solid var(--line);margin:0;}
 }
 @keyframes travel{0%{left:0;}50%{left:100%;}100%{left:0;}}
 
-/* route line — vertical */
+/* route line: vertical */
 .route{position:relative;padding-left:30px;}
 .route .step{position:relative;padding-bottom:22px;}
 .route .step:last-child{padding-bottom:0;}
@@ -427,7 +427,7 @@ hr.rule{border:none;border-top:1px solid var(--line);margin:0;}
 .route .step.wait .r1{color:var(--mist);font-weight:400;}
 .route .r2{font-size:11.5px;color:var(--mist);margin:0;line-height:1.5;}
 
-/* route — horizontal mini */
+/* route: horizontal mini */
 .route-mini{display:flex;align-items:center;gap:0;}
 .route-mini .n{
   width:9px;height:9px;border-radius:50%;border:1.5px solid var(--line);flex-shrink:0;background:var(--void);
@@ -630,13 +630,13 @@ hr.rule{border:none;border-top:1px solid var(--line);margin:0;}
        HERO
        ========================================================== -->
   <header class="hero">
-    <div class="eyebrow">corridor — UI/UX system &amp; screens, phase 2</div>
+    <div class="eyebrow">corridor · UI/UX system &amp; screens, phase 2</div>
     <svg class="mark" width="66" height="66"><use href="#mark-lg"/></svg>
     <h1 class="display">One corridor,<br>eleven screens.</h1>
     <p class="lede">Your dollars, still dollars, on the other side.</p>
     <p class="note" style="margin-top:14px;">
       A single flow, designed end to end: <b>on-ramp → KYC gate → USDC send → TRY payout</b>, on the
-      <b>USD → Turkey</b> corridor. Every token here comes from the phase 1 identity spec — this document
+      <b>USD → Türkiye</b> corridor. Every token here comes from the phase 1 identity spec; this document
       is that system doing actual work, including the parts where it has to say no.
     </p>
     <div class="meta-row">
@@ -657,13 +657,13 @@ hr.rule{border:none;border-top:1px solid var(--line);margin:0;}
     <h2 class="sec">The honesty rule</h2>
     <p class="note">
       Bridge is KYB-gated and genuinely not self-serve, so the fiat legs are simulated. That fact is
-      disclosed <b>on-screen</b>, not only in a README — a demo that hides its own seams is a demo you
+      disclosed <b>on-screen</b>, not only in a README. A demo that hides its own seams is a demo you
       can't trust the rest of. Each screen below carries the badge for the rail it sits on.
     </p>
     <div class="legend">
       <div class="legend-item">
         <div class="k"><span class="badge real">real</span></div>
-        <p>Privy embedded wallet + auth. One real Base Sepolia USDC transfer with a verifiable tx hash — the proof artifact.</p>
+        <p>Privy embedded wallet + auth. One real Base Sepolia USDC transfer with a verifiable tx hash: the proof artifact.</p>
       </div>
       <div class="legend-item">
         <div class="k"><span class="badge hybrid">hybrid</span></div>
@@ -723,7 +723,7 @@ hr.rule{border:none;border-top:1px solid var(--line);margin:0;}
     </div>
     <div class="flow-tail">
       <span class="dash"></span>
-      <span><b style="color:var(--paper);font-weight:500;">11</b> &nbsp;Edge states branch off stages 2–6 — rate expiry, KYC rejection, payout return.</span>
+      <span><b style="color:var(--paper);font-weight:500;">11</b> &nbsp;Edge states branch off stages 2-6: rate expiry, KYC rejection, payout return.</span>
     </div>
   </section>
 
@@ -780,15 +780,15 @@ hr.rule{border:none;border-top:1px solid var(--line);margin:0;}
         <h3>Welcome &amp; auth <span class="badge real" style="vertical-align:middle;margin-left:6px;">real</span></h3>
         <p class="purpose">Get someone to a funded, non-custodial wallet without them ever learning they now have one.</p>
         <ul>
-          <li><b>Email or passkey. Nothing else.</b> No seed phrase, no extension, no "connect wallet" — Privy provisions the embedded wallet on first login and shards the key across device, Privy, and recovery.</li>
+          <li><b>Email or passkey. Nothing else.</b> No seed phrase, no extension, no "connect wallet". Privy provisions the embedded wallet on first login and shards the key across device, Privy, and recovery.</li>
           <li><b>The word "wallet" never appears</b> above the fold. It's in the footnote, as reassurance, not as a concept the user has to learn before signing up.</li>
           <li>The <b>positioning line is the hero</b>. A remittance sender's real fear is that value shrinks in transit; the line answers it in one sentence with no crypto vocabulary.</li>
-          <li>The live rate is on the <b>first</b> screen. Rate is the single number this audience shops on — making them sign up to see it is a conversion tax.</li>
+          <li>The live rate is on the <b>first</b> screen. Rate is the single number this audience shops on, and making them sign up to see it is a conversion tax.</li>
           <li>Demo disclosure sits in the footer of the very first screen, permanently.</li>
         </ul>
         <div class="arch">
           <p class="lbl">architecture</p>
-          <p><b>Privy <code>useLoginWithEmail</code> → embedded wallet on first auth.</b> The wallet address is derived before the user reaches Home, so the balance query on 02 never races the wallet creation. Passkey is the fallback for returning users, not the primary — email survives device loss.</p>
+          <p><b>Privy <code>useLoginWithEmail</code> → embedded wallet on first auth.</b> The wallet address is derived before the user reaches Home, so the balance query on 02 never races the wallet creation. Passkey is the fallback for returning users, not the primary; email survives device loss.</p>
         </div>
         <div class="states">
           <p class="lbl">states</p>
@@ -818,7 +818,7 @@ hr.rule{border:none;border-top:1px solid var(--line);margin:0;}
             <div class="card" style="margin:8px 0 14px;">
               <p class="t-micro" style="margin-bottom:12px;">your balance</p>
               <p class="amt-hero" style="font-size:40px;">1,284.50 <span class="cur">USDC</span></p>
-              <p style="font-size:13px;color:var(--mist);margin:9px 0 16px;font-variant-numeric:tabular-nums;">≈ $1,284.50 — always 1:1</p>
+              <p style="font-size:13px;color:var(--mist);margin:9px 0 16px;font-variant-numeric:tabular-nums;">≈ $1,284.50, always 1:1</p>
               <div class="chip plain" style="padding-left:0;">
                 <span style="color:var(--mist);">0x477F···92a3</span>
                 <svg><use href="#copy"/></svg>
@@ -837,7 +837,7 @@ hr.rule{border:none;border-top:1px solid var(--line);margin:0;}
               </div>
             </div>
 
-            <button class="btn primary" style="margin-bottom:20px;">Send to Turkey</button>
+            <button class="btn primary" style="margin-bottom:20px;">Send to Türkiye</button>
 
             <div class="row" style="margin-bottom:2px;">
               <p class="t-micro">activity</p>
@@ -867,16 +867,16 @@ hr.rule{border:none;border-top:1px solid var(--line);margin:0;}
         <h3>Home <span class="badge real" style="vertical-align:middle;margin-left:6px;">real</span> <span class="badge mock" style="vertical-align:middle;">rate feed</span></h3>
         <p class="purpose">One balance, one corridor, one action. Everything else is history.</p>
         <ul>
-          <li><b>A single primary CTA.</b> Not "send / receive / swap / buy" — this app does one thing, and the home screen should be embarrassed to pretend otherwise.</li>
-          <li><b>"≈ $1,284.50 — always 1:1"</b> under the balance. The whole reason a remittance user tolerates a stablecoin is that it doesn't move. Say it where the number is.</li>
+          <li><b>A single primary CTA.</b> Not "send / receive / swap / buy". This app does one thing, and the home screen should be embarrassed to pretend otherwise.</li>
+          <li><b>"≈ $1,284.50, always 1:1"</b> under the balance. The whole reason a remittance user tolerates a stablecoin is that it doesn't move. Say it where the number is.</li>
           <li>The corridor strip carries the <b>live rate plus its direction</b>, so the user builds a mental model of the market before they're asked to commit to a number on 03.</li>
-          <li><b>Address is visible but demoted</b> — mist, mono, copyable. Present for the crypto-literate, invisible to everyone else.</li>
+          <li><b>Address is visible but demoted</b>: mist, mono, copyable. Present for the crypto-literate, invisible to everyone else.</li>
           <li>Activity uses status pills, not icons. <code>in transit</code> is a first-class state here because the ACH leg means transfers genuinely live for days.</li>
           <li>The demo strip is persistent chrome, not a dismissible toast.</li>
         </ul>
         <div class="arch">
           <p class="lbl">architecture</p>
-          <p>Balance reads from chain via Privy's provider; activity is a merge of <b>on-chain transfers and off-chain Bridge transfer records</b>, keyed on a client-generated <code>transferId</code>. Those two sources settle at different speeds, so the list renders from the off-chain record and enriches with the hash when it lands — never the reverse, or rows would appear and vanish.</p>
+          <p>Balance reads from chain via Privy's provider; activity is a merge of <b>on-chain transfers and off-chain Bridge transfer records</b>, keyed on a client-generated <code>transferId</code>. Those two sources settle at different speeds, so the list renders from the off-chain record and enriches with the hash when it lands, never the reverse, or rows would appear and vanish.</p>
         </div>
         <div class="states">
           <p class="lbl">states</p>
@@ -932,7 +932,7 @@ hr.rule{border:none;border-top:1px solid var(--line);margin:0;}
                 <div class="fee-line"><span>Payout · USDC → TRY</span><span>$2.49</span></div>
                 <div class="fee-line total"><span>Total charged</span><span>$503.75</span></div>
               </div>
-              <p style="font-size:10.5px;color:var(--success);margin:12px 0 0;line-height:1.5;">No FX markup — you get the mid-market rate. Our margin is the $3.75.</p>
+              <p style="font-size:10.5px;color:var(--success);margin:12px 0 0;line-height:1.5;">No FX markup. You get the mid-market rate. Our margin is the $3.75.</p>
             </div>
 
             <div class="keypad">
@@ -953,16 +953,16 @@ hr.rule{border:none;border-top:1px solid var(--line);margin:0;}
         <h3>Amount <span class="badge hybrid" style="vertical-align:middle;margin-left:6px;">hybrid</span></h3>
         <p class="purpose">The quote <em>is</em> the product. Everything else is logistics.</p>
         <ul>
-          <li><b>Mid-market rate, no markup — stated on the screen.</b> Legacy remitters bury a 3–5% spread in a "free transfer". Naming our margin out loud is the entire competitive posture, so it goes next to the number, not in a help article.</li>
+          <li><b>Mid-market rate, no markup, stated on the screen.</b> Legacy remitters bury a 3-5% spread in a "free transfer". Naming our margin out loud is the entire competitive posture, so it goes next to the number, not in a help article.</li>
           <li><b>The rate lock has a visible countdown.</b> A quote that silently expires is the most common way a transfer flow loses trust. If it's going to expire, the user watches it happen.</li>
-          <li><b>Fees expand, they don't hide.</b> Three line items, each named after the rail it pays for — on-ramp, network, payout. A CTO reading this sees the cost structure of the corridor.</li>
+          <li><b>Fees expand, they don't hide.</b> Three line items, each named after the rail it pays for: on-ramp, network, payout. A CTO reading this sees the cost structure of the corridor.</li>
           <li><b>Custom keypad, not the OS keyboard.</b> The receive amount recomputes on every keystroke; a system keyboard would resize the viewport and make the two amounts jump. It also lets us reject a second decimal point rather than validate after the fact.</li>
-          <li>The mark is the divider between the two currencies — the identity's own applied pattern, doing its job.</li>
+          <li>The mark is the divider between the two currencies, the identity's own applied pattern, doing its job.</li>
           <li>"Elif receives", not "recipient gets". The recipient is already known from the last transfer.</li>
         </ul>
         <div class="arch">
           <p class="lbl">architecture</p>
-          <p><b>Quotes are server-issued and signed, never computed on the client.</b> The client displays a <code>quoteId</code> with an <code>expiresAt</code>; 08 submits the <code>quoteId</code>, not the amounts. This is what stops a stale or tampered rate from reaching settlement — the client's numbers are a rendering of the quote, never the source of it.</p>
+          <p><b>Quotes are server-issued and signed, never computed on the client.</b> The client displays a <code>quoteId</code> with an <code>expiresAt</code>; 08 submits the <code>quoteId</code>, not the amounts. This is what stops a stale or tampered rate from reaching settlement; the client's numbers are a rendering of the quote, never the source of it.</p>
         </div>
         <div class="states">
           <p class="lbl">states</p>
@@ -1042,17 +1042,17 @@ hr.rule{border:none;border-top:1px solid var(--line);margin:0;}
       </div>
       <div class="anno">
         <p class="num">04</p>
-        <h3>Add USD — on-ramp <span class="badge mock" style="vertical-align:middle;margin-left:6px;">simulated</span></h3>
+        <h3>Add USD (on-ramp) <span class="badge mock" style="vertical-align:middle;margin-left:6px;">simulated</span></h3>
         <p class="purpose">Make the speed-versus-cost trade legible <em>before</em> the user commits to it.</p>
         <ul>
-          <li><b>A date, not a duration.</b> "Arrives Wed, Aug 5" instead of "1–3 business days" — the vague version is where remittance apps lose people, because the sender usually has a real deadline on the other end.</li>
+          <li><b>A date, not a duration.</b> "Arrives Wed, Aug 5" instead of "1-3 business days". The vague version is where remittance apps lose people, because the sender usually has a real deadline on the other end.</li>
           <li><b>ACH is the default and it's free.</b> Instant costs 1.5%. We show both honestly and let the user decide whether their urgency is worth $7.56.</li>
-          <li>The mini route preview shows <b>which leg they're buying</b> — the choice only affects the first hop; the chain and payout legs are identical either way.</li>
+          <li>The mini route preview shows <b>which leg they're buying</b>: the choice only affects the first hop; the chain and payout legs are identical either way.</li>
           <li>The simulation notice is <b>in the flow, at the moment of the lie</b>. It names why (KYB gating) and what's still faithful (timing, fee structure).</li>
         </ul>
         <div class="arch">
-          <p class="lbl">architecture — the important one</p>
-          <p><b>ACH is the settlement-risk leg, and it's the reason this corridor is hard.</b> An ACH debit can be returned days after it appears to have cleared — <code>R01</code> insufficient funds up to 2 days, <code>R08</code> stop payment, <code>R10</code> unauthorised up to <b>60 days</b>. The USDC has been sent and the TRY paid out long before that window closes. Every operator has to pick: hold the payout until ACH settles (slow, safe) or front the funds and underwrite the return risk (fast, needs capital and fraud scoring). <b>Corridor holds.</b> That's why 09 shows "USD received" as a discrete step with its own timestamp rather than collapsing it into a spinner — the wait is real, so the UI makes it legible instead of hiding it.</p>
+          <p class="lbl">architecture, the important one</p>
+          <p><b>ACH is the settlement-risk leg, and it's the reason this corridor is hard.</b> An ACH debit can be returned days after it appears to have cleared: <code>R01</code> insufficient funds up to 2 days, <code>R08</code> stop payment, <code>R10</code> unauthorised up to <b>60 days</b>. The USDC has been sent and the TRY paid out long before that window closes. Every operator has to pick: hold the payout until ACH settles (slow, safe) or front the funds and underwrite the return risk (fast, needs capital and fraud scoring). <b>Corridor holds.</b> That's why 09 shows "USD received" as a discrete step with its own timestamp rather than collapsing it into a spinner: the wait is real, so the UI makes it legible instead of hiding it.</p>
         </div>
         <div class="states">
           <p class="lbl">states</p>
@@ -1101,7 +1101,7 @@ hr.rule{border:none;border-top:1px solid var(--line);margin:0;}
             <div class="card tight" style="margin-bottom:12px;">
               <p style="font-size:11.5px;color:var(--mist);margin:0;line-height:1.6;">
                 <b style="color:var(--paper);font-weight:500;">Corridor never stores your documents.</b>
-                Images go straight to our verification provider. We keep the result and a reference — never the file.
+                Images go straight to our verification provider. We keep the result and a reference, never the file.
               </p>
             </div>
 
@@ -1123,14 +1123,14 @@ hr.rule{border:none;border-top:1px solid var(--line);margin:0;}
         <p class="purpose">Explain before demanding. A verification wall with no stated reason reads as a scam to exactly the users who most need this product.</p>
         <ul>
           <li><b>Placed after the quote, before funding.</b> The user has already seen what they'd get, so they're verifying <em>for</em> something concrete. Gating at signup instead would kill the funnel before the value is visible.</li>
-          <li><b>Names the actual reason</b> — US money transmission — rather than "for security reasons". Diaspora senders have usually been asked for documents by someone who shouldn't have asked; specificity is what separates us from that.</li>
+          <li><b>Names the actual reason</b> (US money transmission) rather than "for security reasons". Diaspora senders have usually been asked for documents by someone who shouldn't have asked; specificity is what separates us from that.</li>
           <li><b>"Once. Not every transfer."</b> The single most valuable sentence on the screen.</li>
           <li><b>Says what we don't keep</b>, unprompted. Data handling stated before the camera opens, not in a policy nobody opens.</li>
-          <li>Time estimate is concrete, and "Not now" is a real exit — the quote survives, the transfer parks.</li>
+          <li>Time estimate is concrete, and "Not now" is a real exit: the quote survives, the transfer parks.</li>
         </ul>
         <div class="arch">
           <p class="lbl">architecture</p>
-          <p>KYC status is a <b>server-owned state machine</b> — <code>none → pending → review → approved | rejected | resubmit</code> — never inferred client-side. The client polls or subscribes; it never decides. Approval is also <b>tiered</b>: basic KYC clears the $2,999 per-transfer limit shown on 03, higher limits require proof of address and source of funds. Turkey adds a second constraint the flow has to respect — <b>the payout name must match the verified sender or a declared recipient</b>, which is why 07 warns about name matching rather than discovering it at payout time.</p>
+          <p>KYC status is a <b>server-owned state machine</b> (<code>none → pending → review → approved | rejected | resubmit</code>), never inferred client-side. The client polls or subscribes; it never decides. Approval is also <b>tiered</b>: basic KYC clears the $2,999 per-transfer limit shown on 03, higher limits require proof of address and source of funds. Türkiye adds a second constraint the flow has to respect: <b>the payout name must match the verified sender or a declared recipient</b>, which is why 07 warns about name matching rather than discovering it at payout time.</p>
         </div>
         <div class="states">
           <p class="lbl">states</p>
@@ -1195,14 +1195,14 @@ hr.rule{border:none;border-top:1px solid var(--line);margin:0;}
         <p class="purpose">One instruction at a time, with the camera doing the teaching.</p>
         <ul>
           <li><b>The guide frame is the instruction.</b> Two short lines of copy, not a paragraph. Anything longer gets skipped by a user holding a phone in one hand and a licence in the other.</li>
-          <li><b>Glare and blur are checked on-device before upload.</b> Round-tripping a bad frame to a vendor and failing 60 seconds later is the single worst moment in any KYC flow — most abandonment happens on the second rejection.</li>
+          <li><b>Glare and blur are checked on-device before upload.</b> Round-tripping a bad frame to a vendor and failing 60 seconds later is the single worst moment in any KYC flow; most abandonment happens on the second rejection.</li>
           <li>The <b>progress rail</b> is three segments, not a percentage. The user needs to know how much is left, not how much is done.</li>
           <li>"front captured" stays visible so the user knows what's banked. Nothing they've already done should feel at risk.</li>
           <li><b>Upload-from-photos escape hatch</b> for cracked cameras, bad light, and shaky hands. Never trap someone in a camera.</li>
         </ul>
         <div class="arch">
           <p class="lbl">architecture</p>
-          <p>Images never touch Corridor's servers — the client uploads <b>direct to the provider with a short-lived signed URL</b>, and our backend only ever sees <code>{ sessionId, status, reasonCode }</code>. That's a deliberate reduction of what a breach could expose, and it's the technical fact behind the promise made on 05. Capture is <b>resumable</b>: sessions survive backgrounding, so an interrupted verification doesn't restart at step one.</p>
+          <p>Images never touch Corridor's servers. The client uploads <b>direct to the provider with a short-lived signed URL</b>, and our backend only ever sees <code>{ sessionId, status, reasonCode }</code>. That's a deliberate reduction of what a breach could expose, and it's the technical fact behind the promise made on 05. Capture is <b>resumable</b>: sessions survive backgrounding, so an interrupted verification doesn't restart at step one.</p>
         </div>
         <div class="states">
           <p class="lbl">states</p>
@@ -1242,7 +1242,7 @@ hr.rule{border:none;border-top:1px solid var(--line);margin:0;}
             <p class="t-micro" style="margin-bottom:10px;">or add someone new</p>
 
             <div class="field">
-              <p class="fl">Full name — exactly as their bank has it</p>
+              <p class="fl">Full name, exactly as their bank has it</p>
               <div class="input"><span class="ph">Ad Soyad</span></div>
             </div>
 
@@ -1257,7 +1257,7 @@ hr.rule{border:none;border-top:1px solid var(--line);margin:0;}
                 <svg style="width:14px;height:14px;color:var(--warning);flex-shrink:0;margin-top:2px;"><use href="#alert"/></svg>
                 <p style="font-size:11.5px;color:var(--mist);margin:0;line-height:1.6;">
                   <b style="color:var(--paper);font-weight:500;">Turkish banks reject on name mismatch.</b>
-                  If the name doesn't match the account holder exactly, the payout bounces — and takes 2–3 days to come back.
+                  If the name doesn't match the account holder exactly, the payout bounces, and takes 2-3 days to come back.
                 </p>
               </div>
             </div>
@@ -1271,18 +1271,18 @@ hr.rule{border:none;border-top:1px solid var(--line);margin:0;}
       <div class="anno">
         <p class="num">07</p>
         <h3>Recipient <span class="badge mock" style="vertical-align:middle;margin-left:6px;">payout simulated</span> <span class="badge real" style="vertical-align:middle;">validation real</span></h3>
-        <p class="purpose">Catch the failure here, where it costs a retype — not at payout, where it costs three days.</p>
+        <p class="purpose">Catch the failure here, where it costs a retype, rather than at payout, where it costs three days.</p>
         <ul>
           <li><b>IBAN validated locally: TR length (26) + ISO 7064 mod-97 checksum</b>, before any network call. Instant feedback, zero round trips, works offline.</li>
-          <li><b>The bank name is derived from the IBAN's own bank code</b> (<code>0062</code> → Garanti BBVA) and echoed back. That's the cheapest possible confirmation that the user typed the right account — they recognise the bank, or they don't.</li>
+          <li><b>The bank name is derived from the IBAN's own bank code</b> (<code>0062</code> → Garanti BBVA) and echoed back. That's the cheapest possible confirmation that the user typed the right account: they recognise the bank, or they don't.</li>
           <li><b>The name-match warning is stated up front,</b> with the actual consequence and the actual delay. It's the number one cause of Turkish payout rejection, and a user who reads this sentence checks the spelling.</li>
-          <li>"Exactly as their bank has it" beats "Full name" — it tells the user what correctness means here, which is not what it means anywhere else in the app.</li>
-          <li>The saved recipient is pre-selected and marked <code>verified</code> — a recipient who has successfully received once is the safest path, so it's the default.</li>
-          <li>Turkish placeholder text (<em>Ad Soyad</em>) — this corridor's users are Turkish speakers.</li>
+          <li>"Exactly as their bank has it" beats "Full name": it tells the user what correctness means here, which is not what it means anywhere else in the app.</li>
+          <li>The saved recipient is pre-selected and marked <code>verified</code>. A recipient who has successfully received once is the safest path, so it's the default.</li>
+          <li>Turkish placeholder text (<em>Ad Soyad</em>): this corridor's users are Turkish speakers.</li>
         </ul>
         <div class="arch">
           <p class="lbl">architecture</p>
-          <p>Local validation catches format errors; it <b>cannot</b> catch a valid IBAN belonging to the wrong person. Real implementations resolve that with a name-check service before debit where the market offers one. Turkey does not, so the design absorbs it: warn loudly at entry, mark previously-successful recipients as <code>verified</code>, and make the returned-payout path on 11 non-catastrophic. <b>When you can't prevent a failure, make it cheap.</b></p>
+          <p>Local validation catches format errors; it <b>cannot</b> catch a valid IBAN belonging to the wrong person. Real implementations resolve that with a name-check service before debit where the market offers one. Türkiye does not, so the design absorbs it: warn loudly at entry, mark previously-successful recipients as <code>verified</code>, and make the returned-payout path on 11 non-catastrophic. <b>When you can't prevent a failure, make it cheap.</b></p>
         </div>
         <div class="states">
           <p class="lbl">states</p>
@@ -1364,18 +1364,18 @@ hr.rule{border:none;border-top:1px solid var(--line);margin:0;}
         <p class="purpose">The last screen where anything can be changed. Every number that will be charged is visible without tapping anything.</p>
         <ul>
           <li><b>Nothing is behind an expander.</b> On 03 the fee breakdown collapses because the user is still exploring; here they're committing, so it's all open. Same data, different disclosure, because the stakes changed.</li>
-          <li><b>Slide to send, not tap to send.</b> Deliberate friction proportional to irreversibility — this is the moment money leaves. It also makes accidental sends essentially impossible.</li>
-          <li><b>The lock is under a minute and the strip has turned amber.</b> The rate-expiry warning arrives before the failure, not as the failure — 11a is what happens if they ignore it.</li>
+          <li><b>Slide to send, not tap to send.</b> Deliberate friction proportional to irreversibility; this is the moment money leaves. It also makes accidental sends essentially impossible.</li>
+          <li><b>The lock is under a minute and the strip has turned amber.</b> The rate-expiry warning arrives before the failure, not as the failure; 11a is what happens if they ignore it.</li>
           <li><b>Both the source and destination account are restated</b> here, at the last responsible moment, in mono. Wrong-account sends are unrecoverable; wrong-account reviews cost one tap back.</li>
-          <li>The four-node route sets the expectation that 09 will fulfil — the user has already seen the map before they watch the dot move along it.</li>
+          <li>The four-node route sets the expectation that 09 will fulfil: the user has already seen the map before they watch the dot move along it.</li>
         </ul>
         <div class="arch">
           <p class="lbl">architecture</p>
-          <p>Submission carries an <b>idempotency key</b> generated when the screen mounts, so a retry on a flaky connection can never double-send. The server re-validates the <code>quoteId</code> against its own clock — <b>a client with a frozen countdown still gets rejected</b>. On expiry the transfer isn't discarded, it's re-quoted: same recipient, same amount, new rate, explicit re-confirmation.</p>
+          <p>Submission carries an <b>idempotency key</b> generated when the screen mounts, so a retry on a flaky connection can never double-send. The server re-validates the <code>quoteId</code> against its own clock, so <b>a client with a frozen countdown still gets rejected</b>. On expiry the transfer isn't discarded, it's re-quoted: same recipient, same amount, new rate, explicit re-confirmation.</p>
         </div>
         <div class="states">
           <p class="lbl">states</p>
-          <div class="pills"><span>locked</span><span>expiring &lt; 60s</span><span>expired</span><span>submitting</span><span>submitted</span><span>rejected — limits</span><span>rejected — compliance</span><span>network error / retry</span></div>
+          <div class="pills"><span>locked</span><span>expiring &lt; 60s</span><span>expired</span><span>submitting</span><span>submitted</span><span>rejected · limits</span><span>rejected · compliance</span><span>network error / retry</span></div>
         </div>
       </div>
     </div>
@@ -1446,22 +1446,22 @@ hr.rule{border:none;border-top:1px solid var(--line);margin:0;}
       <div class="anno">
         <p class="num">09</p>
         <h3>In flight <span class="badge real" style="vertical-align:middle;margin-left:6px;">chain leg real</span> <span class="badge mock" style="vertical-align:middle;">fiat legs</span></h3>
-        <p class="purpose">Five real steps mapped to five real rails — not a progress bar pretending to know something.</p>
+        <p class="purpose">Five real steps mapped to five real rails, not a progress bar pretending to know something.</p>
         <ul>
           <li><b>Every step is a rail, and every completed step has a timestamp.</b> A generic spinner tells the user nothing and tells a reviewing engineer less. This screen is the architecture diagram, rendered for a non-technical user.</li>
-          <li><b>The hash appears the instant it exists</b> — mid-flight, not on the receipt. It's the verifiable artifact; making someone wait for success to see proof gets the sequencing backwards.</li>
+          <li><b>The hash appears the instant it exists</b>: mid-flight, not on the receipt. It's the verifiable artifact; making someone wait for success to see proof gets the sequencing backwards.</li>
           <li><b>Confirmation count is shown</b> (<code>2 / 12</code>). On Base that's seconds, but it's the honest unit for this step, and it's what makes the on-chain leg feel materially different from the two fiat legs around it.</li>
-          <li>Pending steps carry their <b>expectation</b> — "usually under 30 min" — so silence never reads as failure.</li>
+          <li>Pending steps carry their <b>expectation</b> ("usually under 30 min"), so silence never reads as failure.</li>
           <li><b>The gold dot from the identity is doing real work here</b>, pulsing on the live node. The motion signature is load-bearing, not decoration.</li>
           <li>The reference number and a help route sit in persistent chrome. Something going wrong is precisely when a user shouldn't have to hunt.</li>
         </ul>
         <div class="arch">
           <p class="lbl">architecture</p>
-          <p>State is <b>push, with polling as the floor</b> — Bridge webhooks and chain subscriptions drive the timeline, and a backoff poll covers dropped sockets and cold starts. Steps are <b>monotonic</b>: the UI never walks a step backwards on out-of-order webhooks, because a user watching a completed step un-complete has just learned not to trust the screen. Each step also has a <b>stall threshold</b>; crossing it swaps the copy from "usually under 30 min" to a named, actionable delay rather than leaving the row silently spinning.</p>
+          <p>State is <b>push, with polling as the floor</b>: Bridge webhooks and chain subscriptions drive the timeline, and a backoff poll covers dropped sockets and cold starts. Steps are <b>monotonic</b>: the UI never walks a step backwards on out-of-order webhooks, because a user watching a completed step un-complete has just learned not to trust the screen. Each step also has a <b>stall threshold</b>; crossing it swaps the copy from "usually under 30 min" to a named, actionable delay rather than leaving the row silently spinning.</p>
         </div>
         <div class="states">
           <p class="lbl">states</p>
-          <div class="pills"><span>per-step: wait / live / done / failed</span><span>ACH pending (days)</span><span>chain pending</span><span>chain reorg</span><span>payout queued — bank closed</span><span>step stalled</span><span>payout returned</span></div>
+          <div class="pills"><span>per-step: wait / live / done / failed</span><span>ACH pending (days)</span><span>chain pending</span><span>chain reorg</span><span>payout queued · bank closed</span><span>step stalled</span><span>payout returned</span></div>
         </div>
       </div>
     </div>
@@ -1529,15 +1529,15 @@ hr.rule{border:none;border-top:1px solid var(--line);margin:0;}
         <p class="purpose">The proof artifact. This is the screen that gets screenshotted and sent to the person on the other end.</p>
         <ul>
           <li><b>The tx hash is copyable and links out to BaseScan.</b> This is the case study's evidence: a real, independently verifiable Base Sepolia transfer. Anyone reviewing the portfolio can check it without taking my word for anything.</li>
-          <li><b>Rate used and total fees are restated</b> after the fact. A quote you can only see before you commit isn't a quote you can audit — and disputes are always after.</li>
-          <li><b>"Time in transit: 1d 19h 50m"</b> — reported honestly rather than quietly omitted. ACH was the slow leg; the chain leg took seconds. That contrast <em>is</em> the argument for stablecoin rails, and hiding it would throw away the point.</li>
+          <li><b>Rate used and total fees are restated</b> after the fact. A quote you can only see before you commit isn't a quote you can audit, and disputes are always after.</li>
+          <li><b>"Time in transit: 1d 19h 50m"</b>, reported honestly rather than quietly omitted. ACH was the slow leg; the chain leg took seconds. That contrast <em>is</em> the argument for stablecoin rails, and hiding it would throw away the point.</li>
           <li><b>Delivered amount is the hero</b>, in the recipient's currency. The sender's mental model ends at "did she get the lira", so the receipt answers that first and everything else underneath.</li>
-          <li><b>"Send again" over "Done"</b>. Remittance is a habit — most senders are on a monthly cycle to the same person.</li>
+          <li><b>"Send again" over "Done"</b>. Remittance is a habit: most senders are on a monthly cycle to the same person.</li>
           <li>Share is in the nav bar. Sending the receipt to the recipient is the most common next action after closing.</li>
         </ul>
         <div class="arch">
           <p class="lbl">architecture</p>
-          <p>The receipt renders from an <b>immutable settled record</b>, not from live state — once terminal, it never re-fetches and never changes. Downloadable as PDF with the same reference number, because this is the document that goes to a bank or an accountant. <b>"Delivered" means the payout was confirmed by Bridge as credited</b>, not merely submitted; the two are days apart when a Turkish bank holiday intervenes, and conflating them is how a receipt becomes a lie.</p>
+          <p>The receipt renders from an <b>immutable settled record</b>, not from live state: once terminal, it never re-fetches and never changes. Downloadable as PDF with the same reference number, because this is the document that goes to a bank or an accountant. <b>"Delivered" means the payout was confirmed by Bridge as credited</b>, not merely submitted; the two are days apart when a Turkish bank holiday intervenes, and conflating them is how a receipt becomes a lie.</p>
         </div>
         <div class="states">
           <p class="lbl">states</p>
@@ -1549,16 +1549,16 @@ hr.rule{border:none;border-top:1px solid var(--line);margin:0;}
   </section>
 
   <!-- ==========================================================
-       11 — EDGE STATES
+       11 · EDGE STATES
        ========================================================== -->
   <section class="block" id="edge">
     <div class="eyebrow">11 · edge states</div>
     <h2 class="sec">Where the money doesn't move</h2>
     <p class="note">
       Happy paths are easy to design and prove nothing. These three are the failures this corridor
-      actually produces — a rate that dies mid-flow, a document a provider won't accept, and a Turkish
+      actually produces: a rate that dies mid-flow, a document a provider won't accept, and a Turkish
       bank that bounces the payout. Each one has a rule: <b>say what happened, say where the money is,
-      say what to do next — in that order.</b>
+      say what to do next, in that order.</b>
     </p>
 
     <div class="trio">
@@ -1600,7 +1600,7 @@ hr.rule{border:none;border-top:1px solid var(--line);margin:0;}
         </div>
         <div class="cap">
           <h4>11a · Rate expired</h4>
-          <p><b>"Nothing was sent"</b> is the first line, because that's the user's first fear. Then the delta — old, new, and what it costs in lira, stated in the currency the recipient actually cares about. Re-accepting is an explicit choice with a fresh lock, never a silent re-quote. <b>An app that quietly repriced would be indistinguishable from one that skimmed.</b></p>
+          <p><b>"Nothing was sent"</b> is the first line, because that's the user's first fear. Then the delta: old, new, and what it costs in lira, stated in the currency the recipient actually cares about. Re-accepting is an explicit choice with a fresh lock, never a silent re-quote. <b>An app that quietly repriced would be indistinguishable from one that skimmed.</b></p>
         </div>
       </div>
 
@@ -1624,11 +1624,11 @@ hr.rule{border:none;border-top:1px solid var(--line);margin:0;}
               <div class="card tight" style="padding:12px;margin-bottom:10px;">
                 <div class="list-row" style="padding:8px 0;">
                   <div class="lead" style="width:24px;height:24px;font-size:9px;background:rgba(201,138,75,0.14);color:var(--warning);">!</div>
-                  <div class="mid"><p class="l1" style="font-size:11px;">ID — front</p><p class="l2" style="font-size:9.5px;">Low light · retake needed</p></div>
+                  <div class="mid"><p class="l1" style="font-size:11px;">ID · front</p><p class="l2" style="font-size:9.5px;">Low light · retake needed</p></div>
                 </div>
                 <div class="list-row" style="padding:8px 0;">
                   <div class="lead" style="width:24px;height:24px;font-size:9px;background:rgba(143,168,118,0.14);color:var(--success);">✓</div>
-                  <div class="mid"><p class="l1" style="font-size:11px;">ID — back</p><p class="l2" style="font-size:9.5px;">Accepted</p></div>
+                  <div class="mid"><p class="l1" style="font-size:11px;">ID · back</p><p class="l2" style="font-size:9.5px;">Accepted</p></div>
                 </div>
                 <div class="list-row" style="padding:8px 0;">
                   <div class="lead" style="width:24px;height:24px;font-size:9px;background:rgba(143,168,118,0.14);color:var(--success);">✓</div>
@@ -1638,7 +1638,7 @@ hr.rule{border:none;border-top:1px solid var(--line);margin:0;}
               <div class="card tight" style="padding:11px;">
                 <p style="font-size:9.5px;color:var(--mist);margin:0;line-height:1.6;">
                   <b style="color:var(--paper);font-weight:500;">Your transfer is saved.</b>
-                  Your rate is re-quoted when you're verified — no money has moved.
+                  Your rate is re-quoted when you're verified. No money has moved.
                 </p>
               </div>
             </div>
@@ -1651,7 +1651,7 @@ hr.rule{border:none;border-top:1px solid var(--line);margin:0;}
         </div>
         <div class="cap">
           <h4>11b · KYC resubmit</h4>
-          <p>Rejection is <b>scoped, not total</b> — one item failed, two passed, and the screen shows the ledger so the user doesn't fear starting over. The reason is specific and actionable (<b>"too dark to read"</b>, not "could not be verified"). Vague rejection copy is what turns a 30-second retake into an abandoned account, and it's usually chosen to avoid coaching fraudsters — a real tradeoff, resolved here toward the honest user.</p>
+          <p>Rejection is <b>scoped, not total</b>: one item failed, two passed, and the screen shows the ledger so the user doesn't fear starting over. The reason is specific and actionable (<b>"too dark to read"</b>, not "could not be verified"). Vague rejection copy is what turns a 30-second retake into an abandoned account, and it's usually chosen to avoid coaching fraudsters, a real tradeoff resolved here toward the honest user.</p>
         </div>
       </div>
 
@@ -1694,7 +1694,7 @@ hr.rule{border:none;border-top:1px solid var(--line);margin:0;}
         </div>
         <div class="cap">
           <h4>11c · Payout returned</h4>
-          <p>The one that matters. <b>"Your money is safe" appears above the fold</b>, before any explanation — a user watching ₺26,420 fail needs the location of their funds in the first second, not the third paragraph. The timeline stays visible with the failure in place, so the return is legible as a <b>completed round trip rather than a hole</b>. Fees for the leg that didn't happen come back. The retry is one tap and preserves everything already entered.</p>
+          <p>The one that matters. <b>"Your money is safe" appears above the fold</b>, before any explanation. A user watching ₺26,420 fail needs the location of their funds in the first second, not the third paragraph. The timeline stays visible with the failure in place, so the return is legible as a <b>completed round trip rather than a hole</b>. Fees for the leg that didn't happen come back. The retry is one tap and preserves everything already entered.</p>
         </div>
       </div>
 
@@ -1709,7 +1709,7 @@ hr.rule{border:none;border-top:1px solid var(--line);margin:0;}
     <h2 class="sec">The parts, out of context</h2>
     <p class="note">
       Every component above, assembled from the phase 1 tokens and nothing else. These port directly to
-      React Native primitives in phase 4 — same names, same variants, same states.
+      React Native primitives in phase 4: same names, same variants, same states.
     </p>
 
     <div class="lib-grid">
@@ -1728,7 +1728,7 @@ hr.rule{border:none;border-top:1px solid var(--line);margin:0;}
 
       <div class="lib-card">
         <p class="lc-title">Status pill</p>
-        <p class="lc-note">Semantic colors only — never gold. Gold means brand and action; a status that borrowed it would compete with the CTA.</p>
+        <p class="lc-note">Semantic colors only, never gold. Gold means brand and action; a status that borrowed it would compete with the CTA.</p>
         <div class="lc-body" style="display:flex;flex-wrap:wrap;gap:8px;">
           <span class="pill done">delivered</span>
           <span class="pill live">in transit</span>
@@ -1741,7 +1741,7 @@ hr.rule{border:none;border-top:1px solid var(--line);margin:0;}
 
       <div class="lib-card">
         <p class="lc-title">Input</p>
-        <p class="lc-note">Focus is a gold border plus a lift to concrete-raised — no glow, no shadow. Validation resolves inline, under the field.</p>
+        <p class="lc-note">Focus is a gold border plus a lift to concrete-raised: no glow, no shadow. Validation resolves inline, under the field.</p>
         <div class="lc-body">
           <div class="input"><span class="ph">Default</span></div>
           <div class="input focus"><span>Focused</span><span class="caret"></span></div>
@@ -1754,7 +1754,7 @@ hr.rule{border:none;border-top:1px solid var(--line);margin:0;}
 
       <div class="lib-card">
         <p class="lc-title">Chip</p>
-        <p class="lc-note">Mono for anything a machine produced — hashes, addresses, references. Gold-bright signals "verifiable", not "important".</p>
+        <p class="lc-note">Mono for anything a machine produced: hashes, addresses, references. Gold-bright signals "verifiable", not "important".</p>
         <div class="lc-body" style="display:flex;flex-wrap:wrap;gap:9px;">
           <span class="chip"><span>0x551c···ba10</span><svg><use href="#copy"/></svg><svg><use href="#ext"/></svg></span>
           <span class="chip"><span style="color:var(--mist);">0x477F···92a3</span><svg><use href="#copy"/></svg></span>
@@ -1765,7 +1765,7 @@ hr.rule{border:none;border-top:1px solid var(--line);margin:0;}
 
       <div class="lib-card">
         <p class="lc-title">Amount</p>
-        <p class="lc-note">Bricolage for display moments — entry, receipt hero. Inter with tabular figures everywhere numbers stack and must align.</p>
+        <p class="lc-note">Bricolage for display moments: entry, receipt hero. Inter with tabular figures everywhere numbers stack and must align.</p>
         <div class="lc-body">
           <p class="amt-hero" style="font-size:38px;">$503.75<span class="cur">USD</span></p>
           <p class="amt-sub" style="font-size:27px;">₺26,420.00 <span class="cur">TRY</span></p>
@@ -1779,7 +1779,7 @@ hr.rule{border:none;border-top:1px solid var(--line);margin:0;}
 
       <div class="lib-card">
         <p class="lc-title">Route line</p>
-        <p class="lc-note">The identity mark, unrolled. Vertical for live status, horizontal for previews. Gold behind, line ahead — the boundary is always the current step.</p>
+        <p class="lc-note">The identity mark, unrolled. Vertical for live status, horizontal for previews. Gold behind, line ahead; the boundary is always the current step.</p>
         <div class="lc-body">
           <div class="route" style="margin-bottom:22px;">
             <div class="step done"><span class="node"><svg><use href="#check"/></svg></span><p class="r1">Complete</p><p class="r2">with timestamp</p></div>
@@ -1798,7 +1798,7 @@ hr.rule{border:none;border-top:1px solid var(--line);margin:0;}
 
       <div class="lib-card">
         <p class="lc-title">Selectable option</p>
-        <p class="lc-note">Selection is a gold border plus a raised surface — two signals, so it survives both color-blindness and glare.</p>
+        <p class="lc-note">Selection is a gold border plus a raised surface: two signals, so it survives both color-blindness and glare.</p>
         <div class="lc-body">
           <div class="opt sel" style="margin:0;">
             <span class="radio"></span>
@@ -1815,7 +1815,7 @@ hr.rule{border:none;border-top:1px solid var(--line);margin:0;}
 
       <div class="lib-card">
         <p class="lc-title">Rate strip</p>
-        <p class="lc-note">The lock countdown is mono — it's a machine-owned number the user is watching, and mono makes it read as authoritative rather than decorative.</p>
+        <p class="lc-note">The lock countdown is mono: it's a machine-owned number the user is watching, and mono makes it read as authoritative rather than decorative.</p>
         <div class="lc-body">
           <div class="rate-strip"><p class="rl">1 USD = <b>52.84 ₺</b> <span style="color:var(--mist);">· mid-market</span></p><span class="lock"><svg><use href="#lock"/></svg>14:52</span></div>
           <div class="rate-strip warn"><p class="rl">1 USD = <b>52.84 ₺</b></p><span class="lock"><svg><use href="#lock"/></svg>00:47 left</span></div>
@@ -1824,7 +1824,7 @@ hr.rule{border:none;border-top:1px solid var(--line);margin:0;}
 
       <div class="lib-card">
         <p class="lc-title">Disclosure</p>
-        <p class="lc-note">Warning-toned, never error-toned — nothing is broken, something is simulated. Appears at the moment of the mock, not on a legal page.</p>
+        <p class="lc-note">Warning-toned, never error-toned: nothing is broken, something is simulated. Appears at the moment of the mock, not on a legal page.</p>
         <div class="lc-body">
           <div class="disclose"><svg><use href="#alert"/></svg><p><b style="font-weight:600;">Simulated leg.</b> Bridge's on-ramp is KYB-gated, so no real bank is debited.</p></div>
           <div class="demo-strip" style="border:1px solid var(--line);border-radius:var(--r-sm);"><span class="dot"></span><p>Demo build · Base Sepolia · fiat rails simulated</p></div>
@@ -1833,7 +1833,7 @@ hr.rule{border:none;border-top:1px solid var(--line);margin:0;}
 
       <div class="lib-card">
         <p class="lc-title">List row</p>
-        <p class="lc-note">One shape for activity, recipients and checklists. Value right, tabular, status underneath — so a column of transfers scans vertically.</p>
+        <p class="lc-note">One shape for activity, recipients and checklists. Value right, tabular, status underneath, so a column of transfers scans vertically.</p>
         <div class="lc-body">
           <div class="list-row"><div class="lead">TR</div><div class="mid"><p class="l1">Elif Yıldız</p><p class="l2">Aug 3 · Garanti BBVA</p></div><div class="end"><p class="v">₺26,420</p><p class="s"><span class="pill live">in transit</span></p></div></div>
           <div class="list-row"><div class="lead">US</div><div class="mid"><p class="l1">Added funds</p><p class="l2">Jul 19 · Chase ···4417</p></div><div class="end"><p class="v">+250.00</p><p class="s">USDC</p></div></div>
@@ -1850,7 +1850,7 @@ hr.rule{border:none;border-top:1px solid var(--line);margin:0;}
 
       <div class="lib-card">
         <p class="lc-title">Country token &amp; corridor strip</p>
-        <p class="lc-note">Two-letter mono tokens instead of flag emoji — flags render inconsistently across platforms and carry political weight a payment rail shouldn't.</p>
+        <p class="lc-note">Two-letter mono tokens instead of flag emoji, which render inconsistently across platforms and carry political weight a payment rail shouldn't.</p>
         <div class="lc-body">
           <div style="display:flex;gap:9px;"><span class="ctok on">US</span><span class="ctok on">TR</span><span class="ctok">DE</span><span class="ctok">MX</span></div>
           <div class="corridor-strip">
@@ -1871,10 +1871,10 @@ hr.rule{border:none;border-top:1px solid var(--line);margin:0;}
         </thead>
         <tbody>
           <tr><td>Gold budget</td><td>One gold element per viewport, max two</td><td>The accent only reads as "the action" if nothing else is competing. Status pills use semantic colors for exactly this reason.</td></tr>
-          <tr><td>Elevation</td><td><code>void</code> → <code>concrete</code> → <code>concrete-raised</code>, plus a 1px <code>line</code> border</td><td>No drop shadows on dark — depth is surface luminance. Inherited from phase 1 and enforced everywhere here.</td></tr>
+          <tr><td>Elevation</td><td><code>void</code> → <code>concrete</code> → <code>concrete-raised</code>, plus a 1px <code>line</code> border</td><td>No drop shadows on dark: depth is surface luminance. Inherited from phase 1 and enforced everywhere here.</td></tr>
           <tr><td>Numerals</td><td>Inter, <code>tabular-nums</code>, in every stacked or aligned context</td><td>Fee breakdowns and activity lists have to align on the decimal. Bricolage is display-only.</td></tr>
           <tr><td>Mono usage</td><td>Hashes, addresses, IBANs, reference numbers, lock countdowns</td><td>Mono means "a machine produced this and you may need to check it character by character".</td></tr>
-          <tr><td>Touch targets</td><td>44 × 44 minimum; primary buttons 48 tall</td><td>Apple HIG floor. The keypad on 03 runs 52 — it's used under time pressure with a locked rate.</td></tr>
+          <tr><td>Touch targets</td><td>44 × 44 minimum; primary buttons 48 tall</td><td>Apple HIG floor. The keypad on 03 runs 52, because it's used under time pressure with a locked rate.</td></tr>
           <tr><td>Radius</td><td>sm 8 chips/hints · md 14 buttons, inputs, tight cards · lg 24 primary cards</td><td>Radius encodes hierarchy: the larger the surface's role, the softer its corner.</td></tr>
           <tr><td>Copy voice</td><td>Plain sentences. No crypto vocabulary before the receipt.</td><td>"Wallet", "gas", "chain" appear only where they're unavoidable and always with an explanation nearby.</td></tr>
           <tr><td>Error voice</td><td>What happened → where the money is → what to do</td><td>Fixed order. A user reading a failure needs the second one fastest, and it's the one most apps put last.</td></tr>
@@ -1891,23 +1891,23 @@ hr.rule{border:none;border-top:1px solid var(--line);margin:0;}
     <h2 class="sec">Quiet, except once</h2>
     <p class="note">
       Phase 1 set the rule: the gold dot travelling the route on step-complete is the signature, and
-      everywhere else motion stays out of the way at 200–250ms ease-out. Phase 2 spends that budget
-      exactly once — on screen 09, where the dot is reporting real settlement rather than decorating a
+      everywhere else motion stays out of the way at 200-250ms ease-out. Phase 2 spends that budget
+      exactly once, on screen 09, where the dot is reporting real settlement rather than decorating a
       transition.
     </p>
     <div class="table-scroll">
       <table class="spec-table">
         <thead><tr><th>Moment</th><th>Motion</th><th>Duration</th></tr></thead>
         <tbody>
-          <tr><td>Step completes (09)</td><td>Gold dot travels the segment, node fills, check draws</td><td>640ms · ease-in-out — the signature, and the only motion over 300ms</td></tr>
+          <tr><td>Step completes (09)</td><td>Gold dot travels the segment, node fills, check draws</td><td>640ms · ease-in-out. The signature, and the only motion over 300ms</td></tr>
           <tr><td>Live node (09)</td><td>Gold dot pulses 1.0 → 0.62 scale</td><td>1800ms loop · ease-in-out</td></tr>
-          <tr><td>Amount recalculates (03)</td><td>Receive figure cross-fades; no slide, no count-up</td><td>140ms · linear — a counting animation on money reads as a slot machine</td></tr>
+          <tr><td>Amount recalculates (03)</td><td>Receive figure cross-fades; no slide, no count-up</td><td>140ms · linear. A counting animation on money reads as a slot machine</td></tr>
           <tr><td>Rate lock crosses 60s (08)</td><td>Strip border and countdown shift to warning over one tick</td><td>250ms · ease-out</td></tr>
           <tr><td>Screen push / pop</td><td>Horizontal slide, native stack defaults</td><td>250ms · ease-out</td></tr>
           <tr><td>Sheet present</td><td>Vertical, scrim to 60% void</td><td>220ms · ease-out</td></tr>
           <tr><td>Confirm slider (08)</td><td>Knob follows finger 1:1; releases below 80% snap back</td><td>Gesture-driven · 180ms spring on release</td></tr>
           <tr><td>Success bloom (10)</td><td>Ring scales 0.9 → 1.0, check draws, single haptic</td><td>420ms · ease-out</td></tr>
-          <tr><td>Failure (11)</td><td>No animation at all. The screen is simply there.</td><td>0ms — animating a failure makes it feel designed rather than reported</td></tr>
+          <tr><td>Failure (11)</td><td>No animation at all. The screen is simply there.</td><td>0ms. Animating a failure makes it feel designed rather than reported</td></tr>
           <tr><td><code>prefers-reduced-motion</code></td><td>All loops and travel become instant state changes; cross-fades survive</td><td>Non-negotiable, including the signature</td></tr>
         </tbody>
       </table>
@@ -1929,9 +1929,9 @@ hr.rule{border:none;border-top:1px solid var(--line);margin:0;}
         <tbody>
           <tr><td>01 Welcome</td><td>Privy <code>useLoginWithEmail</code> / passkey; embedded wallet provisioning</td><td><span class="badge real">real</span></td></tr>
           <tr><td>02 Home</td><td>USDC <code>balanceOf</code> via Privy provider; merged transfer list; rate feed</td><td><span class="badge real">real</span> + <span class="badge mock">rate</span></td></tr>
-          <tr><td>03 Amount</td><td>Server-signed quote — <code>quoteId</code>, <code>rate</code>, <code>fees[]</code>, <code>expiresAt</code></td><td><span class="badge hybrid">hybrid</span></td></tr>
+          <tr><td>03 Amount</td><td>Server-signed quote: <code>quoteId</code>, <code>rate</code>, <code>fees[]</code>, <code>expiresAt</code></td><td><span class="badge hybrid">hybrid</span></td></tr>
           <tr><td>04 Add USD</td><td>Bridge on-ramp: source list, <code>POST /transfers</code>, ACH settlement estimate</td><td><span class="badge mock">simulated</span></td></tr>
-          <tr><td>05–06 KYC</td><td>Provider session token, signed upload URL, status webhook</td><td><span class="badge hybrid">hybrid</span></td></tr>
+          <tr><td>05-06 KYC</td><td>Provider session token, signed upload URL, status webhook</td><td><span class="badge hybrid">hybrid</span></td></tr>
           <tr><td>07 Recipient</td><td>Local mod-97 IBAN validation + bank-code lookup; recipient store</td><td><span class="badge real">real</span></td></tr>
           <tr><td>08 Review</td><td><code>quoteId</code> re-validation, idempotency key, submit</td><td><span class="badge hybrid">hybrid</span></td></tr>
           <tr><td>09 In flight</td><td>Bridge webhooks + Base Sepolia tx subscription; backoff poll fallback</td><td><span class="badge real">chain</span> + <span class="badge mock">fiat</span></td></tr>
@@ -1943,7 +1943,7 @@ hr.rule{border:none;border-top:1px solid var(--line);margin:0;}
 
     <p class="note" style="margin-top:34px;">
       <b>Phase 4 port.</b> The tokens block at the top of this file becomes <code>theme/tokens.ts</code>
-      unchanged — same names, same values. Each component card above becomes one RN primitive with the
+      unchanged: same names, same values. Each component card above becomes one RN primitive with the
       same variants. The device frame here is 393 × 852 because that's the iPhone 15/16 Pro logical
       viewport; layouts use the spacing scale and flex, so the 375-wide and 430-wide cases fall out
       without a second design pass.
@@ -1954,7 +1954,7 @@ hr.rule{border:none;border-top:1px solid var(--line);margin:0;}
       <b>Phase 5 will disclose, in the failure-modes writeup:</b> the ACH return window and why Corridor
       holds rather than fronts; rate-lock expiry and re-quote semantics; Turkish name-match rejection and
       the returned-payout path; chain reorg handling on the settlement leg; KYC provider outage as a
-      hard stop rather than a bypass; and — first, not last — that the Bridge legs in this build are
+      hard stop rather than a bypass; and, first not last, that the Bridge legs in this build are
       simulated because Bridge is KYB-gated.
     </p>
 

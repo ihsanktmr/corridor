@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Corridor — failure modes</title>
+<title>Corridor: failure modes</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -131,14 +131,14 @@ hr.rule{border:none;border-top:1px solid var(--line);margin:0;}
 <div class="wrap">
 
   <header class="hero">
-    <div class="eyebrow">corridor — failure modes, phase 5</div>
+    <div class="eyebrow">corridor · failure modes, phase 5</div>
     <svg width="60" height="60" style="display:block;margin-bottom:24px;"><use href="#mark-lg"/></svg>
     <h1 class="display">Everything that<br>goes wrong.</h1>
     <p class="lede">And the one thing no design can fix.</p>
     <p class="note" style="margin-top:14px;">
       A remittance corridor is a chain of four systems that fail independently, on different
       timescales, and mostly after the user has stopped looking. This document names each failure,
-      says how Corridor detects it, what the user sees, and — where the honest answer is "nothing" —
+      says how Corridor detects it, what the user sees, and, where the honest answer is "nothing",
       says that instead.
     </p>
     <p class="note">
@@ -159,7 +159,7 @@ hr.rule{border:none;border-top:1px solid var(--line);margin:0;}
     <p class="note">
       Four of the five rails in this build are simulated. Each is disclosed on-screen at the moment it
       matters, and the badge text is read from the provider registry rather than written into the
-      screens — so a screen <em>cannot</em> claim a leg is real while a fixture is bound.
+      screens, so a screen <em>cannot</em> claim a leg is real while a fixture is bound.
     </p>
 
     <div class="disc-grid">
@@ -167,8 +167,8 @@ hr.rule{border:none;border-top:1px solid var(--line);margin:0;}
         <div class="dt"><strong>Bridge → TRY payout</strong><span class="badge gone">does not exist</span></div>
         <p>
           Bridge publishes USD (ACH/FedNow/Wire), EUR (SEPA), MXN (SPEI), BRL (Pix), GBP (FPS) and COP.
-          <b>There is no TRY route in either direction.</b> This is not a KYB gate that could be opened
-          — the product is not sold. Phases 1 and 2 named Bridge as the TRY payout provider and were
+          <b>There is no TRY route in either direction.</b> This is not a KYB gate that could be opened;
+          the product is not sold. Phases 1 and 2 named Bridge as the TRY payout provider and were
           simply wrong; phase 3 caught it against the live route table.
         </p>
       </div>
@@ -212,7 +212,7 @@ hr.rule{border:none;border-top:1px solid var(--line);margin:0;}
         <div class="dt"><strong>The tx hash</strong><span class="badge real">real · verified</span></div>
         <p>
           <b>Discharged.</b> <code>0x551c···ba10</code> is a genuine ERC-20 transfer of 1.00 USDC on
-          Base Sepolia, block 45038683, against Circle's canonical contract — produced by
+          Base Sepolia, block 45038683, against Circle's canonical contract, produced by
           <code>scripts/proof.mts</code> and checkable on BaseScan without trusting this repo.
           <b>The amount differs from the app's 500.00 demo figures</b> because Circle's testnet faucet
           caps it; the receipt screen states that on the screen itself.
@@ -222,8 +222,8 @@ hr.rule{border:none;border-top:1px solid var(--line);margin:0;}
       <div class="disc">
         <div class="dt"><strong>FX rate feed</strong><span class="badge mock">fixed</span></div>
         <p>
-          Pinned at <code>52.84 TRY/USD</code>. The rate <em>machinery</em> is real — rationals, signed
-          quotes, server-side expiry — but no live feed is attached, so rate-movement failures are
+          Pinned at <code>52.84 TRY/USD</code>. The rate <em>machinery</em> is real (rationals, signed
+          quotes, server-side expiry), but no live feed is attached, so rate-movement failures are
           modelled rather than observed.
         </p>
       </div>
@@ -233,7 +233,7 @@ hr.rule{border:none;border-top:1px solid var(--line);margin:0;}
       <p class="lbl">the honest summary</p>
       <p>
         <b>No money moves in this build, and no blockchain transaction exists.</b> What is real is the
-        design, the domain logic, the provider seam, and the failure handling — all of which are
+        design, the domain logic, the provider seam, and the failure handling, all of which are
         exercised on every run because the simulated adapters go through the same ingress, signature
         check and state fold that a real vendor would.
       </p>
@@ -246,7 +246,7 @@ hr.rule{border:none;border-top:1px solid var(--line);margin:0;}
     <h2 class="sec">The full list</h2>
     <p class="note">
       Every failure mode the corridor produces, with what the user sees and what residual risk remains
-      after mitigation. <b>Residual is the column that matters</b> — a register where everything is
+      after mitigation. <b>Residual is the column that matters</b>: a register where everything is
       fully mitigated is a register that has not been thought about.
     </p>
 
@@ -266,23 +266,23 @@ hr.rule{border:none;border-top:1px solid var(--line);margin:0;}
           <tr>
             <td>ACH return <code>R10</code> unauthorised</td>
             <td>Bridge webhook, <b>up to 60 days</b></td>
-            <td>Nothing — lira already delivered</td>
+            <td>Nothing; lira already delivered</td>
             <td>Priced into fee; velocity limits until settled history</td>
             <td class="sev"><span class="sv hi">unclosable</span></td>
           </tr>
           <tr>
             <td>Rate lock expires mid-flow</td>
             <td>Server clock at submit</td>
-            <td>11a — old vs new rate, delta in lira</td>
+            <td>11a · old vs new rate, delta in lira</td>
             <td>Explicit re-accept, fresh lock, never silent reprice</td>
             <td class="sev"><span class="sv lo">none</span></td>
           </tr>
           <tr>
             <td>Payout name mismatch</td>
             <td>Partner webhook, minutes to hours</td>
-            <td>11c — "Your money is safe", funds returned</td>
+            <td>11c · "Your money is safe", funds returned</td>
             <td>Warned at entry; USDC returns to balance; fee refunded</td>
-            <td class="sev"><span class="sv md">2–3 day delay</span></td>
+            <td class="sev"><span class="sv md">2-3 day delay</span></td>
           </tr>
           <tr>
             <td>IBAN typo / transposition</td>
@@ -293,7 +293,7 @@ hr.rule{border:none;border-top:1px solid var(--line);margin:0;}
           </tr>
           <tr>
             <td>Valid IBAN, wrong person</td>
-            <td>Not detectable — no TR name-check service</td>
+            <td>Not detectable; no TR name-check service</td>
             <td>11c after the fact</td>
             <td>Cannot prevent; made cheap and reversible</td>
             <td class="sev"><span class="sv hi">unclosable</span></td>
@@ -315,7 +315,7 @@ hr.rule{border:none;border-top:1px solid var(--line);margin:0;}
           <tr>
             <td>Webhook duplicated / out of order</td>
             <td><code>seq</code> assigned on ingress</td>
-            <td>Nothing — fold is idempotent</td>
+            <td>Nothing; fold is idempotent</td>
             <td>Sort by seq, drop duplicates, monotonic steps</td>
             <td class="sev"><span class="sv lo">none</span></td>
           </tr>
@@ -350,7 +350,7 @@ hr.rule{border:none;border-top:1px solid var(--line);margin:0;}
           <tr>
             <td>KYC document rejected</td>
             <td>Vendor <code>reasonCode</code></td>
-            <td>11b — scoped, specific, retake one item</td>
+            <td>11b · scoped, specific, retake one item</td>
             <td>Ledger of passed items preserved; quote parked</td>
             <td class="sev"><span class="sv lo">none</span></td>
           </tr>
@@ -384,7 +384,7 @@ hr.rule{border:none;border-top:1px solid var(--line);margin:0;}
 
     <ul class="pts">
       <li><b>The shape of it.</b> ACH is pull-based and reversible. Corridor debits the sender's bank, mints USDC, sends it on Base, and a Turkish bank credits lira. The lira is irreversible. The ACH debit is not.</li>
-      <li><b>Holding to settlement covers the common cases.</b> <code>R01</code> insufficient funds and <code>R08</code> stop payment surface within about two banking days. Waiting for settlement before releasing the payout eliminates both — which is exactly why screen 09 shows "USD received" as a discrete, timestamped step rather than hiding a two-day wait inside a spinner.</li>
+      <li><b>Holding to settlement covers the common cases.</b> <code>R01</code> insufficient funds and <code>R08</code> stop payment surface within about two banking days. Waiting for settlement before releasing the payout eliminates both, which is exactly why screen 09 shows "USD received" as a discrete, timestamped step rather than hiding a two-day wait inside a spinner.</li>
       <li><b>It does not cover <code>R10</code>.</b> An unauthorised-debit return can arrive up to <b>60 days</b> later. By then the recipient has spent the lira. No holding period a customer would tolerate closes this window.</li>
       <li><b>So it is priced, not solved.</b> Residual exposure sits in the $3.75 fee and is bounded by per-user velocity limits that rise with <em>settled history</em> rather than elapsed time. First transfer capped low; limits earned, not aged into.</li>
       <li><b>The alternative is a real product, not a mistake.</b> Fronting the funds buys same-day delivery and requires working capital plus fraud scoring. That is the right call at scale and the wrong one for a first corridor.</li>
@@ -412,14 +412,14 @@ case <span class="s">'onramp_returned'</span>:
   <!-- ==================== PAYOUT ==================== -->
   <section class="block" id="payout">
     <div class="eyebrow">the payout leg</div>
-    <h2 class="sec">What Turkey cannot tell you</h2>
+    <h2 class="sec">What Türkiye cannot tell you</h2>
     <p class="note">
-      Local IBAN validation catches typos, transpositions, wrong-country pastes and bad lengths — all
+      Local IBAN validation catches typos, transpositions, wrong-country pastes and bad lengths, all
       before a network call, on every keystroke. It cannot catch a structurally perfect IBAN belonging
-      to the wrong person, and <b>Turkey has no name-check service to resolve that</b>.
+      to the wrong person, and <b>Türkiye has no name-check service to resolve that</b>.
     </p>
     <ul class="pts">
-      <li><b>Markets that offer confirmation-of-payee</b> (UK CoP, and increasingly the EU) let you verify the account holder's name before debit. Turkey does not, so name mismatch is discovered by the receiving bank after the money is already in flight.</li>
+      <li><b>Markets that offer confirmation-of-payee</b> (UK CoP, and increasingly the EU) let you verify the account holder's name before debit. Türkiye does not, so name mismatch is discovered by the receiving bank after the money is already in flight.</li>
       <li><b>The design absorbs what it cannot prevent.</b> Warn loudly at entry with the real consequence and the real delay; mark previously-successful recipients <code>verified</code> and default to them; make the returned-payout path non-catastrophic.</li>
       <li><b>Screen 11c leads with "Your money is safe"</b> above any explanation, because a user watching ₺26,420 fail needs the location of their funds in the first second, not the third paragraph.</li>
       <li><b>The timeline stays visible with the failure in place</b>, so the return reads as a completed round trip rather than a hole. Fees for the leg that did not happen are refunded.</li>
@@ -437,7 +437,7 @@ case <span class="s">'onramp_returned'</span>:
     <h2 class="sec">Three clocks, one story</h2>
     <p class="note">
       Bridge, the payout partner and the chain all report independently. They will deliver late, twice,
-      and out of order. None of that is exceptional — a design that only handles the happy path stalls
+      and out of order. None of that is exceptional; a design that only handles the happy path stalls
       silently in production.
     </p>
     <ul class="pts">
@@ -466,7 +466,7 @@ case <span class="s">'onramp_returned'</span>:
             <td>
               The on-chain transaction is <b>1.00 USDC</b>; the app's demo figures are 500.00. Circle's
               testnet faucet sets the ceiling, not the design. Same contract, same decimals, same
-              signing path — different amount. Stated on the receipt screen itself, not only here,
+              signing path, different amount. Stated on the receipt screen itself, not only here,
               because a receipt implying a 500.00 settlement over a 1.00 transaction would be the exact
               failure this document exists to avoid.
             </td>
@@ -476,7 +476,7 @@ case <span class="s">'onramp_returned'</span>:
             <td>Wallet does not sign in-app</td>
             <td>
               The verified transfer was produced by <code>scripts/proof.mts</code> using the same
-              contract and chain the app targets, not by tapping through the app itself — because
+              contract and chain the app targets, not by tapping through the app itself, because
               wiring Privy would force every reviewer through a development build.
               <b>The transaction is real; the path to it was a script.</b>
             </td>
@@ -484,7 +484,7 @@ case <span class="s">'onramp_returned'</span>:
           </tr>
           <tr>
             <td>Privy not wired</td>
-            <td><code>@privy-io/expo</code> requires native modules and therefore a development build — a reviewer could not <code>npx expo start</code> the repo. The wallet sits behind <code>WalletProvider</code> so the real adapter binds in the same slot.</td>
+            <td><code>@privy-io/expo</code> requires native modules and therefore a development build; a reviewer could not <code>npx expo start</code> the repo. The wallet sits behind <code>WalletProvider</code> so the real adapter binds in the same slot.</td>
             <td>One adapter + an EAS dev build</td>
           </tr>
           <tr>
@@ -504,7 +504,7 @@ case <span class="s">'onramp_returned'</span>:
           </tr>
           <tr>
             <td>Quote signing is not HMAC</td>
-            <td><code>services/signing.ts</code> is a keyed FNV-1a standing in for HMAC-SHA256, labelled as such. The <em>shape</em> is right — signed at issue, verified before a transfer is created — but it is not a security boundary.</td>
+            <td><code>services/signing.ts</code> is a keyed FNV-1a standing in for HMAC-SHA256, labelled as such. The <em>shape</em> is right (signed at issue, verified before a transfer is created), but it is not a security boundary.</td>
             <td>One dependency, server-side</td>
           </tr>
           <tr>
@@ -525,11 +525,11 @@ case <span class="s">'onramp_returned'</span>:
       If this corridor took real volume tomorrow, in the order I would expect things to hurt:
     </p>
     <ul class="pts">
-      <li><b>1 — Fraud, not engineering.</b> A US-outbound corridor to a high-inflation market is an attractive laundering route. Velocity limits and settled-history tiers are a start; real operation needs transaction monitoring, device fingerprinting and a SAR process. Nothing on the screens hints at how much of this exists behind them, which is correct.</li>
-      <li><b>2 — The R10 reserve.</b> Unauthorised-return exposure scales linearly with volume and lands 60 days behind it. Growth makes this worse in a way that feels fine right up until it doesn't.</li>
-      <li><b>3 — Payout partner concentration.</b> One Turkish partner is a single point of failure for the entire corridor. The <code>PayoutProvider</code> seam makes a second one cheap to add, which is most of the argument for having built it.</li>
-      <li><b>4 — Rate risk on the lock.</b> A 15-minute lock is a free option written to the customer. At volume, in a currency that moves like TRY, that needs hedging or a shorter window.</li>
-      <li><b>5 — Reconciliation.</b> Three providers, three clocks, and a ledger that must balance daily against all of them. The event log makes this tractable; it does not make it small.</li>
+      <li><b>1 · Fraud, not engineering.</b> A US-outbound corridor to a high-inflation market is an attractive laundering route. Velocity limits and settled-history tiers are a start; real operation needs transaction monitoring, device fingerprinting and a SAR process. Nothing on the screens hints at how much of this exists behind them, which is correct.</li>
+      <li><b>2 · The R10 reserve.</b> Unauthorised-return exposure scales linearly with volume and lands 60 days behind it. Growth makes this worse in a way that feels fine right up until it doesn't.</li>
+      <li><b>3 · Payout partner concentration.</b> One Turkish partner is a single point of failure for the entire corridor. The <code>PayoutProvider</code> seam makes a second one cheap to add, which is most of the argument for having built it.</li>
+      <li><b>4 · Rate risk on the lock.</b> A 15-minute lock is a free option written to the customer. At volume, in a currency that moves like TRY, that needs hedging or a shorter window.</li>
+      <li><b>5 · Reconciliation.</b> Three providers, three clocks, and a ledger that must balance daily against all of them. The event log makes this tractable; it does not make it small.</li>
     </ul>
 
     <div class="call good">
@@ -537,7 +537,7 @@ case <span class="s">'onramp_returned'</span>:
       <p>
         Not that Corridor handles all of the above. It is a case study, and it moves no money. The claim
         is narrower and, I think, more useful: <b>that the failures were enumerated before the happy path
-        was designed, and that the design visibly changed because of them</b> — <code>funded_held</code>
+        was designed, and that the design visibly changed because of them</b>: <code>funded_held</code>
         exists because of ACH returns, the <code>PayoutProvider</code> seam exists because Bridge has no
         TRY route, and screen 11c leads with the location of the money because that is what a frightened
         user needs first.

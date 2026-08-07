@@ -15,11 +15,11 @@ import { color, space } from '../../theme/tokens';
 import { face, tabular, type } from '../../theme/type';
 
 /**
- * 04 · Add USD — on-ramp
+ * 04 · Add USD (on-ramp)
  *
  * Make the speed-versus-cost trade legible before the user commits to it.
  *
- * A date, not a duration: "arrives Wed, Aug 5" rather than "1–3 business days". The
+ * A date, not a duration: "arrives Wed, Aug 5" rather than "1-3 business days". The
  * vague version is where remittance apps lose people, because the sender usually
  * has a real deadline on the other end.
  */
@@ -96,7 +96,7 @@ export default function Fund() {
             <Text style={[type.label, { fontSize: 12.5 }]}>You pay</Text>
             <Text style={[type.bodyStrong, tabular, { fontFamily: face.semibold }]}>{format(charged)}</Text>
           </Row>
-          {/* The choice only affects the first hop — the chain and payout legs are
+          {/* The choice only affects the first hop; the chain and payout legs are
               identical either way. */}
           <RouteMini labels={['Chase', 'USDC · Base', 'Garanti']} filled={2} />
         </Card>

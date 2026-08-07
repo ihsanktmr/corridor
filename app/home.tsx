@@ -18,7 +18,7 @@ import { tabular, type } from '../theme/type';
  *
  * One balance, one corridor, one action. Everything else is history.
  *
- * A single primary CTA — not "send / receive / swap / buy". This app does one thing
+ * A single primary CTA, not "send / receive / swap / buy". This app does one thing
  * and the home screen should be embarrassed to pretend otherwise.
  */
 export default function Home() {
@@ -55,7 +55,7 @@ export default function Home() {
           <Text style={[type.label, tabular, { fontSize: 13, marginTop: 9, marginBottom: space.base }]}>
             {/* The whole reason a remittance user tolerates a stablecoin is that it
                 doesn't move. Say it where the number is. */}
-            ≈ {format({ currency: 'USD', minor: balance.minor / 10_000n })} — always 1:1
+            ≈ {format({ currency: 'USD', minor: balance.minor / 10_000n })}, always 1:1
           </Text>
 
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm }}>
@@ -76,12 +76,12 @@ export default function Home() {
         />
 
         <Button
-          label="Send to Turkey"
+          label="Send to Türkiye"
           onPress={() => router.push('/transfer/amount')}
           style={{ marginTop: space.base, marginBottom: space.lg }}
         />
 
-        {/* No "See all" — this list is already everything. An affordance that
+        {/* No "See all": this list is already everything. An affordance that
             implies more content teaches the user the controls are decorative. */}
         <Text style={[type.micro, { marginBottom: 2 }]}>activity</Text>
 
@@ -120,7 +120,7 @@ function ActivityRow({ transfer, last }: { transfer: Transfer; last: boolean }) 
 }
 
 /**
- * `in transit` is a first-class state here, not an edge case — the ACH leg means
+ * `in transit` is a first-class state here, not an edge case; the ACH leg means
  * transfers genuinely live for days.
  */
 function statusOf(t: Transfer): { tone: 'done' | 'live' | 'wait' | 'fail'; label: string } {

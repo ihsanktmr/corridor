@@ -46,7 +46,7 @@ function reset(): void {
 const step = (t: ReturnType<typeof foldTransfer>, id: StepId) =>
   t.steps.find((s) => s.id === id);
 
-describe('quote — the locked demo numbers', () => {
+describe('quote: the locked demo numbers', () => {
   test('fees are the three named rails and total $3.75', () => {
     assert.deepEqual(
       QUOTE.fees.map((f) => format(f.amount)),
@@ -74,7 +74,7 @@ describe('quote — the locked demo numbers', () => {
   });
 });
 
-describe('foldTransfer — happy path', () => {
+describe('foldTransfer: happy path', () => {
   test('walks all five rails to delivered', () => {
     reset();
     const t = foldTransfer(SEED, [
@@ -108,7 +108,7 @@ describe('foldTransfer — happy path', () => {
   });
 });
 
-describe('foldTransfer — ordering guarantees', () => {
+describe('foldTransfer: ordering guarantees', () => {
   test('an out-of-order delivery is corrected by seq, not trusted', () => {
     reset();
     const events = [
@@ -162,7 +162,7 @@ describe('foldTransfer — ordering guarantees', () => {
   });
 });
 
-describe('foldTransfer — failure paths', () => {
+describe('foldTransfer: failure paths', () => {
   test('payout returned, then refunded, keeps the timeline intact', () => {
     reset();
     const t = foldTransfer(SEED, [

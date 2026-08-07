@@ -15,7 +15,7 @@ import { type } from '../../theme/type';
  * 06 · ID capture
  *
  * One instruction at a time, with the camera doing the teaching. The guide frame is
- * the instruction — two short lines of copy, not a paragraph, because the user is
+ * the instruction: two short lines of copy, not a paragraph, because the user is
  * holding a phone in one hand and a licence in the other.
  *
  * Glare and blur are checked on-device before upload. Round-tripping a bad frame to
@@ -26,7 +26,7 @@ import { type } from '../../theme/type';
 /** The three captures, in order. Each press moves to the next and says so. */
 const STEPS = [
   { title: 'Front of your licence', hint: 'Fill the frame. Flat surface, no glare.' },
-  { title: 'Back of your licence', hint: 'Same again — keep the barcode in view.' },
+  { title: 'Back of your licence', hint: 'Same again. Keep the barcode in view.' },
   { title: 'Now a selfie', hint: 'Look straight at the camera. Neutral expression.' },
 ] as const;
 
@@ -81,7 +81,7 @@ export default function Capture() {
 
         <Viewport selfie={index === 2} />
 
-        {/* Everything banked so far stays visible — nothing the user has already
+        {/* Everything banked so far stays visible; nothing the user has already
             done should feel at risk. */}
         <Row style={{ marginVertical: space.base }}>
           <View style={{ flexDirection: 'row', gap: 6, flexWrap: 'wrap', flex: 1 }}>
@@ -118,7 +118,7 @@ export default function Capture() {
           <View style={{ width: 48, height: 48, borderRadius: 24, backgroundColor: color.gold }} />
         </Pressable>
 
-        {/* Never trap someone in a camera — cracked lenses, bad light, shaky hands.
+        {/* Never trap someone in a camera: cracked lenses, bad light, shaky hands.
             It is a real alternate path, so it advances exactly like the shutter. */}
         <Pressable onPress={onCapture} disabled={reviewing || busy} hitSlop={10}>
           <Text style={[type.label, { fontSize: 11, textAlign: 'center', marginTop: space.base }]}>

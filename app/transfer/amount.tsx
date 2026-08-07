@@ -19,14 +19,14 @@ import { type } from '../../theme/type';
  *
  * The quote is the product. Everything else is logistics.
  *
- * Mid-market rate with no markup, stated on the screen — legacy remitters bury a
- * 3–5% spread in a "free transfer", so naming our margin out loud is the entire
+ * Mid-market rate with no markup, stated on the screen. Legacy remitters bury a
+ * 3-5% spread in a "free transfer", so naming our margin out loud is the entire
  * competitive posture and belongs next to the number.
  */
 export default function AmountScreen() {
   const { quote } = useCorridor();
   const [digits, setDigits] = useState('500.00');
-  // Collapsed by default. The user is still exploring here — on screen 08 they are
+  // Collapsed by default. The user is still exploring here; on screen 08 they are
   // committing, so the same data is shown fully open. Same numbers, different
   // disclosure, because the stakes changed.
   const [expanded, setExpanded] = useState(false);
@@ -81,7 +81,7 @@ export default function AmountScreen() {
           />
         </View>
 
-        {/* The mark doubles as the divider between the two currencies — phase 1's
+        {/* The mark doubles as the divider between the two currencies, phase 1's
             own applied pattern, doing its job. */}
         <MarkDivider />
 
@@ -125,12 +125,12 @@ export default function AmountScreen() {
           ) : null}
 
           <Text style={{ fontSize: 10.5, color: color.success, marginTop: space.md, lineHeight: 16 }}>
-            No FX markup — you get the mid-market rate. Our margin is the {format(feeTotal)}.
+            No FX markup. You get the mid-market rate. Our margin is the {format(feeTotal)}.
           </Text>
         </Card>
 
         {/* The keypad is the floor of the screen, never a layer over the card
-            above it — `minHeight: 0` lets this column shrink instead of letting
+            above it. `minHeight: 0` lets this column shrink instead of letting
             the keypad's intrinsic height push it into the fee breakdown. */}
         <View style={{ flex: 1, minHeight: 0, justifyContent: 'flex-end' }}>
           <Keypad value={digits} onChange={setDigits} />

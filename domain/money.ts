@@ -92,7 +92,7 @@ export function rescale(m: Money, to: Currency): Money {
   const divisor = 10n ** BigInt(-delta);
   if (m.minor % divisor !== 0n) {
     throw new RangeError(
-      `${format(m)} cannot be represented in ${to} without loss — ` +
+      `${format(m)} cannot be represented in ${to} without loss; ` +
         `caller must decide where the remainder goes`,
     );
   }
@@ -102,7 +102,7 @@ export function rescale(m: Money, to: Currency): Money {
 /**
  * `$500.00` · `₺26,420.00` · `500.000000 USDC`
  *
- * Exact by default — the string round-trips through `parseAmount`. Pass `decimals`
+ * Exact by default: the string round-trips through `parseAmount`. Pass `decimals`
  * to shorten for display: USDC carries six places, and rendering a balance as
  * "1,284.500000" is precision the user did not ask for and cannot use. Display
  * rounds half-up; it is never fed back into arithmetic.

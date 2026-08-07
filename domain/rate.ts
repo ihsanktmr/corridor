@@ -48,7 +48,7 @@ export function rateFromDecimal(
  * Apply a rate, crossing any precision difference between the two currencies.
  *
  * Rounds half-up on the final minor unit. The rounding direction is fixed and
- * documented because it is a commercial decision, not an implementation detail —
+ * documented because it is a commercial decision, not an implementation detail:
  * whoever eats the half-unit needs to be the same party every time.
  */
 export function convert(amount: Money, r: Rate): Money {
@@ -71,7 +71,7 @@ export function convert(amount: Money, r: Rate): Money {
   return { currency: r.to, minor: negative ? -quotient : quotient };
 }
 
-/** `52.84` — for display next to the amount on screens 03 and 08. */
+/** `52.84`, for display next to the amount on screens 03 and 08. */
 export function formatRate(r: Rate, decimals = 2): string {
   const scaled = (r.num * 10n ** BigInt(decimals) * 2n + r.den) / (r.den * 2n);
   const digits = scaled.toString().padStart(decimals + 1, '0');
