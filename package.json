@@ -9,7 +9,8 @@
     "android": "expo start --android",
     "typecheck": "tsc --noEmit",
     "test": "node --test domain/*.test.ts services/*.test.ts",
-    "proof": "node scripts/proof.mts"
+    "proof": "node scripts/proof.mts",
+    "brand": "bash scripts/brand.sh"
   },
   "dependencies": {
     "@expo-google-fonts/bricolage-grotesque": "^0.4.1",

@@ -1,0 +1,13 @@
+<!--
+  Corridor mark, without the arrival dot.
+
+  This is the working form: the one used in-product wherever the mark is small or
+  repeated (nav chrome, the currency divider), where the dot reads as noise rather
+  than as arrival. Matches `<Mark />` at its default `dot={false}`.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100" fill="none" role="img" aria-label="Corridor">
+  <title>Corridor</title>
+  <line x1="30" y1="20" x2="30" y2="80" stroke="#C9A35C" stroke-width="4" stroke-linecap="round"/>
+  <line x1="66" y1="32" x2="66" y2="68" stroke="#C9A35C" stroke-width="4" stroke-linecap="round"/>
+  <line x1="30" y1="80" x2="66" y2="32" stroke="#E0BC7C" stroke-width="2.5" stroke-linecap="round"/>
+</svg>

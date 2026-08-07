@@ -1,0 +1,37 @@
+<!--
+  Corridor lockup: mark plus wordmark.
+
+  The wordmark is set in Bricolage Grotesque SemiBold, lowercase, -0.02em tracking,
+  in `paper` (#F6F3EC), the display face from the identity spec.
+
+  NOTE ON THE TEXT: this file keeps the wordmark as a live <text> element, so it only
+  renders correctly where Bricolage Grotesque is installed. For anything you hand to
+  someone else (a deck, a README, a press kit) use the rendered PNGs in this folder
+  (`lockup-*.png`), which are rasterised against the bundled TTF and carry no font
+  dependency. Outlining the text here would make this file un-editable, which is the
+  wrong trade for a source asset.
+-->
+
+<!--
+  The viewBox is cropped to the artwork (measured content box: 258.8×68.4 at 5.8,25.8)
+  rather than sitting in a round 300×120 canvas. A transparent logo carrying 35 units
+  of trailing whitespace centres wrong in every layout it's dropped into, and the
+  person dropping it in has no way to know the whitespace is there.
+  Drawing coordinates are unchanged; only the window onto them moved.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="260" height="70" viewBox="5 25 260 70" fill="none" role="img" aria-label="Corridor">
+  <title>Corridor</title>
+
+  <!-- mark: 100-unit geometry, scaled to a 64px cap height and set on the baseline -->
+  <g transform="translate(-24, 6.667) scale(1.0667)">
+    <line x1="30" y1="20" x2="30" y2="80" stroke="#C9A35C" stroke-width="4" stroke-linecap="round"/>
+    <line x1="66" y1="32" x2="66" y2="68" stroke="#C9A35C" stroke-width="4" stroke-linecap="round"/>
+    <line x1="30" y1="80" x2="66" y2="32" stroke="#E0BC7C" stroke-width="2.5" stroke-linecap="round"/>
+    <circle cx="66" cy="32" r="3.5" fill="#E0BC7C"/>
+  </g>
+
+  <text x="66" y="80"
+        font-family="'Bricolage Grotesque', 'Inter', system-ui, sans-serif"
+        font-size="58" font-weight="600" letter-spacing="-1.16"
+        fill="#F6F3EC">corridor</text>
+</svg>

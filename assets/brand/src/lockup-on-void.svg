@@ -1,0 +1,36 @@
+<!--
+  Lockup on a void plate.
+
+  This is the variant to reach for on any surface Corridor doesn't control: a GitHub
+  README, a slide template, someone else's deck. The bare `lockup.svg` sets the
+  wordmark in `paper` (#F6F3EC) on transparency, which disappears on a light page.
+
+  The alternative would be a light-background lockup with the wordmark in ink, but
+  that also needs a darker sightline to stay legible on white (`gold-bright` on paper
+  is nearly invisible), and there is no such value in the locked palette. Adding one
+  is an identity-spec decision, not an export-script decision. So: plate it.
+-->
+<!--
+  Plate is 330×140 around a measured content box of 258.8×68.4, which lands 35.6 units
+  of margin on the left and right against 35.8 top and bottom, i.e. even on all four
+  sides. The first cut used a 360-wide plate and a translate of 30, which looked
+  balanced in the markup and was not: 35.8 left against 65.4 right, because the
+  wordmark's advance width is nothing like the canvas width. Measure, don't eyeball.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="330" height="140" viewBox="0 0 330 140" fill="none" role="img" aria-label="Corridor">
+  <title>Corridor</title>
+  <rect width="330" height="140" rx="24" fill="#14120F"/>
+
+  <g transform="translate(29.8, 10)">
+    <g transform="translate(-24, 6.667) scale(1.0667)">
+      <line x1="30" y1="20" x2="30" y2="80" stroke="#C9A35C" stroke-width="4" stroke-linecap="round"/>
+      <line x1="66" y1="32" x2="66" y2="68" stroke="#C9A35C" stroke-width="4" stroke-linecap="round"/>
+      <line x1="30" y1="80" x2="66" y2="32" stroke="#E0BC7C" stroke-width="2.5" stroke-linecap="round"/>
+      <circle cx="66" cy="32" r="3.5" fill="#E0BC7C"/>
+    </g>
+    <text x="66" y="80"
+          font-family="'Bricolage Grotesque', 'Inter', system-ui, sans-serif"
+          font-size="58" font-weight="600" letter-spacing="-1.16"
+          fill="#F6F3EC">corridor</text>
+  </g>
+</svg>

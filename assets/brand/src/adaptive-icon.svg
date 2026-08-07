@@ -1,0 +1,16 @@
+<!--
+  Android adaptive icon, foreground layer. Transparent; the background comes from
+  `android.adaptiveIcon.backgroundColor` in app.json (`void`, #14120F).
+
+  Android crops this to an OEM-chosen shape, so only the central 66% is guaranteed
+  visible. The mark is drawn at ×7.333 here rather than the iOS ×8.667: bounding-box
+  diagonal 513px against a 676px safe circle, which survives the roundest mask.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" fill="none">
+  <g transform="translate(160, 145.333) scale(7.333)">
+    <line x1="30" y1="20" x2="30" y2="80" stroke="#C9A35C" stroke-width="4" stroke-linecap="round"/>
+    <line x1="66" y1="32" x2="66" y2="68" stroke="#C9A35C" stroke-width="4" stroke-linecap="round"/>
+    <line x1="30" y1="80" x2="66" y2="32" stroke="#E0BC7C" stroke-width="2.5" stroke-linecap="round"/>
+    <circle cx="66" cy="32" r="3.5" fill="#E0BC7C"/>
+  </g>
+</svg>

@@ -7,6 +7,7 @@
     "scheme": "corridor",
     "userInterfaceStyle": "dark",
     "backgroundColor": "#14120F",
+    "icon": "./assets/icon.png",
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": false,
@@ -14,12 +15,27 @@
     },
     "android": {
       "package": "dev.corridor.app",
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#14120F"
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
     },
     "plugins": [
       "expo-router",
       "expo-font",
-      "expo-splash-screen"
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 180,
+          "resizeMode": "contain",
+          "backgroundColor": "#14120F"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

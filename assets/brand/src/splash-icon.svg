@@ -1,0 +1,15 @@
+<!--
+  Splash image source. Transparent; `expo-splash-screen` paints `void` behind it,
+  which keeps the launch surface identical to the app's own background and means the
+  hand-off into the welcome screen has nothing to flash.
+
+  Same geometry as the iOS icon, minus the plate.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024" fill="none">
+  <g transform="translate(96, 78.667) scale(8.667)">
+    <line x1="30" y1="20" x2="30" y2="80" stroke="#C9A35C" stroke-width="4" stroke-linecap="round"/>
+    <line x1="66" y1="32" x2="66" y2="68" stroke="#C9A35C" stroke-width="4" stroke-linecap="round"/>
+    <line x1="30" y1="80" x2="66" y2="32" stroke="#E0BC7C" stroke-width="2.5" stroke-linecap="round"/>
+    <circle cx="66" cy="32" r="3.5" fill="#E0BC7C"/>
+  </g>
+</svg>
