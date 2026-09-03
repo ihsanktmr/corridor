@@ -99,6 +99,12 @@ export default function Home() {
   );
 }
 
+const LEAD_TONE: Partial<Record<ReturnType<typeof statusOf>['tone'], 'success' | 'warning' | 'error'>> = {
+  done: 'success',
+  wait: 'warning',
+  fail: 'error',
+};
+
 function ActivityRow({ transfer, last }: { transfer: Transfer; last: boolean }) {
   const { tone, label } = statusOf(transfer);
 
@@ -106,6 +112,7 @@ function ActivityRow({ transfer, last }: { transfer: Transfer; last: boolean }) 
     <View>
       <ListRow
         lead="TR"
+        {...(LEAD_TONE[tone] ? { leadTone: LEAD_TONE[tone] } : {})}
         title="Elif Yıldız"
         subtitle={`${new Date(transfer.events[0]?.at ?? Date.now()).toLocaleDateString('en-US', {
           month: 'short',

@@ -44,14 +44,14 @@ export const type = {
   displayXL: {
     fontFamily: face.display,
     fontSize: 46,
-    letterSpacing: -1.4,
+    letterSpacing: -1.7,
     lineHeight: 52,
     color: color.paper,
   },
   displayL: {
     fontFamily: face.display,
     fontSize: 34,
-    letterSpacing: -0.9,
+    letterSpacing: -1.1,
     lineHeight: 40,
     color: color.paper,
   },

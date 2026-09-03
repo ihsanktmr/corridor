@@ -218,10 +218,20 @@ export function Amount({
   }
 
   const style = size === 'hero' ? type.displayXL : type.displayL;
+  const raw = value.currency === 'USDC' ? formatBare(value, { decimals: 2 }) : format(value);
+  const decimalAt = raw.lastIndexOf('.');
+  const whole = decimalAt === -1 ? raw : raw.slice(0, decimalAt);
+  const cents = decimalAt === -1 ? '' : raw.slice(decimalAt);
+
   return (
     <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: space.sm }}>
       <Text style={style}>
-        {value.currency === 'USDC' ? formatBare(value, { decimals: 2 }) : format(value)}
+        {whole}
+        {/* Weight/colour break on the decimals, not just a smaller size: the
+            move that reads as "designed" rather than the OS default at scale. */}
+        {cents ? (
+          <Text style={{ fontSize: style.fontSize * 0.62, color: color.mist, letterSpacing: 0 }}>{cents}</Text>
+        ) : null}
       </Text>
       {caret ? <Caret /> : null}
       {showCurrency ? (
@@ -412,6 +422,14 @@ export function ListRow({
         : leadTone === 'error'
           ? 'rgba(181,105,90,0.14)'
           : color.concreteRaised;
+  const leadFg =
+    leadTone === 'success'
+      ? color.success
+      : leadTone === 'warning'
+        ? color.warning
+        : leadTone === 'error'
+          ? color.error
+          : color.gold;
   return (
     <View
       style={{
@@ -434,7 +452,7 @@ export function ListRow({
           }}
         >
           {leadNode ?? (
-            <Text style={{ fontSize: 11.5, fontFamily: face.semibold, color: color.gold }}>{lead}</Text>
+            <Text style={{ fontSize: 11.5, fontFamily: face.semibold, color: leadFg }}>{lead}</Text>
           )}
         </View>
       ) : null}
