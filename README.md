@@ -1,5 +1,7 @@
 # Corridor
 
+[![ci](https://github.com/ihsanktmr/corridor/actions/workflows/ci.yml/badge.svg)](https://github.com/ihsanktmr/corridor/actions/workflows/ci.yml)
+
 A stablecoin remittance case study: **USD → USDC → TRY payout**, built to demonstrate product design and integration architecture for consumer fintech.
 
 <p align="center">
