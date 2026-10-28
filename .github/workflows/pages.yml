@@ -1,0 +1,70 @@
+name: pages
+
+# Publishes the case-study documents and the app's web build together.
+#
+#   /corridor/                 README index and the five corridor-*.html docs
+#   /corridor/demo/            the app, exported with expo-router's base URL
+#
+# The docs go through the same Jekyll build the legacy branch deploy used, so
+# their URLs and the README index are unchanged.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+env:
+  BASE: /corridor/demo
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+
+      # Before npm ci, so node_modules is never part of the site.
+      - uses: actions/jekyll-build-pages@v1
+        with:
+          source: ./
+          destination: ./_site
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npx expo export --platform web --output-dir dist-web
+        env:
+          EXPO_BASE_URL: ${{ env.BASE }}
+
+      # The export is a single-page app, so a refresh or a shared deep link
+      # (/corridor/demo/demo/receipt) has no file behind it. Pages answers those
+      # with 404.html, which is the app itself; any other missing path is sent
+      # back to the docs rather than booting the app outside its base URL.
+      - name: Place the app and its deep-link fallback
+        run: |
+          sudo cp -r dist-web "_site/demo"
+          sed "s#<head>#<head><script>if(!location.pathname.startsWith('$BASE/'))location.replace('/corridor/')</script>#" \
+            dist-web/index.html | sudo tee _site/404.html > /dev/null
+
+      - uses: actions/upload-pages-artifact@v3
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

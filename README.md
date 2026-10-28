@@ -28,6 +28,8 @@ One corridor, one flow: on-ramp → KYC gate → USDC send → Turkish lira payo
 
 **No money moves here.** See [What's real](#whats-real) before reading anything else.
 
+**[Try it in your browser →](https://ihsanktmr.github.io/corridor/demo/)** The whole flow, every rail simulated and labelled as such.
+
 ---
 
 ## The documents
@@ -104,7 +106,7 @@ corridor://demo/review      corridor://demo/inflight    corridor://demo/receipt
 corridor://demo/expired     corridor://demo/returned    corridor://demo/kyc-resubmit
 ```
 
-These build the same event log the real timeline produces. No screen special-cases them.
+These build the same event log the real timeline produces. No screen special-cases them. They work on the hosted demo too, for example [`/demo/demo/receipt`](https://ihsanktmr.github.io/corridor/demo/demo/receipt) or [`/demo/demo/returned`](https://ihsanktmr.github.io/corridor/demo/demo/returned).
 
 ```bash
 npm test           # 49 tests: domain, plus the full flow end to end
