@@ -7,6 +7,7 @@
     "start": "expo start",
     "ios": "expo start --ios",
     "android": "expo start --android",
+    "web": "expo start --web",
     "typecheck": "tsc --noEmit",
     "test": "node --test domain/*.test.ts services/*.test.ts",
     "proof": "node scripts/proof.mts",
@@ -16,6 +17,7 @@
     "@expo-google-fonts/bricolage-grotesque": "^0.4.1",
     "@expo-google-fonts/ibm-plex-mono": "^0.4.1",
     "@expo-google-fonts/inter": "^0.4.2",
+    "@expo/metro-runtime": "~57.0.17",
     "expo": "~57.0.9",
     "expo-constants": "~57.0.8",
     "expo-font": "~57.0.1",
@@ -25,10 +27,12 @@
     "expo-status-bar": "~57.0.1",
     "expo-updates": "~57.0.12",
     "react": "19.2.3",
+    "react-dom": "19.2.3",
     "react-native": "0.86.2",
     "react-native-safe-area-context": "~5.7.0",
     "react-native-screens": "~4.26.0",
-    "react-native-svg": "15.15.4"
+    "react-native-svg": "15.15.4",
+    "react-native-web": "^0.21.2"
   },
   "devDependencies": {
     "@types/node": "^26.1.2",

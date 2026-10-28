@@ -111,7 +111,7 @@ npm test           # 49 tests: domain, plus the full flow end to end
 npm run typecheck  # strict + noUncheckedIndexedAccess + exactOptionalPropertyTypes
 ```
 
-**iOS and Android only.** Privy's Expo SDK has no web target, so there is no browser build.
+**It also runs in a browser:** `npm run web`. The wallet is behind the provider seam, so the build has no native-only dependency; a real Privy adapter would change that, since Privy's Expo SDK has no web target.
 
 ---
 
