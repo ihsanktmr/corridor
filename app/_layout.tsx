@@ -15,7 +15,8 @@ import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
+import { useEffect, type ReactNode } from 'react';
+import { Platform, View, useWindowDimensions } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { color } from '../theme/tokens';
@@ -51,18 +52,51 @@ export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <StatusBar style="light" />
-      <Stack
-        screenOptions={{
-          headerShown: false,
-          contentStyle: { backgroundColor: color.void },
-          // Horizontal push, native stack defaults: 250ms ease-out.
-          animation: 'slide_from_right',
+      <PhoneColumn>
+        <Stack
+          screenOptions={{
+            headerShown: false,
+            contentStyle: { backgroundColor: color.void },
+            // Horizontal push, native stack defaults: 250ms ease-out.
+            animation: 'slide_from_right',
+          }}
+        >
+          <Stack.Screen name="index" options={{ animation: 'fade' }} />
+          <Stack.Screen name="transfer/status" options={{ gestureEnabled: false }} />
+          <Stack.Screen name="transfer/receipt" options={{ animation: 'slide_from_bottom' }} />
+        </Stack>
+      </PhoneColumn>
+    </SafeAreaProvider>
+  );
+}
+
+/** The 393-wide frame every screen was designed at, plus a little room. */
+const COLUMN = 430;
+
+/**
+ * On a desktop browser, hold the app to a phone-width column.
+ *
+ * Every screen was designed at 393×852 with one primary CTA docked full-width at
+ * the bottom; stretched across a laptop, that dock becomes a 1,200px bar and the
+ * layout stops reading as an app. Native and phone-width browsers are untouched.
+ */
+function PhoneColumn({ children }: { children: ReactNode }) {
+  const { width } = useWindowDimensions();
+  if (Platform.OS !== 'web' || width <= COLUMN) return <>{children}</>;
+
+  return (
+    <View style={{ flex: 1, backgroundColor: color.void, alignItems: 'center' }}>
+      <View
+        style={{
+          flex: 1,
+          width: COLUMN,
+          borderLeftWidth: 1,
+          borderRightWidth: 1,
+          borderColor: color.line,
         }}
       >
-        <Stack.Screen name="index" options={{ animation: 'fade' }} />
-        <Stack.Screen name="transfer/status" options={{ gestureEnabled: false }} />
-        <Stack.Screen name="transfer/receipt" options={{ animation: 'slide_from_bottom' }} />
-      </Stack>
-    </SafeAreaProvider>
+        {children}
+      </View>
+    </View>
   );
 }
