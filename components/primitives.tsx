@@ -129,14 +129,20 @@ export function Chip({
   value,
   muted = false,
   onPress,
+  label,
 }: {
   value: string;
   muted?: boolean;
   onPress?: () => void;
+  /** Read instead of the shortened value, which means nothing aloud. */
+  label?: string;
 }) {
   return (
     <Pressable
       onPress={onPress}
+      disabled={!onPress}
+      {...(onPress ? { accessibilityRole: 'link' as const } : {})}
+      {...(label ? { accessibilityLabel: label } : {})}
       style={{
         flexDirection: 'row',
         alignItems: 'center',

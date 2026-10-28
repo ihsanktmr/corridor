@@ -141,6 +141,8 @@ export function Keypad({ value, onChange }: { value: string; onChange: (next: st
         <Pressable
           key={key}
           onPress={() => press(key)}
+          accessibilityRole="button"
+          accessibilityLabel={KEY_LABEL[key] ?? key}
           style={({ pressed }) => ({
             width: '33.33%',
             height: 52,
@@ -172,6 +174,9 @@ export function Keypad({ value, onChange }: { value: string; onChange: (next: st
 // Confirm slider
 // ─────────────────────────────────────────────────────────────────────────────
 
+/** What a screen reader says for the two keys that are glyphs, not digits. */
+const KEY_LABEL: Partial<Record<string, string>> = { '⌫': 'Delete', '.': 'Decimal point' };
+
 const TRACK_INSET = 4;
 const KNOB_WIDTH = 64;
 
@@ -181,6 +186,10 @@ const KNOB_WIDTH = 64;
  * Deliberate friction proportional to irreversibility. Exactly one of these exists
  * in the app, on screen 08. If a second ever appears, the first has stopped meaning
  * anything.
+ *
+ * A drag is not something a screen-reader user can perform, so the control also
+ * exposes an `activate` action. Focusing it, hearing "Slide to send $503.75", and
+ * double-tapping is already a deliberate act; the friction survives the translation.
  */
 export function ConfirmSlider({
   label,
@@ -223,6 +232,15 @@ export function ConfirmSlider({
 
   return (
     <View
+      accessible
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      accessibilityHint="Double-tap to confirm and send"
+      accessibilityState={{ disabled }}
+      accessibilityActions={[{ name: 'activate' }]}
+      onAccessibilityAction={(e) => {
+        if (e.nativeEvent.actionName === 'activate' && !disabled) onConfirm();
+      }}
       onLayout={(e) => {
         width.current = e.nativeEvent.layout.width;
       }}

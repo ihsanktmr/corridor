@@ -119,6 +119,7 @@ export default function Receipt() {
           <Text style={[type.micro, { marginBottom: 11 }]}>on-chain proof</Text>
           <Chip
             value={transfer.txHash ? shortHash(transfer.txHash) : '—'}
+            label="View the transaction on BaseScan"
             onPress={() => {
               if (transfer.txHash) void Linking.openURL(explorer);
             }}
