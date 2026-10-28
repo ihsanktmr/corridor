@@ -1,0 +1,33 @@
+<!--
+  Link-preview card for the case-study pages: og:image and twitter:image.
+
+  1200×630 is the 1.91:1 frame LinkedIn, X and Slack all crop to; anything wider (the
+  2400×646 lockup) gets letterboxed or cut. The lockup reuses the measured content box
+  from lockup-on-void.svg (258.8×68.4 at local 5.8,25.8), scaled ×2.4 and centred:
+  translate x = (1200 − 621.1) / 2 − 5.8 × 2.4.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" fill="none" role="img" aria-label="Corridor">
+  <title>Corridor</title>
+  <rect width="1200" height="630" fill="#14120F"/>
+
+  <text x="600" y="180" text-anchor="middle"
+        font-family="'Inter', system-ui, sans-serif" font-size="22" font-weight="500"
+        letter-spacing="3.5" fill="#A39C8E">STABLECOIN REMITTANCE CASE STUDY · USD → TRY</text>
+
+  <g transform="translate(275.5, 153.1) scale(2.4)">
+    <g transform="translate(-24, 6.667) scale(1.0667)">
+      <line x1="30" y1="20" x2="30" y2="80" stroke="#C9A35C" stroke-width="4" stroke-linecap="round"/>
+      <line x1="66" y1="32" x2="66" y2="68" stroke="#C9A35C" stroke-width="4" stroke-linecap="round"/>
+      <line x1="30" y1="80" x2="66" y2="32" stroke="#E0BC7C" stroke-width="2.5" stroke-linecap="round"/>
+      <circle cx="66" cy="32" r="3.5" fill="#E0BC7C"/>
+    </g>
+    <text x="66" y="80"
+          font-family="'Bricolage Grotesque', 'Inter', system-ui, sans-serif"
+          font-size="58" font-weight="600" letter-spacing="-1.16"
+          fill="#F6F3EC">corridor</text>
+  </g>
+
+  <text x="600" y="455" text-anchor="middle"
+        font-family="'Inter', system-ui, sans-serif" font-size="30" font-weight="400"
+        fill="#F6F3EC">Your dollars, still dollars, on the other side.</text>
+</svg>

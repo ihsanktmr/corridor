@@ -23,6 +23,7 @@ command -v rsvg-convert >/dev/null || {
 SRC=assets/brand/src     # hand-authored, source of truth
 LOGO=assets/brand/logo   # generated, safe to delete
 FONT_DIR=node_modules/@expo-google-fonts/bricolage-grotesque
+INTER_DIR=node_modules/@expo-google-fonts/inter   # the og card's caption
 
 mkdir -p "$LOGO"
 
@@ -39,6 +40,7 @@ cat > "$FC_DIR/fonts.conf" <<EOF
 <!DOCTYPE fontconfig SYSTEM "fonts.dtd">
 <fontconfig>
   <dir>$(pwd)/$FONT_DIR</dir>
+  <dir>$(pwd)/$INTER_DIR</dir>
   <dir>/System/Library/Fonts</dir>
   <dir>/Library/Fonts</dir>
   <cachedir>$FC_DIR/cache</cachedir>
@@ -78,6 +80,10 @@ outline $SRC/lockup.svg         $LOGO/corridor-logo-on-dark.svg
 render  $SRC/mark.svg           $LOGO/corridor-mark.png          1024 1024
 cp      $SRC/mark.svg           $LOGO/corridor-mark.svg  # no text, nothing to outline
 echo "  $LOGO/corridor-mark.svg  vector"
+
+# Link previews for the case-study pages on GitHub Pages; the docs point og:image here.
+echo "social"
+render  $SRC/og-card.svg        $LOGO/corridor-og.png            1200  630
 
 # iOS rejects an alpha channel on the store icon; rsvg emits RGBA regardless.
 if command -v magick >/dev/null; then

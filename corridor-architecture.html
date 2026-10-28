@@ -4,6 +4,17 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Corridor: integration architecture</title>
+<meta name="description" content="Provider audit, trust boundary, contracts and the transfer state machine behind a USD to TRY stablecoin remittance app.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Corridor">
+<meta property="og:title" content="Corridor: integration architecture">
+<meta property="og:description" content="Provider audit, trust boundary, contracts and the transfer state machine behind a USD to TRY stablecoin remittance app.">
+<meta property="og:url" content="https://ihsanktmr.github.io/corridor/corridor-architecture.html">
+<meta property="og:image" content="https://ihsanktmr.github.io/corridor/assets/brand/logo/corridor-og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://ihsanktmr.github.io/corridor/assets/brand/logo/corridor-og.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -133,8 +144,28 @@ pre.code .h{color:var(--gold-bright);}
 .footer-mark{display:flex;align-items:center;gap:12px;margin-top:52px;}
 .footer-mark p{font-size:12.5px;color:var(--mist);margin:0;}
 </style>
+<style>
+/* Case-study strip: the five documents, shared verbatim across every page. */
+.docnav{background:#14120F;border-bottom:1px solid #332E24;}
+.docnav .inner{max-width:980px;margin:0 auto;padding:9px 24px;display:flex;align-items:center;gap:18px;overflow-x:auto;font-family:'Inter',system-ui,sans-serif;font-size:11.5px;}
+.docnav .lbl{color:#A39C8E;letter-spacing:0.08em;text-transform:uppercase;font-size:10.5px;white-space:nowrap;flex-shrink:0;}
+.docnav a{color:#A39C8E;text-decoration:none;white-space:nowrap;}
+.docnav a:hover{color:#F6F3EC;}
+.docnav a[aria-current="page"]{color:#E0BC7C;}
+</style>
 </head>
 <body>
+<nav class="docnav" aria-label="Case study documents">
+  <div class="inner">
+    <span class="lbl">Corridor case study</span>
+    <a href="corridor-identity.html">Identity</a>
+    <a href="corridor-screens.html">Screens</a>
+    <a href="corridor-architecture.html" aria-current="page">Architecture</a>
+    <a href="corridor-diagram.html">Diagram</a>
+    <a href="corridor-failure-modes.html">Failure modes</a>
+    <a href="https://github.com/ihsanktmr/corridor">Repo</a>
+  </div>
+</nav>
 
 <svg style="display:none" aria-hidden="true">
   <symbol id="mark" viewBox="0 0 100 100">
