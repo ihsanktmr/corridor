@@ -2,8 +2,8 @@
  * Provider registry and route table.
  *
  * This is the only file that knows whether a leg is real or simulated. It decides
- * once, at module load, from the environment. There is no `isMock` branch anywhere
- * above this line: not in the orchestrator, not in a service, not in a screen.
+ * once, at module load. There is no `isMock` branch anywhere above this line: not
+ * in the orchestrator, not in a service, not in a screen.
  *
  * Adding a corridor is a row in `ROUTES` plus an adapter. Not a release.
  */
@@ -55,23 +55,15 @@ export const ROUTES: Record<CorridorId, RouteBinding> = {
 /** The corridor this build ships. */
 export const ACTIVE_CORRIDOR: CorridorId = 'USD:TRY';
 
-interface Env {
-  readonly BRIDGE_KEY?: string;
-  readonly TRY_PARTNER_KEY?: string;
-  readonly KYC_KEY?: string;
-  readonly PRIVY_APP_ID?: string;
-}
-
 /**
- * Real adapters bind when their credential is present.
- *
- * None are present in this build, and the shape of this function is the honest
- * reason why: `bridge.usd.ach` would bind to a real client the moment a sandbox key
- * existed, and the surrounding pipeline would not change.
+ * Every slot is bound to a simulated adapter, because no real one exists yet: each
+ * is waiting on a credential this build cannot get (see the disclosures). When one
+ * arrives, its adapter replaces the simulated one in its slot here, chosen by
+ * whether the key is present, and nothing outside this function changes.
  */
-function selectProviders(env: Env) {
+function selectProviders() {
   return {
-    onramp: (env.BRIDGE_KEY ? new SimulatedOnramp() : new SimulatedOnramp()) as OnrampProvider,
+    onramp: new SimulatedOnramp() as OnrampProvider,
     payouts: {
       'turkiye.try.bank': new SimulatedTurkiyePayout() as PayoutProvider,
       'bridge.mxn.spei': new SimulatedBridgePayout() as PayoutProvider,
@@ -81,9 +73,7 @@ function selectProviders(env: Env) {
   };
 }
 
-const env: Env = {};
-
-export const providers = selectProviders(env);
+export const providers = selectProviders();
 
 export function payoutFor(corridor: CorridorId): PayoutProvider {
   const binding = ROUTES[corridor];
