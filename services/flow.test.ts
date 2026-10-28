@@ -3,7 +3,7 @@ import { test, describe, after } from 'node:test';
 
 import { format } from '../domain/money.ts';
 import { formatRate } from '../domain/rate.ts';
-import { LOCAL_WEBHOOK_SECRET } from '../providers/simulated.ts';
+import { LOCAL_WEBHOOK_SECRET, setKycOutcome, setPayoutOutcome } from '../providers/simulated.ts';
 import {
   addRecipient,
   createQuote,
@@ -14,8 +14,6 @@ import {
   requote,
   reset,
   seedDemo,
-  setKycOutcome,
-  setPayoutOutcome,
   startKyc,
   submitKycDocuments,
   submitTransfer,
@@ -65,6 +63,7 @@ describe('the full path: welcome to receipt', () => {
     // 01 → 02
     await login('demo@corridor.dev');
     assert.ok(getState().session, 'login must produce a session');
+    const opening = getState().balance;
 
     // 03: the quote
     const quoted = createQuote('500.00');
@@ -102,11 +101,20 @@ describe('the full path: welcome to receipt', () => {
     // A delivered payout marks the recipient verified for next time.
     assert.equal(getState().recipients.find((r) => r.id === recipient.id)?.verified, true);
 
-    // The partner retries its webhook. Ingress acknowledges it and the log is unchanged.
+    // Funded by ACH, so the wallet only carried the USDC through: minted in, sent out.
+    assert.equal(getState().balance.minor, opening.minor, 'an ACH-funded send nets to zero');
+
+    // Both vendors retry their webhooks. Ingress acknowledges them, the log is
+    // unchanged, and a second settlement does not trigger a second chain send.
     assert.ok(
       ingest(submitted.transferId, 'turkiye.try.bank', { event: 'payout.delivered' }, LOCAL_WEBHOOK_SECRET),
     );
+    assert.ok(
+      ingest(submitted.transferId, 'bridge.usd.ach', { event: 'deposit.settled', amount: '503.75' }, LOCAL_WEBHOOK_SECRET),
+    );
+    await new Promise((r) => setTimeout(r, 50));
     assert.equal(transferById(submitted.transferId)!.events.length, done.events.length);
+    assert.equal(getState().balance.minor, opening.minor);
     assert.match(done.reference, /^CRD-[0-9A-F]{4}-[0-9A-F]{4}$/);
   });
 });
@@ -139,7 +147,11 @@ describe('the failure path stays walkable', () => {
     assert.equal(settled?.t === 'onramp_settled' && format(settled.amount), '$203.75');
     assert.equal(format(t.minted!), '200.000000 USDC');
     assert.equal(format(t.refunded), '200.000000 USDC');
-    assert.equal(getState().balance.minor, before.minor, 'what left the balance came back');
+    // The ACH-funded USDC came back to the wallet rather than to the bank, so the
+    // balance is up by exactly the send amount.
+    // Read back from the wallet just after the event lands, as the UI sees it.
+    const refundedBalance = before.minor + t.minted!.minor;
+    await waitFor(() => getState().balance.minor === refundedBalance, 'refund back in the wallet');
 
     setPayoutOutcome('deliver');
   });

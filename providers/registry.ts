@@ -10,6 +10,7 @@
 
 import type { CorridorId } from '../domain/quote.ts';
 import type {
+  Ingress,
   KycProvider,
   OnrampProvider,
   PayoutProvider,
@@ -18,6 +19,8 @@ import type {
   WalletProvider,
 } from './contracts.ts';
 import {
+  connectSimulatedIngress,
+  resetSimulation,
   SimulatedBridgePayout,
   SimulatedKyc,
   SimulatedOnramp,
@@ -74,6 +77,21 @@ function selectProviders() {
 }
 
 export const providers = selectProviders();
+
+/**
+ * Point the bound providers' webhooks at Corridor's ingress.
+ *
+ * For a real adapter this is configuration in the vendor's dashboard, not code, so
+ * only the simulated ones need telling.
+ */
+export function connectIngress(target: Ingress): void {
+  connectSimulatedIngress(target);
+}
+
+/** Test seam: a fresh fixture world under every simulated slot. */
+export function resetProviders(): void {
+  resetSimulation();
+}
 
 export function payoutFor(corridor: CorridorId): PayoutProvider {
   const binding = ROUTES[corridor];

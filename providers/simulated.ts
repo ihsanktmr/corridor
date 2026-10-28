@@ -5,18 +5,24 @@
  * vocabulary. Nothing above the registry knows they exist; there is no `isMock`
  * branch in the orchestrator, the services, or any screen.
  *
+ * They also behave like vendors in time: a call returns a reference, and the result
+ * arrives later as a signed webhook to Corridor's ingress. Value moves on a shared
+ * simulated USDC ledger, so the wallet balance the app reads is the one the on-ramp
+ * minted into and a returned payout paid back to.
+ *
  * Fixtures encode *timing*, not just payloads. The ACH leg settles at T+2 in
  * wall-clock terms, compressed by `DEMO_SPEED` for a walkthrough. A mock that
  * returned instantly would have hidden the entire `funded_held` design.
  */
 
-import { parseAmount, type Money } from '../domain/money.ts';
+import { formatBare, parseAmount, type Money } from '../domain/money.ts';
 import type { CorridorId, FiatRail } from '../domain/quote.ts';
 import { validateTurkishIban, maskIban, IBAN_MESSAGES } from '../domain/iban.ts';
 import type { TransferEvent } from '../domain/transfer.ts';
 import type {
   DepositRequest,
   Destination,
+  Ingress,
   KycEvent,
   KycProvider,
   OnrampProvider,
@@ -71,6 +77,60 @@ function addBankingDays(from: Date, days: number): Date {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// The simulated world: a USDC ledger, ingress, and fixture outcomes
+// ─────────────────────────────────────────────────────────────────────────────
+
+/** The locked demo address and hash. See the tracker's demo-data block. */
+const DEMO_ADDRESS = '0x477Fb9fA92b264Fe8f636bA6EA5415dd21a392a3';
+const DEMO_TX = '0x551c67045ddfe8e8fb94fdad1ca0b5ffd078d3ca50f167531f0680722a55ba10';
+const OPENING_BALANCE = parseAmount('USDC', '1284.50');
+
+/** USDC by address, in minor units. Stands in for the chain the wallet reads. */
+const ledger = new Map<string, bigint>();
+
+function credit(address: string, amount: Money): void {
+  ledger.set(address, (ledger.get(address) ?? 0n) + amount.minor);
+}
+
+let ingress: Ingress | null = null;
+
+/** Where the simulated vendors deliver their webhooks. Called once by the registry. */
+export function connectSimulatedIngress(target: Ingress): void {
+  ingress = target;
+}
+
+let kycOutcome: 'approved' | 'resubmit' = 'approved';
+let payoutOutcome: 'deliver' | 'return' = 'deliver';
+
+/** Test seam: the next KYC verdict. `resubmit` drives screen 11b. */
+export function setKycOutcome(outcome: 'approved' | 'resubmit'): void {
+  kycOutcome = outcome;
+}
+
+/** Test seam: what the payout partner does next. `return` drives screen 11c. */
+export function setPayoutOutcome(outcome: 'deliver' | 'return'): void {
+  payoutOutcome = outcome;
+}
+
+/**
+ * Test seam: a fresh simulated world. Webhooks already scheduled still fire, but
+ * against transfers ingress no longer knows, so they are dropped.
+ */
+export function resetSimulation(): void {
+  ledger.clear();
+  credit(DEMO_ADDRESS, OPENING_BALANCE);
+  kycOutcome = 'approved';
+  payoutOutcome = 'deliver';
+}
+
+resetSimulation();
+
+/** Runs `fn` after a real-world duration, compressed for the demo. */
+function later(realMs: number, fn: () => void): void {
+  setTimeout(fn, demoDelay(realMs));
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // On-ramp: Bridge USD/ACH
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -96,8 +156,25 @@ export class SimulatedOnramp implements OnrampProvider {
     return addBankingDays(from, 2);
   }
 
+  private readonly deposits = new Set<string>();
+
   async createDeposit(req: DepositRequest, idem: string): Promise<string> {
-    return `br_${idem.replace(/[^a-z0-9]/gi, '').slice(0, 12)}`;
+    const ref = `br_${idem.replace(/[^a-z0-9]/gi, '').slice(0, 12)}`;
+    // Idempotent on the key, as Bridge is: a retried call returns the first deposit.
+    if (this.deposits.has(idem)) return ref;
+    this.deposits.add(idem);
+
+    const settles = req.rail === 'ach' ? SETTLEMENT.ach : req.rail === 'wire' ? SETTLEMENT.wire : SETTLEMENT.card;
+    later(settles, () => {
+      credit(req.destination, req.deliver);
+      ingress?.transfer(
+        req.transferId,
+        this.meta.id,
+        { event: 'deposit.settled', amount: formatBare(req.amount) },
+        LOCAL_WEBHOOK_SECRET,
+      );
+    });
+    return ref;
   }
 
   parseWebhook(raw: unknown, sig: string): TransferEvent | null {
@@ -151,8 +228,30 @@ export class SimulatedTurkiyePayout implements PayoutProvider {
     return { ok: true, bank: result.bank, masked: maskIban(result.normalised) };
   }
 
+  private readonly payouts = new Set<string>();
+
   async submit(req: PayoutRequest, idem: string): Promise<string> {
-    return `tr_${idem.replace(/[^a-z0-9]/gi, '').slice(0, 12)}`;
+    const ref = `tr_${idem.replace(/[^a-z0-9]/gi, '').slice(0, 12)}`;
+    if (this.payouts.has(idem)) return ref;
+    this.payouts.add(idem);
+
+    const send = (body: Record<string, unknown>) =>
+      ingress?.transfer(req.transferId, this.meta.id, body, LOCAL_WEBHOOK_SECRET);
+
+    later(SETTLEMENT.payout, () => {
+      if (payoutOutcome === 'deliver') {
+        send({ event: 'payout.delivered' });
+        return;
+      }
+      send({ event: 'payout.returned', reason: 'name_mismatch' });
+      // The bank bounced the lira; the partner sends the USDC back to the address
+      // that funded it. That is what lets screen 11c lead with "your money is safe".
+      later(2 * 60_000, () => {
+        credit(req.funding.from, req.funding.amount);
+        send({ event: 'payout.refunded', amount: formatBare(req.funding.amount) });
+      });
+    });
+    return ref;
   }
 
   parseWebhook(raw: unknown, sig: string): TransferEvent | null {
@@ -165,6 +264,8 @@ export class SimulatedTurkiyePayout implements PayoutProvider {
         return { t: 'payout_delivered' };
       case 'payout.returned':
         return { t: 'payout_returned', reason: (body.reason as 'name_mismatch') ?? 'bank_rejected' };
+      case 'payout.refunded':
+        return { t: 'refunded', amount: parseAmount('USDC', String(body.amount ?? '0')) };
       default:
         return null;
     }
@@ -221,17 +322,6 @@ const KYC_META: ProviderMeta = {
 
 export class SimulatedKyc implements KycProvider {
   readonly meta = KYC_META;
-  /**
-   * Flip to exercise screen 11b instead of the happy path.
-   *
-   * These are the vendor's own status strings, deliberately; the adapter's job is
-   * to translate them. An earlier version used 'approve' here while `parseWebhook`
-   * matched 'approved', so the verdict silently parsed to null and the flow hung on
-   * "Checking your documents" forever. Exactly the drop the architecture warns
-   * about, landing on the happy path instead of an edge case.
-   */
-  outcome: 'approved' | 'resubmit' = 'approved';
-
   async createSession(userId: string): Promise<{ sessionId: string; uploadUrl: string }> {
     const sessionId = `kyc_${userId}_${Date.now().toString(36)}`;
     // A real vendor returns a short-lived signed URL; documents go client → vendor
@@ -240,8 +330,18 @@ export class SimulatedKyc implements KycProvider {
     return { sessionId, uploadUrl: `https://vendor.example/upload/${sessionId}` };
   }
 
-  async submitDocuments(): Promise<void> {
-    /* fixture: verdict is delivered by the runtime timeline */
+  /**
+   * The verdict arrives as a webhook, after a reviewer-shaped delay.
+   *
+   * The status strings are the vendor's own, deliberately; the adapter's job is to
+   * translate them. An earlier version sent 'approve' while `parseWebhook` matched
+   * 'approved', so the verdict silently parsed to null and the flow hung on
+   * "Checking your documents" forever. Exactly the drop the architecture warns
+   * about, landing on the happy path instead of an edge case.
+   */
+  async submitDocuments(sessionId: string): Promise<void> {
+    const status = kycOutcome;
+    later(45_000, () => ingress?.kyc({ sessionId, status }, LOCAL_WEBHOOK_SECRET));
   }
 
   parseWebhook(raw: unknown, sig: string): KycEvent | null {
@@ -272,14 +372,10 @@ const WALLET_META: ProviderMeta = {
     'Privy adapter binds in the same slot.',
 };
 
-/** The locked demo address and hash. See the tracker's demo-data block. */
-const DEMO_ADDRESS = '0x477Fb9fA92b264Fe8f636bA6EA5415dd21a392a3';
-const DEMO_TX = '0x551c67045ddfe8e8fb94fdad1ca0b5ffd078d3ca50f167531f0680722a55ba10';
-
 export class SimulatedWallet implements WalletProvider {
   readonly meta = WALLET_META;
   private address: string | null = null;
-  private balance: Money = parseAmount('USDC', '1284.50');
+  private readonly sent = new Map<string, `0x${string}`>();
 
   async login(email: string): Promise<{ userId: string; address: string }> {
     this.address = DEMO_ADDRESS;
@@ -291,12 +387,27 @@ export class SimulatedWallet implements WalletProvider {
   }
 
   async getBalance(): Promise<Money> {
-    return this.balance;
+    return { currency: 'USDC', minor: ledger.get(this.address ?? DEMO_ADDRESS) ?? 0n };
   }
 
-  async sendUsdc(_to: string, amount: Money): Promise<`0x${string}`> {
-    this.balance = { currency: 'USDC', minor: this.balance.minor - amount.minor };
-    return DEMO_TX as `0x${string}`;
+  async sendUsdc(to: string, amount: Money, idem: string): Promise<`0x${string}`> {
+    // A resubmit under the same key is the same transaction, never a second one.
+    const prior = this.sent.get(idem);
+    if (prior) return prior;
+
+    const from = this.address ?? DEMO_ADDRESS;
+    const balance = ledger.get(from) ?? 0n;
+    if (balance < amount.minor) throw new RangeError('insufficient USDC for the chain leg');
+    ledger.set(from, balance - amount.minor);
+    credit(to, amount);
+
+    const hash = DEMO_TX as `0x${string}`;
+    this.sent.set(idem, hash);
+    return hash;
+  }
+
+  async waitForConfirmations(): Promise<void> {
+    await new Promise<void>((resolve) => later(SETTLEMENT.chain, resolve));
   }
 
   async logout(): Promise<void> {

@@ -11,7 +11,7 @@
  */
 
 import { validateTurkishIban, maskIban } from '../domain/iban.ts';
-import { format, formatBare, parseAmount, rescale, type Money } from '../domain/money.ts';
+import { format, parseAmount, rescale, type Money } from '../domain/money.ts';
 import {
   buildQuote,
   canonicalise,
@@ -24,6 +24,7 @@ import {
 } from '../domain/quote.ts';
 import { rateFromDecimal, type Rate } from '../domain/rate.ts';
 import {
+  CONFIRMATIONS_REQUIRED,
   eventKey,
   foldTransfer,
   idemKey,
@@ -35,11 +36,12 @@ import {
 import type { Destination, KycStatus, ProviderId } from '../providers/contracts.ts';
 import {
   ACTIVE_CORRIDOR,
+  connectIngress,
   onrampFor,
   payoutFor,
   providers,
+  resetProviders,
 } from '../providers/registry.ts';
-import { demoDelay, LOCAL_WEBHOOK_SECRET, SETTLEMENT } from '../providers/simulated.ts';
 import { sign, verify } from './signing.ts';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -174,6 +176,7 @@ export function reset(): void {
   records.clear();
   seq = 0;
   liveRate = DEMO_RATE;
+  resetProviders();
   state = {
     session: null,
     balance: parseAmount('USDC', '1284.50'),
@@ -195,6 +198,8 @@ export function reset(): void {
 // monotonic fold on the exercised path rather than the hopeful one.
 // ─────────────────────────────────────────────────────────────────────────────
 
+connectIngress({ transfer: ingest, kyc: ingestKyc });
+
 export function ingest(
   transferId: string,
   providerId: ProviderId,
@@ -213,22 +218,24 @@ export function ingest(
   if (event === null) return false;
 
   // A redelivery is acknowledged, not appended: the vendor gets its 200 and stops
-  // retrying, and the log holds the event once.
-  append(transferId, event);
+  // retrying, the log holds the event once, and nothing downstream runs twice.
+  if (append(transferId, event)) void react(transferId, event);
   return true;
 }
 
-function append(transferId: string, event: TransferEvent, at: Date = new Date()): void {
+/** Returns false for a duplicate, which is then neither logged nor acted on. */
+function append(transferId: string, event: TransferEvent, at: Date = new Date()): boolean {
   const record = records.get(transferId);
-  if (!record) return;
+  if (!record) return false;
 
   const idem = eventKey(transferId, event);
-  if (record.log.some((e) => e.idem === idem)) return;
+  if (record.log.some((e) => e.idem === idem)) return false;
 
   seq += 1;
   record.log.push({ ...event, seq, at: at.toISOString(), idem } as LoggedEvent);
 
   emit({});
+  return true;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -340,19 +347,16 @@ export async function submitKycDocuments(): Promise<void> {
   if (!sessionId) return;
 
   emit({ kyc: 'review' });
+  // The verdict comes back later, as a webhook, through `ingestKyc`.
   await providers.kyc.submitDocuments(sessionId);
-
-  setTimeout(() => {
-    const event = providers.kyc.parseWebhook(
-      { sessionId, status: (providers.kyc as { outcome?: string }).outcome ?? 'approved' },
-      LOCAL_WEBHOOK_SECRET,
-    );
-    if (event) emit({ kyc: event.status });
-  }, demoDelay(45_000));
 }
 
-export function setKycOutcome(outcome: 'approved' | 'resubmit'): void {
-  (providers.kyc as unknown as { outcome: 'approved' | 'resubmit' }).outcome = outcome;
+/** KYC webhook ingress. A verdict for a session the user has moved on from is dropped. */
+export function ingestKyc(rawBody: unknown, signature: string): boolean {
+  const event = providers.kyc.parseWebhook(rawBody, signature);
+  if (event === null || event.sessionId !== state.kycSessionId) return false;
+  emit({ kyc: event.status });
+  return true;
 }
 
 export function retryKyc(): void {
@@ -418,106 +422,96 @@ export function submitTransfer(recipientId: string): SubmitResult {
   append(transferId, { t: 'quote_accepted', quoteId: quote.id });
   emit({ activeTransferId: transferId, quote: null });
 
-  void runTimeline(transferId, recipientId);
+  void startFunding(transferId);
   return { ok: true, transferId };
 }
 
-/** Flip to exercise screen 11c instead of the happy path. */
-let payoutOutcome: 'deliver' | 'return' = 'deliver';
-
-export function setPayoutOutcome(outcome: 'deliver' | 'return'): void {
-  payoutOutcome = outcome;
-}
-
-const wait = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
-
 /**
- * The simulated settlement timeline.
+ * The orchestrator: each leg starts when the previous one's event lands.
  *
- * Delays derive from `SETTLEMENT`, which holds the *real* durations: ACH at T+2,
- * Base to 12 confirmations, Turkish FAST inside banking hours, compressed only for
- * the walkthrough. Every provider result enters through `ingest`, signed, so the
- * ingress path is the one under test.
+ * Nothing here knows how long a leg takes or whether its provider is simulated.
+ * Timing belongs to the provider, and results arrive through `ingest`, so the
+ * same code runs whether the webhook came from Bridge or from a fixture.
  */
-async function runTimeline(transferId: string, recipientId: string): Promise<void> {
+async function startFunding(transferId: string): Promise<void> {
   const record = records.get(transferId);
   if (!record) return;
-
   const { quote } = record.seed;
-  // At par: the USD that settles is minted 1:1, and that USDC is what goes on chain
-  // and what a returned payout gives back. Fees stay in USD with the on-ramp.
-  const minted = rescale(quote.send, 'USDC');
-  const recipient = state.recipients.find((r) => r.id === recipientId);
-  const onramp = onrampFor(ACTIVE_CORRIDOR);
-  const payout = payoutFor(ACTIVE_CORRIDOR);
+  const session = await ensureSession();
 
-  const depositRef = await onramp.createDeposit(
-    { transferId, amount: quote.totalCharged, rail: quote.rail },
+  const ref = await onrampFor(ACTIVE_CORRIDOR).createDeposit(
+    {
+      transferId,
+      amount: quote.totalCharged,
+      // At par: the send amount mints 1:1 into the sender's wallet, which signs
+      // the chain leg. Fees stay in USD with the on-ramp.
+      deliver: rescale(quote.send, 'USDC'),
+      destination: session.address,
+      rail: quote.rail,
+    },
     idemKey(transferId, 'onramp'),
   );
-  append(transferId, { t: 'onramp_initiated', ref: depositRef, rail: quote.rail });
+  append(transferId, { t: 'onramp_initiated', ref, rail: quote.rail });
+}
 
-  // The ACH hold. This wait is the whole reason `funded_held` is a state.
-  await wait(demoDelay(SETTLEMENT.ach));
-  ingest(
-    transferId,
-    'bridge.usd.ach',
-    { event: 'deposit.settled', amount: formatBare(quote.totalCharged) },
-    LOCAL_WEBHOOK_SECRET,
-  );
+/**
+ * Where the chain leg lands. In the phase 3 architecture this is the payout
+ * partner's deposit address; the proof artifact sent to this treasury.
+ */
+const SETTLEMENT_ADDRESS = '0xEAe5a1715a414818a0e86043f2d608083Ccbd1C6';
+
+async function react(transferId: string, event: TransferEvent): Promise<void> {
+  switch (event.t) {
+    case 'onramp_settled':
+      return sendOnChain(transferId);
+    case 'payout_delivered':
+      return markRecipientVerified(transferId);
+    case 'refunded':
+      // The partner returned the USDC to the sender's wallet; read it back.
+      emit({ balance: await providers.wallet.getBalance() });
+      return;
+    default:
+      return;
+  }
+}
+
+/** USD has cleared and USDC is in the sender's wallet: send it, confirm it, pay out. */
+async function sendOnChain(transferId: string): Promise<void> {
+  const record = records.get(transferId);
+  if (!record) return;
+  const { quote, recipientId } = record.seed;
+  const minted = rescale(quote.send, 'USDC');
+  const wallet = providers.wallet;
 
   append(transferId, { t: 'minted', amount: minted });
+  emit({ balance: await wallet.getBalance() });
 
-  const txHash: Hex = await providers.wallet.sendUsdc(
-    '0xTreasury',
-    minted,
-    idemKey(transferId, 'chain'),
-  );
+  const txHash: Hex = await wallet.sendUsdc(SETTLEMENT_ADDRESS, minted, idemKey(transferId, 'chain'));
   append(transferId, { t: 'chain_submitted', txHash });
-  emit({ balance: await providers.wallet.getBalance() });
+  emit({ balance: await wallet.getBalance() });
 
-  await wait(demoDelay(SETTLEMENT.chain));
-  append(transferId, { t: 'chain_confirmed', txHash, confirmations: 12 });
+  await wallet.waitForConfirmations(txHash, CONFIRMATIONS_REQUIRED);
+  append(transferId, { t: 'chain_confirmed', txHash, confirmations: CONFIRMATIONS_REQUIRED });
 
-  const payoutRef = await payout.submit(
+  const recipient = recipientById(recipientId);
+  const session = await ensureSession();
+  const ref = await payoutFor(ACTIVE_CORRIDOR).submit(
     {
       transferId,
       amount: quote.receive,
-      destination: {
-        holderName: recipient?.holderName ?? '',
-        iban: recipient?.iban ?? '',
-      },
+      destination: { holderName: recipient?.holderName ?? '', iban: recipient?.iban ?? '' },
+      funding: { from: session.address, amount: minted },
     },
     idemKey(transferId, 'payout'),
   );
-  append(transferId, { t: 'payout_submitted', ref: payoutRef });
+  append(transferId, { t: 'payout_submitted', ref });
+}
 
-  await wait(demoDelay(SETTLEMENT.payout));
-
-  if (payoutOutcome === 'deliver') {
-    ingest(transferId, 'turkiye.try.bank', { event: 'payout.delivered' }, LOCAL_WEBHOOK_SECRET);
-    if (recipient && !recipient.verified) {
-      emit({
-        recipients: state.recipients.map((r) =>
-          r.id === recipient.id ? { ...r, verified: true } : r,
-        ),
-      });
-    }
-  } else {
-    ingest(
-      transferId,
-      'turkiye.try.bank',
-      { event: 'payout.returned', reason: 'name_mismatch' },
-      LOCAL_WEBHOOK_SECRET,
-    );
-    // Funds return to the user's balance and the failed leg's fee is refunded;
-    // screen 11c leads with "your money is safe" because this actually happens.
-    await wait(demoDelay(2 * 60_000));
-    append(transferId, { t: 'refunded', amount: minted });
-    emit({
-      balance: { currency: 'USDC', minor: state.balance.minor + minted.minor },
-    });
-  }
+function markRecipientVerified(transferId: string): void {
+  const recipientId = records.get(transferId)?.seed.recipientId;
+  emit({
+    recipients: state.recipients.map((r) => (r.id === recipientId ? { ...r, verified: true } : r)),
+  });
 }
 
 export function transferById(id: string | null): Transfer | null {

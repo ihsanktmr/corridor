@@ -50,7 +50,12 @@ export interface OnrampProvider {
 
 export interface DepositRequest {
   readonly transferId: string;
+  /** USD pulled from the sender's bank: the send amount plus fees. */
   readonly amount: Money;
+  /** USDC minted to `destination` once the USD settles. */
+  readonly deliver: Money;
+  /** The sender's embedded wallet, which signs the chain leg. */
+  readonly destination: string;
   readonly rail: FiatRail;
 }
 
@@ -76,6 +81,8 @@ export interface PayoutRequest {
   readonly transferId: string;
   readonly amount: Money;
   readonly destination: Destination;
+  /** The on-chain transfer that funded this payout. A bounce returns it here. */
+  readonly funding: { readonly from: string; readonly amount: Money };
 }
 
 export type KycStatus =
@@ -117,7 +124,21 @@ export interface WalletProvider {
   getBalance(): Promise<Money>;
   /** ERC-20 transfer on Base. Returns the hash the moment it exists. */
   sendUsdc(to: string, amount: Money, idem: string): Promise<`0x${string}`>;
+  /** Resolves once `hash` has `confirmations` blocks on top of it. */
+  waitForConfirmations(hash: `0x${string}`, confirmations: number): Promise<void>;
   logout(): Promise<void>;
 }
 
 export type { AchReturnCode, PayoutReturnReason };
+
+/**
+ * Where providers deliver webhooks.
+ *
+ * A deployed vendor POSTs to the URL configured in its dashboard, so a real adapter
+ * never sees these. The simulated adapters are told where ingress is instead, and
+ * call it exactly as the HTTP handler would.
+ */
+export interface Ingress {
+  transfer(transferId: string, providerId: ProviderId, raw: unknown, sig: string): void;
+  kyc(raw: unknown, sig: string): void;
+}
