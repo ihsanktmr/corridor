@@ -48,7 +48,7 @@ Four of the five rails are simulated, and every one is disclosed **on-screen** a
 
 | Rail | Status | Why |
 |---|---|---|
-| Domain logic (money, rates, IBAN, state) | **Real** | `bigint` minor units, rational rates, ISO 7064 mod-97. 42 tests. |
+| Domain logic (money, rates, IBAN, state) | **Real** | `bigint` minor units, rational rates, ISO 7064 mod-97. 49 tests. |
 | Design system | **Real** | Ported from the identity spec, unchanged |
 | Wallet | Simulated | `@privy-io/expo` needs native modules → a dev build → you couldn't `npx expo start` this |
 | USD on-ramp | Simulated | Real Bridge product, but sandbox keys are **not self-serve** |
@@ -105,7 +105,7 @@ corridor://demo/expired     corridor://demo/returned    corridor://demo/kyc-resu
 These build the same event log the real timeline produces. No screen special-cases them.
 
 ```bash
-npm test           # 42 domain tests
+npm test           # 49 tests: domain, plus the full flow end to end
 npm run typecheck  # strict + noUncheckedIndexedAccess + exactOptionalPropertyTypes
 ```
 
@@ -130,7 +130,7 @@ app/          expo-router file routes, the 11 screens
 
 **Payout is a binding, not a call.** `USD:TRY` and `USD:MXN` differ by one row in `ROUTES`. Bridge covers MXN via SPEI and doesn't cover TRY at all. Discovering that during integration is exactly what the seam is for. `bridge.mxn.spei` is implemented and never called so the abstraction can be seen to be real rather than retrofitted.
 
-**State is a fold over an append-only log.** Three providers with three clocks deliver events late, twice, and out of order. `seq` is assigned on ingress, duplicates are dropped, and steps are monotonic, so a late webhook can never walk a completed step backwards on screen. Covered by tests.
+**State is a fold over an append-only log.** Three providers with three clocks deliver events late, twice, and out of order. `seq` is assigned on ingress and duplicates are dropped by event identity, not by `seq`, since a vendor retry arrives with a fresh one. Both the state and each step only move forward, so a late webhook can never walk a delivered transfer backwards on screen. Covered by tests.
 
 ---
 
@@ -138,7 +138,7 @@ app/          expo-router file routes, the 11 screens
 
 Phases 1-5 complete: identity → design system → integration architecture → build → packaging.
 
-Typecheck clean, 42/42 tests, iOS bundle succeeds.
+Typecheck clean, 49/49 tests, iOS bundle succeeds.
 
 Brand faces (Bricolage Grotesque, Inter, IBM Plex Mono) are bundled via `expo-font` and held behind the splash until loaded.
 

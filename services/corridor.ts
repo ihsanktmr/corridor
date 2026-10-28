@@ -11,7 +11,7 @@
  */
 
 import { validateTurkishIban, maskIban } from '../domain/iban.ts';
-import { parseAmount, type Money } from '../domain/money.ts';
+import { format, formatBare, parseAmount, rescale, type Money } from '../domain/money.ts';
 import {
   buildQuote,
   canonicalise,
@@ -24,6 +24,7 @@ import {
 } from '../domain/quote.ts';
 import { rateFromDecimal, type Rate } from '../domain/rate.ts';
 import {
+  eventKey,
   foldTransfer,
   idemKey,
   type Hex,
@@ -52,8 +53,17 @@ import { sign, verify } from './signing.ts';
  */
 const DEMO_RATE = '52.84';
 
+/**
+ * Where the market moved to while the 11a quote sat expired. Screen 11a shows
+ * this rate and "Accept new rate" is quoted at it, from the same feed, so the
+ * screen never displays a number the server would not issue.
+ */
+const DEMO_MOVED_RATE = '52.61';
+
+let liveRate = DEMO_RATE;
+
 export function currentRate(now: Date = new Date()): Rate {
-  return rateFromDecimal('USD', 'TRY', DEMO_RATE, now.toISOString());
+  return rateFromDecimal('USD', 'TRY', liveRate, now.toISOString());
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -82,6 +92,7 @@ interface TransferRecord {
     readonly corridor: CorridorId;
     readonly quote: Quote;
     readonly recipientId: string;
+    readonly reference: string;
   };
   readonly log: LoggedEvent[];
 }
@@ -128,6 +139,16 @@ function nextId(prefix: string): string {
   return `${prefix}_${ids.toString(36)}${Date.now().toString(36).slice(-4)}`;
 }
 
+/** `CRD-8F2A-4417`: two groups of four hex digits, unique per transfer. */
+function newReference(): string {
+  const group = () =>
+    Math.floor(Math.random() * 0x10000)
+      .toString(16)
+      .toUpperCase()
+      .padStart(4, '0');
+  return `CRD-${group()}-${group()}`;
+}
+
 function rebuildTransfers(): readonly Transfer[] {
   return [...records.values()]
     .map((r) => foldTransfer(r.seed, r.log))
@@ -152,6 +173,7 @@ export function getState(): CorridorState {
 export function reset(): void {
   records.clear();
   seq = 0;
+  liveRate = DEMO_RATE;
   state = {
     session: null,
     balance: parseAmount('USDC', '1284.50'),
@@ -190,6 +212,8 @@ export function ingest(
   // or one unknown vendor event would stall every transfer behind it.
   if (event === null) return false;
 
+  // A redelivery is acknowledged, not appended: the vendor gets its 200 and stops
+  // retrying, and the log holds the event once.
   append(transferId, event);
   return true;
 }
@@ -198,13 +222,11 @@ function append(transferId: string, event: TransferEvent, at: Date = new Date())
   const record = records.get(transferId);
   if (!record) return;
 
+  const idem = eventKey(transferId, event);
+  if (record.log.some((e) => e.idem === idem)) return;
+
   seq += 1;
-  record.log.push({
-    ...event,
-    seq,
-    at: at.toISOString(),
-    idem: idemKey(transferId, 'chain'),
-  } as LoggedEvent);
+  record.log.push({ ...event, seq, at: at.toISOString(), idem } as LoggedEvent);
 
   emit({});
 }
@@ -241,17 +263,33 @@ export function createQuote(sendDecimal: string, rail: FiatRail = 'ach'): QuoteR
   } catch {
     return { ok: false, reason: 'below_min', message: 'Enter an amount' };
   }
+  return quoteFor(send, rail);
+}
 
+/**
+ * Re-quote an expired quote's amount and rail at the current rate: screen 11a's
+ * "Accept new rate". Takes the amount as `Money`, so it never round-trips through
+ * a decimal string or a float.
+ */
+export function requote(): QuoteResult | null {
+  const expired = state.quote;
+  return expired ? quoteFor(expired.send, expired.rail) : null;
+}
+
+function quoteFor(send: Money, rail: FiatRail): QuoteResult {
   if (send.minor < MIN_TRANSFER.minor) {
-    return { ok: false, reason: 'below_min', message: 'Minimum transfer is $10.00' };
+    return { ok: false, reason: 'below_min', message: `Minimum transfer is ${format(MIN_TRANSFER)}` };
   }
 
-  const limit = state.kyc === 'approved' ? TIER_LIMITS.basic : TIER_LIMITS.basic;
-  if (send.minor > limit.perTransfer.minor) {
+  // Basic is the tier every quote is checked against. Verification happens after
+  // the quote (screen 05), and this build models one tier of it; `enhanced` is the
+  // shape of the next one, not a limit anyone can reach yet.
+  const limit = TIER_LIMITS.basic.perTransfer;
+  if (send.minor > limit.minor) {
     return {
       ok: false,
       reason: 'above_limit',
-      message: 'Above your $2,999.00 per-transfer limit',
+      message: `Above your ${format(limit)} per-transfer limit`,
     };
   }
 
@@ -373,7 +411,7 @@ export function submitTransfer(recipientId: string): SubmitResult {
 
   const transferId = nextId('t');
   records.set(transferId, {
-    seed: { id: transferId, corridor: ACTIVE_CORRIDOR, quote, recipientId },
+    seed: { id: transferId, corridor: ACTIVE_CORRIDOR, quote, recipientId, reference: newReference() },
     log: [],
   });
 
@@ -406,6 +444,9 @@ async function runTimeline(transferId: string, recipientId: string): Promise<voi
   if (!record) return;
 
   const { quote } = record.seed;
+  // At par: the USD that settles is minted 1:1, and that USDC is what goes on chain
+  // and what a returned payout gives back. Fees stay in USD with the on-ramp.
+  const minted = rescale(quote.send, 'USDC');
   const recipient = state.recipients.find((r) => r.id === recipientId);
   const onramp = onrampFor(ACTIVE_CORRIDOR);
   const payout = payoutFor(ACTIVE_CORRIDOR);
@@ -421,15 +462,15 @@ async function runTimeline(transferId: string, recipientId: string): Promise<voi
   ingest(
     transferId,
     'bridge.usd.ach',
-    { event: 'deposit.settled', amount: '500.00' },
+    { event: 'deposit.settled', amount: formatBare(quote.totalCharged) },
     LOCAL_WEBHOOK_SECRET,
   );
 
-  append(transferId, { t: 'minted', amount: parseAmount('USDC', '500.00') });
+  append(transferId, { t: 'minted', amount: minted });
 
   const txHash: Hex = await providers.wallet.sendUsdc(
     '0xTreasury',
-    parseAmount('USDC', '500.00'),
+    minted,
     idemKey(transferId, 'chain'),
   );
   append(transferId, { t: 'chain_submitted', txHash });
@@ -472,12 +513,9 @@ async function runTimeline(transferId: string, recipientId: string): Promise<voi
     // Funds return to the user's balance and the failed leg's fee is refunded;
     // screen 11c leads with "your money is safe" because this actually happens.
     await wait(demoDelay(2 * 60_000));
-    append(transferId, { t: 'refunded', amount: parseAmount('USDC', '500.00') });
+    append(transferId, { t: 'refunded', amount: minted });
     emit({
-      balance: {
-        currency: 'USDC',
-        minor: state.balance.minor + parseAmount('USDC', '500.00').minor,
-      },
+      balance: { currency: 'USDC', minor: state.balance.minor + minted.minor },
     });
   }
 }
@@ -529,10 +567,19 @@ function demoQuote(expired = false): Quote {
   return quote;
 }
 
+/** The locked demo reference, so the screenshots match the spec documents. */
+const DEMO_REFERENCE = 'CRD-8F2A-4417';
+
 function demoTransfer(quote: Quote, events: readonly TransferEvent[]): string {
   const transferId = nextId('t');
   records.set(transferId, {
-    seed: { id: transferId, corridor: ACTIVE_CORRIDOR, quote, recipientId: 'r_elif' },
+    seed: {
+      id: transferId,
+      corridor: ACTIVE_CORRIDOR,
+      quote,
+      recipientId: 'r_elif',
+      reference: DEMO_REFERENCE,
+    },
     log: [],
   });
   const base = Date.parse('2026-08-05T09:38:00.000Z');
@@ -543,12 +590,15 @@ function demoTransfer(quote: Quote, events: readonly TransferEvent[]): string {
 /** Returns the route to navigate to, or null for an unknown scene. */
 export function seedDemo(scene: DemoScene): { pathname: string; id?: string } | null {
   void login('demo@corridor.dev');
+  liveRate = DEMO_RATE;
 
-  const settled: readonly TransferEvent[] = [
-    { t: 'quote_accepted', quoteId: 'q_demo' },
-    { t: 'onramp_initiated', ref: 'br_demo', rail: 'ach' },
-    { t: 'onramp_settled', amount: parseAmount('USD', '500.00') },
-    { t: 'minted', amount: parseAmount('USDC', '500.00') },
+  // The same amounts `runTimeline` derives: what was charged settles, the send
+  // amount mints at par.
+  const settled = (q: Quote): readonly TransferEvent[] => [
+    { t: 'quote_accepted', quoteId: q.id },
+    { t: 'onramp_initiated', ref: 'br_demo', rail: q.rail },
+    { t: 'onramp_settled', amount: q.totalCharged },
+    { t: 'minted', amount: rescale(q.send, 'USDC') },
   ];
 
   switch (scene) {
@@ -556,9 +606,13 @@ export function seedDemo(scene: DemoScene): { pathname: string; id?: string } | 
       emit({ quote: demoQuote(), kyc: 'approved' });
       return { pathname: '/transfer/review' };
 
-    case 'expired':
-      emit({ quote: demoQuote(true), kyc: 'approved' });
+    case 'expired': {
+      // Quoted at the locked rate twenty minutes ago; the market has since moved.
+      const quote = demoQuote(true);
+      liveRate = DEMO_MOVED_RATE;
+      emit({ quote, kyc: 'approved' });
       return { pathname: '/transfer/review' };
+    }
 
     case 'kyc-resubmit':
       emit({ quote: demoQuote(), kyc: 'resubmit' });
@@ -567,7 +621,7 @@ export function seedDemo(scene: DemoScene): { pathname: string; id?: string } | 
     case 'inflight': {
       const quote = demoQuote();
       const id = demoTransfer(quote, [
-        ...settled,
+        ...settled(quote),
         { t: 'chain_submitted', txHash: DEMO_TX_HASH },
       ]);
       emit({ activeTransferId: id, kyc: 'approved' });
@@ -577,7 +631,7 @@ export function seedDemo(scene: DemoScene): { pathname: string; id?: string } | 
     case 'receipt': {
       const quote = demoQuote();
       const id = demoTransfer(quote, [
-        ...settled,
+        ...settled(quote),
         { t: 'chain_submitted', txHash: DEMO_TX_HASH },
         { t: 'chain_confirmed', txHash: DEMO_TX_HASH, confirmations: 12 },
         { t: 'payout_submitted', ref: 'tr_demo' },
@@ -590,12 +644,12 @@ export function seedDemo(scene: DemoScene): { pathname: string; id?: string } | 
     case 'returned': {
       const quote = demoQuote();
       const id = demoTransfer(quote, [
-        ...settled,
+        ...settled(quote),
         { t: 'chain_submitted', txHash: DEMO_TX_HASH },
         { t: 'chain_confirmed', txHash: DEMO_TX_HASH, confirmations: 12 },
         { t: 'payout_submitted', ref: 'tr_demo' },
         { t: 'payout_returned', reason: 'name_mismatch' },
-        { t: 'refunded', amount: parseAmount('USDC', '500.00') },
+        { t: 'refunded', amount: rescale(quote.send, 'USDC') },
       ]);
       emit({ activeTransferId: id, kyc: 'approved' });
       return { pathname: '/transfer/status', id };

@@ -55,7 +55,7 @@ export default function Receipt() {
     void RNShare.share({
       message:
         `Corridor: ${format(quote.receive)} delivered to ${recipient?.holderName ?? 'recipient'}\n` +
-        `Ref CRD-8F2A-4417\n${explorer}`,
+        `Ref ${transfer.reference}\n${explorer}`,
     });
   };
 
@@ -147,7 +147,7 @@ export default function Receipt() {
 
         <Row style={{ paddingVertical: 2, paddingBottom: space.md }}>
           <Text style={[type.label, { fontSize: 11.5 }]}>Reference</Text>
-          <Text style={[type.mono, { fontSize: 11.5, color: color.paper }]}>CRD-8F2A-4417</Text>
+          <Text style={[type.mono, { fontSize: 11.5, color: color.paper }]}>{transfer.reference}</Text>
         </Row>
       </Body>
 

@@ -74,7 +74,7 @@ export default function Status() {
       <Dock bordered>
         <Row>
           <Text style={[type.label, { fontSize: 11.5 }]}>
-            Ref <Text style={[type.mono, { color: color.paper }]}>CRD-8F2A-4417</Text>
+            Ref <Text style={[type.mono, { color: color.paper }]}>{transfer.reference}</Text>
           </Text>
           <Button
             label="Get help"
@@ -127,6 +127,8 @@ function buildSteps(transfer: Transfer) {
       : '';
 
   const [onramp, mint, chain, payout, delivered] = transfer.steps;
+  const recipient = recipientById(transfer.recipientId);
+  const usdc = transfer.minted ? format(transfer.minted, { decimals: 2 }) : null;
 
   return [
     {
@@ -137,7 +139,10 @@ function buildSteps(transfer: Transfer) {
     {
       step: mint!,
       title: 'Converted to USDC',
-      detail: mint?.status === 'done' ? `${at(mint)} · $500.00 → 500.00 USDC at par` : 'At par, 1:1',
+      detail:
+        mint?.status === 'done' && usdc
+          ? `${at(mint)} · ${format(transfer.quote.send)} → ${usdc} at par`
+          : 'At par, 1:1',
     },
     {
       step: chain!,
@@ -146,7 +151,7 @@ function buildSteps(transfer: Transfer) {
       ...(chain?.status === 'live'
         ? { badge: `${Math.min(2, CONFIRMATIONS_REQUIRED)} / ${CONFIRMATIONS_REQUIRED} confs` }
         : {}),
-      detail: chain?.at ? `${at(chain)} · 500.00 USDC` : 'Base Sepolia',
+      detail: chain?.at && usdc ? `${at(chain)} · ${usdc}` : 'Base Sepolia',
       extra: transfer.txHash ? <Chip value={shortHash(transfer.txHash)} /> : undefined,
     },
     {
@@ -159,12 +164,15 @@ function buildSteps(transfer: Transfer) {
           ? `${at(payout)} · ${PAYOUT_FAILURE[transfer.payoutReturn ?? 'bank_rejected']}`
           : payout?.status === 'done'
             ? at(payout)
-            : 'Garanti BBVA · usually under 30 min',
+            : `${recipient?.bank ?? 'Turkish bank'} · usually under 30 min`,
     },
     {
       step: delivered!,
       title: 'Delivered',
-      detail: delivered?.status === 'done' ? at(delivered) : 'Elif is notified by her bank',
+      detail:
+        delivered?.status === 'done'
+          ? at(delivered)
+          : `${recipient?.holderName.split(' ')[0] ?? 'The recipient'} is notified by the bank`,
     },
   ];
 }
@@ -180,6 +188,10 @@ function buildSteps(transfer: Transfer) {
  * completed round trip rather than a hole.
  */
 function PayoutReturned({ transfer }: { transfer: Transfer }) {
+  const bank = recipientById(transfer.recipientId)?.bank;
+  // Before the refund event lands, the amount on its way back is what went out.
+  const returning = transfer.refunded ?? transfer.minted;
+
   return (
     <Screen>
       <Nav title="Transfer" onBack={() => router.replace('/home')} />
@@ -188,7 +200,7 @@ function PayoutReturned({ transfer }: { transfer: Transfer }) {
         <View style={{ paddingTop: space.md, paddingBottom: space.base }}>
           <Pill tone="fail" label="payout returned" />
           <Text style={[type.title, { marginTop: space.md, marginBottom: 6 }]}>
-            Garanti sent it back
+            {bank ?? 'The bank'} sent it back
           </Text>
           <Text style={[type.body, { lineHeight: 20 }]}>
             The account holder's name didn't match. This is the most common reason a Turkish payout
@@ -204,8 +216,9 @@ function PayoutReturned({ transfer }: { transfer: Transfer }) {
             Your money is safe.
           </Text>
           <Text style={[type.label, { fontSize: 11.5, lineHeight: 18 }]}>
-            {transfer.refunded ? format(transfer.refunded, { decimals: 2 }) : '500.00 USDC'} is back in your Corridor
-            balance. Fees for the returned leg were refunded.
+            {returning ? format(returning, { decimals: 2 }) : 'Your USDC'}{' '}
+            {transfer.refunded ? 'is back in' : 'is on its way back to'} your Corridor balance. Fees
+            for the returned leg were refunded.
           </Text>
         </Card>
 

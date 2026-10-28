@@ -2,12 +2,18 @@ import assert from 'node:assert/strict';
 import { test, describe, after } from 'node:test';
 
 import { format } from '../domain/money.ts';
+import { formatRate } from '../domain/rate.ts';
+import { LOCAL_WEBHOOK_SECRET } from '../providers/simulated.ts';
 import {
   addRecipient,
   createQuote,
+  currentRate,
   getState,
+  ingest,
   login,
+  requote,
   reset,
+  seedDemo,
   setKycOutcome,
   setPayoutOutcome,
   startKyc,
@@ -95,6 +101,13 @@ describe('the full path: welcome to receipt', () => {
 
     // A delivered payout marks the recipient verified for next time.
     assert.equal(getState().recipients.find((r) => r.id === recipient.id)?.verified, true);
+
+    // The partner retries its webhook. Ingress acknowledges it and the log is unchanged.
+    assert.ok(
+      ingest(submitted.transferId, 'turkiye.try.bank', { event: 'payout.delivered' }, LOCAL_WEBHOOK_SECRET),
+    );
+    assert.equal(transferById(submitted.transferId)!.events.length, done.events.length);
+    assert.match(done.reference, /^CRD-[0-9A-F]{4}-[0-9A-F]{4}$/);
   });
 });
 
@@ -105,7 +118,9 @@ describe('the failure path stays walkable', () => {
     setPayoutOutcome('return');
 
     await login('demo@corridor.dev');
-    createQuote('500.00');
+    const before = getState().balance;
+    // Deliberately not the demo amount: every leg has to carry the quote's figure.
+    createQuote('200.00');
     await startKyc();
     await submitKycDocuments();
     await waitFor(() => getState().kyc === 'approved', 'kyc approved');
@@ -119,6 +134,12 @@ describe('the failure path stays walkable', () => {
     const t = transferById(submitted.transferId)!;
     assert.equal(t.payoutReturn, 'name_mismatch');
     assert.ok(t.refunded, 'the user must be told where the money went');
+
+    const settled = t.events.find((e) => e.t === 'onramp_settled');
+    assert.equal(settled?.t === 'onramp_settled' && format(settled.amount), '$203.75');
+    assert.equal(format(t.minted!), '200.000000 USDC');
+    assert.equal(format(t.refunded), '200.000000 USDC');
+    assert.equal(getState().balance.minor, before.minor, 'what left the balance came back');
 
     setPayoutOutcome('deliver');
   });
@@ -136,5 +157,20 @@ describe('a rejected verdict does not strand the user', () => {
 
     assert.equal(getState().kyc, 'resubmit');
     setKycOutcome('approved');
+  });
+});
+
+describe('an expired quote re-quotes at the rate the screen shows', () => {
+  test('11a never offers a rate the server would not issue', () => {
+    reset();
+    seedDemo('expired');
+    const expired = getState().quote!;
+    const shown = formatRate(currentRate());
+    assert.notEqual(shown, formatRate(expired.rate), 'the demo market has moved');
+
+    const result = requote();
+    assert.ok(result && result.ok);
+    assert.equal(formatRate(result.quote.rate), shown);
+    assert.equal(format(result.quote.send), format(expired.send));
   });
 });

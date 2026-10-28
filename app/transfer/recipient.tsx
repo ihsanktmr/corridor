@@ -54,7 +54,7 @@ export default function RecipientScreen() {
 
       <Body>
         <Text style={[type.display, { marginTop: space.md }]}>
-          Who's receiving{'\n'}the {quote ? format(quote.receive) : '₺26,420.00'}?
+          Who's receiving{'\n'}the {quote ? format(quote.receive) : 'money'}?
         </Text>
         <Text style={[type.body, { marginBottom: space.lg }]}>
           Turkish bank account, in Turkish lira.

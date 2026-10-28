@@ -43,6 +43,7 @@ export interface Envelope {
   readonly at: string;
   /** The vendor's clock, retained for forensics, never used for ordering. */
   readonly providerAt?: string;
+  /** The event's identity, from `eventKey`. A redelivery carries the same one. */
   readonly idem: string;
 }
 
@@ -62,6 +63,28 @@ export type TransferState =
   | 'clawback';
 
 export const TERMINAL_STATES: readonly TransferState[] = ['delivered', 'refunded', 'clawback'];
+
+/**
+ * Forward progress. A transfer only ever moves to a higher rank, so a late event
+ * describing an earlier moment is kept in the log but cannot walk the state back:
+ * a `chain_confirmed` arriving after `payout_delivered` leaves it delivered.
+ *
+ * The failure states outrank the happy path they interrupt. `clawback` outranks
+ * everything because an R10 can land on a transfer that already finished.
+ */
+const RANK: Record<TransferState, number> = {
+  draft: 0,
+  quoted: 1,
+  funding: 2,
+  funded_held: 3,
+  chain_pending: 4,
+  chain_confirmed: 5,
+  payout_pending: 6,
+  payout_returned: 7,
+  delivered: 8,
+  refunded: 9,
+  clawback: 10,
+};
 
 export function isTerminal(s: TransferState): boolean {
   return TERMINAL_STATES.includes(s);
@@ -86,10 +109,14 @@ export interface Transfer {
   readonly corridor: CorridorId;
   readonly quote: Quote;
   readonly recipientId: string;
+  /** `CRD-8F2A-4417`, what the sender quotes to support. */
+  readonly reference: string;
   readonly state: TransferState;
   readonly steps: readonly Step[];
   readonly txHash?: Hex;
   readonly confirmations: number;
+  /** The USDC that went on chain, which is also what a refund returns. */
+  readonly minted?: Money;
   readonly achReturn?: AchReturnCode;
   readonly payoutReturn?: PayoutReturnReason;
   readonly refunded?: Money;
@@ -101,22 +128,37 @@ interface Seed {
   readonly corridor: CorridorId;
   readonly quote: Quote;
   readonly recipientId: string;
+  readonly reference: string;
+}
+
+/**
+ * An event's identity: each event type happens at most once per transfer.
+ *
+ * Deduplication keys on this, not on `seq`. `seq` is assigned on ingress, so a
+ * provider retrying a webhook gets a fresh one; keying on it would let every
+ * redelivery through. A reorg resubmit is not a second `chain_submitted` either:
+ * it reuses the `{transferId}:chain` key, so the provider returns the first hash.
+ */
+export function eventKey(transferId: string, e: TransferEvent): string {
+  return `${transferId}:${e.t}`;
 }
 
 /**
  * Fold the log into current state.
  *
- * Events are sorted by `seq` first, so an out-of-order delivery is corrected here
- * rather than being allowed to corrupt the result. Duplicate `seq` values are
- * dropped: providers retry, and a retried webhook must be a no-op.
+ * `seq` is arrival order, so sorting by it gives a stable replay, not a
+ * correction: a provider that delivers out of order still arrives out of order.
+ * What makes that harmless is that neither the state nor a completed step can move
+ * backwards (see `RANK` and `setStep`). Duplicates are dropped by `idem`.
  */
 export function foldTransfer(seed: Seed, log: readonly LoggedEvent[]): Transfer {
-  const seen = new Set<number>();
+  const seen = new Set<string>();
   const ordered = [...log]
     .sort((a, b) => a.seq - b.seq)
-    .filter((e) => (seen.has(e.seq) ? false : (seen.add(e.seq), true)));
+    .filter((e) => (seen.has(e.idem) ? false : (seen.add(e.idem), true)));
 
   let state: TransferState = 'draft';
+  let minted: Money | undefined;
   let txHash: Hex | undefined;
   let confirmations = 0;
   let achReturn: AchReturnCode | undefined;
@@ -138,66 +180,73 @@ export function foldTransfer(seed: Seed, log: readonly LoggedEvent[]): Transfer 
     steps.set(id, next);
   };
 
+  const advance = (next: TransferState): void => {
+    if (RANK[next] > RANK[state]) state = next;
+  };
+
   for (const e of ordered) {
     switch (e.t) {
       case 'quote_accepted':
-        state = 'quoted';
+        advance('quoted');
         break;
 
       case 'onramp_initiated':
-        state = 'funding';
+        advance('funding');
         setStep('onramp', { id: 'onramp', status: 'live', at: e.at, detail: e.rail.toUpperCase() });
         break;
 
       case 'onramp_settled':
         // Deliberately not straight to chain: `funded_held` is the ACH hold.
-        state = 'funded_held';
+        advance('funded_held');
         setStep('onramp', { id: 'onramp', status: 'done', at: e.at, detail: 'ACH cleared' });
         break;
 
       case 'onramp_returned':
         achReturn = e.code;
-        // A return after value has already left is a clawback, not a clean failure.
-        state = state === 'funding' ? 'refunded' : 'clawback';
+        // Before value leaves, a return is a clean refund. That includes
+        // `funded_held`: holding until ACH clears exists so an R01 or R08 lands
+        // here. Once USDC is on chain, the same return is a clawback.
+        advance(RANK[state] < RANK.chain_pending ? 'refunded' : 'clawback');
         setStep('onramp', { id: 'onramp', status: 'failed', at: e.at, detail: e.code });
         break;
 
       case 'minted':
+        minted = e.amount;
         setStep('mint', { id: 'mint', status: 'done', at: e.at });
         break;
 
       case 'chain_submitted':
-        state = 'chain_pending';
+        advance('chain_pending');
         txHash = e.txHash;
         setStep('chain', { id: 'chain', status: 'live', at: e.at });
         break;
 
       case 'chain_confirmed':
-        state = 'chain_confirmed';
+        advance('chain_confirmed');
         txHash = e.txHash;
         confirmations = Math.max(confirmations, e.confirmations);
         setStep('chain', { id: 'chain', status: 'done', at: e.at });
         break;
 
       case 'payout_submitted':
-        state = 'payout_pending';
+        advance('payout_pending');
         setStep('payout', { id: 'payout', status: 'live', at: e.at });
         break;
 
       case 'payout_delivered':
-        state = 'delivered';
+        advance('delivered');
         setStep('payout', { id: 'payout', status: 'done', at: e.at });
         setStep('delivered', { id: 'delivered', status: 'done', at: e.at });
         break;
 
       case 'payout_returned':
-        state = 'payout_returned';
+        advance('payout_returned');
         payoutReturn = e.reason;
         setStep('payout', { id: 'payout', status: 'failed', at: e.at, detail: e.reason });
         break;
 
       case 'refunded':
-        state = 'refunded';
+        advance('refunded');
         refunded = e.amount;
         break;
     }
@@ -208,10 +257,12 @@ export function foldTransfer(seed: Seed, log: readonly LoggedEvent[]): Transfer 
     corridor: seed.corridor,
     quote: seed.quote,
     recipientId: seed.recipientId,
+    reference: seed.reference,
     state,
     steps: STEP_ORDER.map((id) => steps.get(id) ?? { id, status: 'wait' }),
     ...(txHash !== undefined ? { txHash } : {}),
     confirmations,
+    ...(minted !== undefined ? { minted } : {}),
     ...(achReturn !== undefined ? { achReturn } : {}),
     ...(payoutReturn !== undefined ? { payoutReturn } : {}),
     ...(refunded !== undefined ? { refunded } : {}),

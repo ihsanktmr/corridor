@@ -316,7 +316,7 @@ hr.rule{border:none;border-top:1px solid var(--line);margin:0;}
             <td>Webhook duplicated / out of order</td>
             <td><code>seq</code> assigned on ingress</td>
             <td>Nothing; fold is idempotent</td>
-            <td>Sort by seq, drop duplicates, monotonic steps</td>
+            <td>Drop duplicates by event identity, state and steps only move forward</td>
             <td class="sev"><span class="sv lo">none</span></td>
           </tr>
           <tr>
@@ -401,11 +401,12 @@ hr.rule{border:none;border-top:1px solid var(--line);margin:0;}
     </div>
 
 <pre class="code"><span class="c">// The distinction the fold has to make, and why `clawback` exists.</span>
-<span class="c">// An ACH return before value leaves is a clean refund.</span>
-<span class="c">// The same return after payout is a loss event.</span>
+<span class="c">// An ACH return before value leaves is a clean refund, and that includes</span>
+<span class="c">// funded_held: the hold exists so an R01 or R08 lands here.</span>
+<span class="c">// The same return once USDC is on chain is a loss event.</span>
 case <span class="s">'onramp_returned'</span>:
   achReturn = e.code;
-  state = state === <span class="s">'funding'</span> ? <span class="s">'refunded'</span> : <span class="s">'clawback'</span>;
+  advance(RANK[state] &lt; RANK.chain_pending ? <span class="s">'refunded'</span> : <span class="s">'clawback'</span>);
   break;</pre>
   </section>
 
@@ -443,7 +444,7 @@ case <span class="s">'onramp_returned'</span>:
     <ul class="pts">
       <li><b>Push is the fast path, polling is the floor.</b> Any transfer not in a terminal state is re-polled on exponential backoff. Dropped webhooks are expected, not escalated.</li>
       <li><b><code>seq</code> is assigned by Corridor on ingress</b>, never taken from the provider. A vendor's ordering guarantees are that vendor's business.</li>
-      <li><b>State is a fold over an append-only log.</b> Redelivery is idempotent because duplicates are dropped by <code>seq</code>; reordering is corrected by sorting before folding. Both are covered by tests.</li>
+      <li><b>State is a fold over an append-only log.</b> Redelivery is idempotent because duplicates are dropped by event identity, not by <code>seq</code>: a vendor retry passes through ingress again and is assigned a fresh one. Reordering is absorbed rather than corrected: <code>seq</code> is arrival order, so the fold ranks states and a late event describing an earlier moment is logged but never moves the transfer backwards. Both are covered by tests.</li>
       <li><b>Steps are monotonic in the UI.</b> A late event that would move a completed step backwards is recorded in the log but not reflected on screen. A user watching a completed step un-complete has just learned not to trust the screen, and they would be right.</li>
       <li><b><code>parseWebhook</code> returns <code>null</code> rather than throwing</b> on unknown or badly-signed payloads. A provider shipping a feature you have not heard of should never be an outage.</li>
     </ul>

@@ -12,7 +12,7 @@ import { msRemaining, quoteStatus } from '../../domain/quote';
 import { convert, formatRate } from '../../domain/rate';
 import { Refresh } from '../../components/icons';
 import { ACTIVE_CORRIDOR, onrampFor } from '../../providers/registry';
-import { createQuote, currentRate, recipientById, submitTransfer } from '../../services/corridor';
+import { currentRate, recipientById, requote, submitTransfer } from '../../services/corridor';
 import { useCorridor } from '../../state/useCorridor';
 import { color, space } from '../../theme/tokens';
 import { tabular, type } from '../../theme/type';
@@ -65,7 +65,7 @@ export default function Review() {
   }
 
   const status = quoteStatus(quote, now);
-  if (status === 'expired') return <RateExpired />;
+  if (status === 'expired') return <RateExpired recipientName={recipient?.holderName ?? null} />;
 
   const onConfirm = () => {
     setSubmitting(true);
@@ -152,15 +152,14 @@ export default function Review() {
  * Re-accepting is an explicit choice with a fresh lock, never a silent re-quote: an
  * app that quietly repriced would be indistinguishable from one that skimmed.
  */
-function RateExpired() {
+function RateExpired({ recipientName }: { recipientName: string | null }) {
   const { quote } = useCorridor();
+  // The same feed "Accept new rate" quotes from, so the number shown here is the
+  // number the server will issue. The demo scene moves the feed; a real expiry
+  // shows whatever the market did, including nothing.
   const fresh = currentRate();
-
-  // A visibly worse rate, so the delta is real rather than decorative.
-  const worse = { ...fresh, num: fresh.num - 23n };
-  const newReceive = quote ? convert(quote.send, worse) : null;
-  const delta =
-    quote && newReceive ? { currency: 'TRY' as const, minor: quote.receive.minor - newReceive.minor } : null;
+  const newReceive = quote ? convert(quote.send, fresh) : null;
+  const delta = quote && newReceive ? quote.receive.minor - newReceive.minor : 0n;
 
   return (
     <Screen>
@@ -187,21 +186,24 @@ function RateExpired() {
           </Row>
           <Row style={{ paddingVertical: 5 }}>
             <Text style={[type.label, { fontSize: 12 }]}>Current rate</Text>
-            <Text style={[type.label, tabular, { color: color.warning }]}>{formatRate(worse)} ₺</Text>
+            <Text style={[type.label, tabular, delta > 0n ? { color: color.warning } : null]}>
+              {formatRate(fresh)} ₺
+            </Text>
           </Row>
           <FeeLineRow
-            label="Elif now receives"
+            label={`${recipientName ?? 'Recipient'} now receives`}
             value={newReceive ? format(newReceive) : '—'}
             total
           />
-          {delta ? (
-            <Text style={{ fontSize: 10.5, color: color.warning, marginTop: 9 }}>
-              {format(delta)} less than your expired quote.
+          {delta !== 0n ? (
+            <Text style={{ fontSize: 10.5, color: delta > 0n ? color.warning : color.success, marginTop: 9 }}>
+              {format({ currency: 'TRY', minor: delta > 0n ? delta : -delta })}{' '}
+              {delta > 0n ? 'less' : 'more'} than your expired quote.
             </Text>
           ) : null}
         </Card>
 
-        <RateStrip rate={formatRate(worse)} remainingMs={15 * 60_000} status="live" showSource={false} />
+        <RateStrip rate={formatRate(fresh)} remainingMs={15 * 60_000} status="live" showSource={false} />
         </View>
       </Body>
 
@@ -209,7 +211,7 @@ function RateExpired() {
         <Button
           label="Accept new rate"
           onPress={() => {
-            createQuote(quote ? (Number(quote.send.minor) / 100).toFixed(2) : '500.00');
+            requote();
             router.replace('/transfer/review');
           }}
         />

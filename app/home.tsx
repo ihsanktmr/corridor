@@ -8,7 +8,7 @@ import { Amount, Card, Chip, CorridorStrip, ListRow, Pill, Row } from '../compon
 import { format } from '../domain/money';
 import { formatRate } from '../domain/rate';
 import { shortAddress, type Transfer } from '../domain/transfer';
-import { currentRate } from '../services/corridor';
+import { currentRate, recipientById } from '../services/corridor';
 import { useCorridor } from '../state/useCorridor';
 import { color, space } from '../theme/tokens';
 import { tabular, type } from '../theme/type';
@@ -70,7 +70,7 @@ export default function Home() {
               <Text style={[type.bodyStrong, tabular, { fontSize: 12 }]}>
                 {formatRate(currentRate())} ₺
               </Text>
-              <Text style={{ fontSize: 10, color: color.success, marginTop: 1 }}>▲ 0.4% today</Text>
+              <Text style={[type.label, { fontSize: 10, marginTop: 1 }]}>mid-market</Text>
             </View>
           }
         />
@@ -107,17 +107,18 @@ const LEAD_TONE: Partial<Record<ReturnType<typeof statusOf>['tone'], 'success' |
 
 function ActivityRow({ transfer, last }: { transfer: Transfer; last: boolean }) {
   const { tone, label } = statusOf(transfer);
+  const recipient = recipientById(transfer.recipientId);
 
   return (
     <View>
       <ListRow
         lead="TR"
         {...(LEAD_TONE[tone] ? { leadTone: LEAD_TONE[tone] } : {})}
-        title="Elif Yıldız"
+        title={recipient?.holderName ?? 'Recipient'}
         subtitle={`${new Date(transfer.events[0]?.at ?? Date.now()).toLocaleDateString('en-US', {
           month: 'short',
           day: 'numeric',
-        })} · Garanti BBVA`}
+        })} · ${recipient?.bank ?? 'Turkish bank'}`}
         value={format(transfer.quote.receive)}
         meta={<Pill tone={tone} label={label} />}
         last={last}

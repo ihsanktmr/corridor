@@ -5,6 +5,7 @@ import { format, parseAmount } from './money.ts';
 import { buildQuote, formatCountdown, quoteStatus, totalFees, type Quote } from './quote.ts';
 import { rateFromDecimal } from './rate.ts';
 import {
+  eventKey,
   foldTransfer,
   shortHash,
   type Hex,
@@ -31,12 +32,14 @@ const SEED = {
   corridor: 'USD:TRY' as const,
   quote: QUOTE,
   recipientId: 'r_elif',
+  reference: 'CRD-8F2A-4417',
 };
 
+/** Logs an event the way ingress does: a fresh `seq`, the event's own `idem`. */
 let seq = 0;
 function ev(e: TransferEvent, at = '2026-08-05T09:38:00.000Z'): LoggedEvent {
   seq += 1;
-  return { ...e, seq, at, idem: `t_demo:${seq}` } as LoggedEvent;
+  return { ...e, seq, at, idem: eventKey(SEED.id, e) } as LoggedEvent;
 }
 
 function reset(): void {
@@ -109,7 +112,7 @@ describe('foldTransfer: happy path', () => {
 });
 
 describe('foldTransfer: ordering guarantees', () => {
-  test('an out-of-order delivery is corrected by seq, not trusted', () => {
+  test('a log replays in seq order however it is stored', () => {
     reset();
     const events = [
       ev({ t: 'quote_accepted', quoteId: 'q_demo' }),
@@ -130,7 +133,7 @@ describe('foldTransfer: ordering guarantees', () => {
     assert.deepEqual(outOfOrder.steps, inOrder.steps);
   });
 
-  test('a redelivered webhook is a no-op', () => {
+  test('a redelivered webhook is a no-op, even with a fresh seq', () => {
     reset();
     const events = [
       ev({ t: 'quote_accepted', quoteId: 'q_demo' }),
@@ -138,10 +141,34 @@ describe('foldTransfer: ordering guarantees', () => {
       ev({ t: 'onramp_settled', amount: parseAmount('USD', '500.00') }),
     ];
     const once = foldTransfer(SEED, events);
-    const twice = foldTransfer(SEED, [...events, ...events, events[1] as LoggedEvent]);
+    // A vendor retry goes through ingress again and is assigned a new seq. Only
+    // its identity matches the original, so that is what dedup has to key on.
+    const redelivered = ev({ t: 'onramp_settled', amount: parseAmount('USD', '500.00') });
+    const twice = foldTransfer(SEED, [...events, redelivered]);
 
+    assert.notEqual(redelivered.seq, events[2]?.seq);
     assert.equal(twice.state, once.state);
     assert.equal(twice.events.length, once.events.length);
+  });
+
+  test('a late event never walks a delivered transfer backwards', () => {
+    reset();
+    // Arrival order, which is seq order: the payout partner's webhook beat the
+    // chain reader's confirmation.
+    const t = foldTransfer(SEED, [
+      ev({ t: 'quote_accepted', quoteId: 'q_demo' }),
+      ev({ t: 'onramp_initiated', ref: 'br_1', rail: 'ach' }),
+      ev({ t: 'onramp_settled', amount: parseAmount('USD', '500.00') }),
+      ev({ t: 'minted', amount: parseAmount('USDC', '500.00') }),
+      ev({ t: 'chain_submitted', txHash: TX }),
+      ev({ t: 'payout_submitted', ref: 'tr_1' }),
+      ev({ t: 'payout_delivered' }),
+      ev({ t: 'chain_confirmed', txHash: TX, confirmations: 12 }),
+    ]);
+
+    assert.equal(t.state, 'delivered');
+    assert.equal(step(t, 'chain')?.status, 'done');
+    assert.equal(t.events.length, 8, 'the late event is still logged');
   });
 
   test('a late webhook never walks a completed step backwards', () => {
@@ -196,6 +223,34 @@ describe('foldTransfer: failure paths', () => {
     ]);
     assert.equal(t.state, 'refunded');
     assert.equal(t.achReturn, 'R01');
+  });
+
+  test('an ACH return during the hold is a clean refund', () => {
+    reset();
+    // The reason `funded_held` exists: USD has settled, nothing has left yet, and
+    // an R01 or R08 arriving now costs Corridor nothing.
+    const t = foldTransfer(SEED, [
+      ev({ t: 'quote_accepted', quoteId: 'q_demo' }),
+      ev({ t: 'onramp_initiated', ref: 'br_1', rail: 'ach' }),
+      ev({ t: 'onramp_settled', amount: parseAmount('USD', '500.00') }),
+      ev({ t: 'minted', amount: parseAmount('USDC', '500.00') }),
+      ev({ t: 'onramp_returned', code: 'R01' }),
+    ]);
+    assert.equal(t.state, 'refunded');
+    assert.equal(step(t, 'onramp')?.status, 'failed');
+  });
+
+  test('an ACH return once USDC is on chain is a clawback', () => {
+    reset();
+    const t = foldTransfer(SEED, [
+      ev({ t: 'quote_accepted', quoteId: 'q_demo' }),
+      ev({ t: 'onramp_initiated', ref: 'br_1', rail: 'ach' }),
+      ev({ t: 'onramp_settled', amount: parseAmount('USD', '500.00') }),
+      ev({ t: 'minted', amount: parseAmount('USDC', '500.00') }),
+      ev({ t: 'chain_submitted', txHash: TX }),
+      ev({ t: 'onramp_returned', code: 'R08' }),
+    ]);
+    assert.equal(t.state, 'clawback');
   });
 
   test('an R10 arriving after payout is a clawback, not a refund', () => {
