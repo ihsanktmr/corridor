@@ -234,9 +234,20 @@ hr.rule{border:none;border-top:1px solid var(--line);margin:0;}
       <div class="disc">
         <div class="dt"><strong>The wallet</strong><span class="badge mock">simulated</span></div>
         <p>
-          <code>@privy-io/expo</code> requires native modules and therefore a development build, so the
-          in-app wallet is a fixture and the repo stays runnable with <code>npx expo start</code>. The
-          real Privy adapter binds in the same slot.
+          <b>The app holds no key and signs nothing</b>; every receipt links to the proof transaction
+          below. Privy is the production design, but <code>@privy-io/expo</code> requires native modules
+          and therefore a development build, so the in-app wallet is a fixture and the repo stays runnable
+          with <code>npx expo start</code>. A real adapter binds in the same slot.
+        </p>
+      </div>
+
+      <div class="disc">
+        <div class="dt"><strong>The backend</strong><span class="badge mock">simulated</span></div>
+        <p>
+          The Corridor API runs in-process (<code>services/corridor.ts</code>) behind the same contracts
+          a deployed server would expose. Quotes are signed at issue and verified before a transfer is
+          created, but <b>quote signing is keyed FNV-1a standing in for HMAC-SHA256</b>, and nothing
+          here is a security boundary.
         </p>
       </div>
 
@@ -498,8 +509,8 @@ case <span class="s">'onramp_returned'</span>:
             <td>Artifact amount ≠ demo amount</td>
             <td>
               The on-chain transaction is <b>1.00 USDC</b>; the app's demo figures are 500.00. Circle's
-              testnet faucet sets the ceiling, not the design. Same contract, same decimals, same
-              signing path, different amount. Stated on the receipt screen itself, not only here,
+              testnet faucet sets the ceiling, not the design. Same contract and decimals; signed by
+              <code>scripts/proof.mts</code>, not the app. Stated on the receipt screen itself, not only here,
               because a receipt implying a 500.00 settlement over a 1.00 transaction would be the exact
               failure this document exists to avoid.
             </td>
@@ -513,17 +524,12 @@ case <span class="s">'onramp_returned'</span>:
               wiring Privy would force every reviewer through a development build.
               <b>The transaction is real; the path to it was a script.</b>
             </td>
-            <td>Privy adapter + EAS dev build</td>
+            <td>A signing wallet adapter + an EAS dev build</td>
           </tr>
           <tr>
             <td>Privy not wired</td>
             <td><code>@privy-io/expo</code> requires native modules and therefore a development build; a reviewer could not <code>npx expo start</code> the repo. The wallet sits behind <code>WalletProvider</code> so the real adapter binds in the same slot.</td>
             <td>One adapter + an EAS dev build</td>
-          </tr>
-          <tr>
-            <td>No web target</td>
-            <td>Privy's Expo SDK is iOS/Android only. There is no browser fallback demo, so the app cannot be linked as a live URL the way the documents can.</td>
-            <td>Not closable with this stack</td>
           </tr>
           <tr>
             <td>Six screens visually unverified</td>

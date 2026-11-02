@@ -695,7 +695,7 @@ hr.rule{border:none;border-top:1px solid var(--line);margin:0;}
     <div class="legend">
       <div class="legend-item">
         <div class="k"><span class="badge real">real</span></div>
-        <p>Privy embedded wallet + auth. One real Base Sepolia USDC transfer with a verifiable tx hash: the proof artifact.</p>
+        <p>One real Base Sepolia USDC transfer with a verifiable tx hash, signed by the repo's proof script rather than the app: the proof artifact. The Privy embedded wallet + auth is the production design; the build simulates it.</p>
       </div>
       <div class="legend-item">
         <div class="k"><span class="badge hybrid">hybrid</span></div>
@@ -1954,19 +1954,21 @@ hr.rule{border:none;border-top:1px solid var(--line);margin:0;}
     <h2 class="sec">What phase 3 has to wire</h2>
     <p class="note">
       Each screen's data dependency, named. This is the list the architecture diagram gets built from.
+      The badges are the phase 2 plan; what the build actually binds is in the README's
+      <a href="https://github.com/ihsanktmr/corridor#whats-real">What's real</a>.
     </p>
     <div class="table-scroll">
       <table class="spec-table">
         <thead><tr><th>Screen</th><th>Depends on</th><th>Rail</th></tr></thead>
         <tbody>
-          <tr><td>01 Welcome</td><td>Privy <code>useLoginWithEmail</code> / passkey; embedded wallet provisioning</td><td><span class="badge real">real</span></td></tr>
-          <tr><td>02 Home</td><td>USDC <code>balanceOf</code> via Privy provider; merged transfer list; rate feed</td><td><span class="badge real">real</span> + <span class="badge mock">rate</span></td></tr>
+          <tr><td>01 Welcome</td><td>Privy <code>useLoginWithEmail</code> / passkey; embedded wallet provisioning</td><td><span class="badge mock">designed · simulated in build</span></td></tr>
+          <tr><td>02 Home</td><td>USDC <code>balanceOf</code> via Privy provider; merged transfer list; rate feed</td><td><span class="badge mock">designed · simulated in build</span> + <span class="badge mock">rate</span></td></tr>
           <tr><td>03 Amount</td><td>Server-signed quote: <code>quoteId</code>, <code>rate</code>, <code>fees[]</code>, <code>expiresAt</code></td><td><span class="badge hybrid">hybrid</span></td></tr>
           <tr><td>04 Add USD</td><td>Bridge on-ramp: source list, <code>POST /transfers</code>, ACH settlement estimate</td><td><span class="badge mock">simulated</span></td></tr>
           <tr><td>05-06 KYC</td><td>Provider session token, signed upload URL, status webhook</td><td><span class="badge hybrid">hybrid</span></td></tr>
           <tr><td>07 Recipient</td><td>Local mod-97 IBAN validation + bank-code lookup; recipient store</td><td><span class="badge real">real</span></td></tr>
           <tr><td>08 Review</td><td><code>quoteId</code> re-validation, idempotency key, submit</td><td><span class="badge hybrid">hybrid</span></td></tr>
-          <tr><td>09 In flight</td><td>Bridge webhooks + Base Sepolia tx subscription; backoff poll fallback</td><td><span class="badge real">chain</span> + <span class="badge mock">fiat</span></td></tr>
+          <tr><td>09 In flight</td><td>Bridge webhooks + Base Sepolia tx subscription; backoff poll fallback</td><td><span class="badge mock">chain</span> + <span class="badge mock">fiat</span></td></tr>
           <tr><td>10 Receipt</td><td>Immutable settled record; BaseScan deep link; PDF export</td><td><span class="badge real">hash</span></td></tr>
           <tr><td>11 Edge</td><td>Re-quote endpoint; KYC <code>reasonCode</code> mapping; payout return handler</td><td><span class="badge hybrid">hybrid</span></td></tr>
         </tbody>

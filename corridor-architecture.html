@@ -213,10 +213,10 @@ pre.code .h{color:var(--gold-bright);}
     </p>
     <div class="meta-row">
       <span class="meta-chip">corridor <b>USD → TRY</b></span>
-      <span class="meta-chip">wallet <b>Privy</b> · real</span>
+      <span class="meta-chip">wallet <b>Privy</b> · designed, simulated in build</span>
       <span class="meta-chip">on-ramp <b>Bridge</b> · simulated</span>
       <span class="meta-chip">payout <b>local partner</b> · simulated</span>
-      <span class="meta-chip">settlement <b>Base Sepolia</b> · real</span>
+      <span class="meta-chip">settlement call <b>Base Sepolia</b> · real, by script</span>
     </div>
   </header>
 
@@ -308,11 +308,11 @@ pre.code .h{color:var(--gold-bright);}
 
       <div class="split" style="margin-bottom:0;">
         <div class="node on">
-          <p class="nt">Privy SDK <span class="badge real">real</span></p>
+          <p class="nt">Privy SDK <span class="badge mock">designed</span></p>
           <p class="nd">On-device. Auth, embedded wallet, EIP-1193 signing. Key shards never leave the device unencrypted.</p>
         </div>
         <div class="node on">
-          <p class="nt">Base RPC <span class="badge real">real</span></p>
+          <p class="nt">Base RPC <span class="badge mock">designed</span></p>
           <p class="nd">Read-only. <code>balanceOf</code>, receipts, confirmations. Public endpoint, no secret.</p>
         </div>
       </div>
@@ -321,7 +321,7 @@ pre.code .h{color:var(--gold-bright);}
 
       <div class="layer trust">
         <p class="lt">⎯ trust boundary ⎯ corridor api (server)</p>
-        <p class="ld">Verifies the Privy JWT against Privy's JWKS on every request. Owns quotes, the ledger, provider credentials, webhook ingress and reconciliation. <b style="color:var(--paper);">Every provider secret lives here and only here.</b></p>
+        <p class="ld">Verifies the Privy JWT against Privy's JWKS on every request. Owns quotes, the ledger, provider credentials, webhook ingress and reconciliation. <b style="color:var(--paper);">Every provider secret lives here and only here.</b> In this build it runs in-process (<code>services/corridor.ts</code>) behind the same contracts.</p>
       </div>
 
       <div class="drop"><svg><use href="#arrow-d"/></svg><span>provider interfaces</span></div>
@@ -349,7 +349,7 @@ pre.code .h{color:var(--gold-bright);}
 
       <div class="layer real">
         <p class="lt">settlement · base sepolia <span class="badge real">real</span></p>
-        <p class="ld">The one leg that genuinely moves value. ERC-20 <code>transfer()</code> on <code>0x036CbD53…F7e</code>, signed by the Privy embedded wallet. Produces the verifiable tx hash.</p>
+        <p class="ld">The one leg that genuinely moves value. ERC-20 <code>transfer()</code> on <code>0x036CbD53…F7e</code>, signed by the embedded wallet in production. The proof tx was signed by <code>scripts/proof.mts</code>; the build's wallet is simulated.</p>
       </div>
     </div>
 
@@ -455,7 +455,7 @@ interface Quote {
   readonly rate: Rate;
   readonly fees: readonly FeeLine[];
   readonly expiresAt: string;    <span class="c">// server clock, always</span>
-  readonly sig: string;          <span class="c">// HMAC over every field above</span>
+  readonly sig: string;          <span class="c">// HMAC-SHA256 over every field above in production; this build uses keyed FNV-1a as a stand-in</span>
 }
 
 interface FeeLine {
@@ -636,9 +636,19 @@ interface Envelope {
     <div class="eyebrow">the real leg</div>
     <h2 class="sec">Producing the proof artifact</h2>
     <p class="note">
-      One genuinely real transaction, end to end, signed by a wallet the user owns. Everything else in
-      this build is a simulation and says so; this is the part that isn't.
+      One genuinely real transaction, end to end. Everything else in this build is a simulation and
+      says so; this is the part that isn't.
     </p>
+    <div class="call">
+      <p class="lbl">as built</p>
+      <p>
+        This section is the phase 3 design: the embedded wallet signs in-app and screen 09 subscribes
+        to real confirmations. <b>The build does neither.</b> The proof transaction was signed by
+        <code>scripts/proof.mts</code> in Node with <code>viem</code>, not by the app, whose wallet is
+        simulated and shows that one hash on every receipt. The faucet question below was resolved in
+        phase 4: the transfer is 1.00 USDC and the receipt says so on screen.
+      </p>
+    </div>
 
 <pre class="code"><span class="c">// The only place the app itself moves value.</span>
 <span class="c">// Privy holds the key shards; the app never sees a private key.</span>
@@ -744,7 +754,7 @@ const PROVIDERS: Record&lt;ProviderId, Provider&gt; = {
       <div class="ci">
         <span class="cb"></span>
         <div class="cx">
-          <p class="c1">Privy app <span class="badge real">real · self-serve</span></p>
+          <p class="c1">Privy app <span class="badge mock">designed · self-serve, not wired</span></p>
           <p class="c2">Create an app at dashboard.privy.io → app ID + client ID. Enable email login and embedded wallets on EVM. Add the Expo scheme to allowed origins. <b style="color:var(--paper);">Requires a signup.</b></p>
         </div>
       </div>
@@ -773,14 +783,14 @@ const PROVIDERS: Record&lt;ProviderId, Provider&gt; = {
         <span class="cb"></span>
         <div class="cx">
           <p class="c1">Corridor API <span class="badge real">code</span></p>
-          <p class="c2">Quote signing, ledger, webhook ingress, reconciler. Small: the interesting parts are the state fold and the provider registry, not the transport.</p>
+          <p class="c2">Quote signing, ledger, webhook ingress, reconciler. Small: the interesting parts are the state fold and the provider registry, not the transport. Runs in-process in this build.</p>
         </div>
       </div>
       <div class="ci">
         <span class="cb"></span>
         <div class="cx">
           <p class="c1">Expo app <span class="badge real">code</span></p>
-          <p class="c2"><code>@privy-io/expo</code> + native extensions + polyfills. Tokens port from phase 1 unchanged; screens port from phase 2. <b style="color:var(--paper);">No web target: Privy's Expo SDK is iOS/Android only, so a web demo is not available as a fallback.</b></p>
+          <p class="c2"><code>@privy-io/expo</code> + native extensions + polyfills. Tokens port from phase 1 unchanged; screens port from phase 2. <b style="color:var(--paper);">Privy's Expo SDK is iOS/Android only.</b> The build keeps Privy behind the wallet seam, so it also runs on the web.</p>
         </div>
       </div>
     </div>
@@ -810,8 +820,7 @@ const PROVIDERS: Record&lt;ProviderId, Provider&gt; = {
       absorbed that; ACH R10 exposure being bounded rather than eliminated, and the reserve it implies;
       rate-lock expiry and re-quote semantics; Turkish name-match rejection as an unpreventable failure
       made cheap; chain reorg resubmission under a stable idempotency key; KYC provider outage as a hard
-      stop rather than a bypass; the faucet-versus-demo-amount constraint on the proof artifact; and
-      that Privy's Expo SDK has no web target, so there is no browser fallback demo.
+      stop rather than a bypass; and the faucet-versus-demo-amount constraint on the proof artifact.
     </p>
 
     <div class="footer-mark">

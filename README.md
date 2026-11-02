@@ -52,16 +52,18 @@ Four of the five rails are simulated, and every one is disclosed **on-screen** a
 
 | Rail | Status | Why |
 |---|---|---|
-| Domain logic (money, rates, IBAN, state) | **Real** | `bigint` minor units, rational rates, ISO 7064 mod-97. 49 tests. |
+| Domain logic (money, rates, IBAN, state) | **Real** | `bigint` minor units, rational rates, ISO 7064 mod-97. 45 tests. |
 | Design system | **Real** | Ported from the identity spec, unchanged |
-| Wallet | Simulated | `@privy-io/expo` needs native modules → a dev build → you couldn't `npx expo start` this |
+| Settlement contract call | **Real, once, by script** | One 1.00 USDC transfer on Base Sepolia, signed by [`scripts/proof.mts`](scripts/proof.mts), not by the app. See [below](#the-proof-artifact) |
+| Wallet | Simulated | The app holds no key and can't sign: every transfer shows the proof script's hash. Privy is the production design, but `@privy-io/expo` needs native modules → a dev build → you couldn't `npx expo start` this |
+| Backend | Simulated | The Corridor API runs in-process ([`services/corridor.ts`](services/corridor.ts)) behind the same contracts. Quote signing is keyed FNV-1a standing in for HMAC-SHA256 |
 | USD on-ramp | Simulated | Real Bridge product, but sandbox keys are **not self-serve** |
 | TRY payout | Simulated | **Bridge has no TRY route in either direction.** Not a gate, the product isn't sold |
 | Identity verification | Real flow, fixture verdict | Sequencing and retry are production-shaped; no documents are captured |
 
 ### The proof artifact
 
-The case study's central evidentiary claim is that the settlement leg is real. `scripts/proof.mts` discharges it: a genuine ERC-20 transfer on Base Sepolia, signed locally with `viem`, verifiable by anyone on BaseScan without taking this repo's word for anything.
+The case study's central evidentiary claim is that the settlement contract call is real. `scripts/proof.mts` discharges it outside the app: a genuine ERC-20 transfer on Base Sepolia, signed locally in Node with `viem`, verifiable by anyone on BaseScan without taking this repo's word for anything. The app itself doesn't sign; its wallet is simulated.
 
 ```bash
 npm run proof              # status + funding needed
@@ -84,9 +86,9 @@ The chain is hard-coded and there is no flag to change it. Keys are generated in
 | Contract | `0x036CbD53842c5426634e7929541eC2318f3dCF7e` (Circle's canonical Base Sepolia USDC) |
 | Transfer | 1.00 USDC → treasury, 57,359 gas |
 
-Full record in [`proof-artifact.json`](proof-artifact.json). The hash is wired into the receipt screen, which links out to BaseScan.
+Full record in [`proof-artifact.json`](proof-artifact.json). Every receipt in the app links to this one transaction on BaseScan.
 
-**On the amount.** The demo figures throughout the app are 500.00 USDC; the on-chain transaction is **1.00 USDC**, capped by Circle's testnet faucet. Same contract, same decimals, same signing path, just a different amount. The receipt screen says so on the screen itself, not just here. A receipt implying a 500.00 settlement over a 1.00 transaction would be exactly the kind of thing this project exists to argue against.
+**On the amount.** The demo figures throughout the app are 500.00 USDC; the on-chain transaction is **1.00 USDC**, capped by Circle's testnet faucet. Same contract and decimals. It was signed by `scripts/proof.mts`, not the app, whose wallet is simulated. The receipt screen says so on the screen itself, not just here. A receipt implying a 500.00 settlement over a 1.00 transaction would be exactly the kind of thing this project exists to argue against.
 
 ---
 
