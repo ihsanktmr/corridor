@@ -130,10 +130,31 @@ export function anySimulated(): boolean {
   return activeProviders().some((m) => m.fidelity !== 'real');
 }
 
+function chainName(): string {
+  return ROUTES[ACTIVE_CORRIDOR].settlement === 'base-sepolia' ? 'Base Sepolia' : 'Base';
+}
+
 /** The persistent strip on screen 02. Derived, never authored. */
 export function demoStripLabel(): string {
-  const chain = ROUTES[ACTIVE_CORRIDOR].settlement === 'base-sepolia' ? 'Base Sepolia' : 'Base';
+  const rails = providers.wallet.meta.fidelity === 'real' ? 'fiat rails' : 'wallet and fiat rails';
   return anySimulated()
-    ? `Demo build · ${chain} · fiat rails simulated`
-    : `Live · ${chain}`;
+    ? `Demo build · ${chainName()} · ${rails} simulated`
+    : `Live · ${chainName()}`;
+}
+
+/** The wallet line on screen 01. Privy is the production design, not a bound adapter. */
+export function walletLine(): string {
+  return providers.wallet.meta.fidelity === 'real'
+    ? providers.wallet.meta.label
+    : 'Wallet simulated · Privy is the production design';
+}
+
+/**
+ * The note beside the address on screen 02. The simulated wallet shows the proof
+ * script's sender: a real address on chain, whose key this app never holds.
+ */
+export function walletAddressNote(): string {
+  return providers.wallet.meta.fidelity === 'real'
+    ? chainName()
+    : `Proof script's wallet · ${chainName()}`;
 }

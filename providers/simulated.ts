@@ -367,9 +367,10 @@ const WALLET_META: ProviderMeta = {
   label: 'Embedded wallet',
   fidelity: 'simulated',
   disclosure:
-    'Simulated wallet. `@privy-io/expo` needs native modules and a development ' +
-    'build; this adapter keeps the repo runnable with `npx expo start`. The real ' +
-    'Privy adapter binds in the same slot.',
+    'Simulated wallet. It holds no key and signs nothing; every transfer shows the ' +
+    "proof script's Base Sepolia transaction. Privy is the production design, and " +
+    '`@privy-io/expo` needs native modules and a development build, so this adapter ' +
+    'keeps the repo runnable with `npx expo start`. A real adapter binds in the same slot.',
 };
 
 export class SimulatedWallet implements WalletProvider {

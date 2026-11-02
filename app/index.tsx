@@ -9,7 +9,7 @@ import { CorridorStrip } from '../components/primitives';
 import { Field } from '../components/inputs';
 import { currentRate, login } from '../services/corridor';
 import { formatRate } from '../domain/rate';
-import { demoStripLabel } from '../providers/registry';
+import { demoStripLabel, walletLine } from '../providers/registry';
 import { color, space } from '../theme/tokens';
 import { tabular, type } from '../theme/type';
 
@@ -92,7 +92,7 @@ export default function Welcome() {
 
       <Dock>
         <Text style={[type.label, { fontSize: 10.5, textAlign: 'center', lineHeight: 17 }]}>
-          Wallet secured by Privy · no seed phrase, ever{'\n'}
+          {walletLine()}{'\n'}
           <Text style={{ color: '#7d776c' }}>{demoStripLabel()}</Text>
         </Text>
       </Dock>

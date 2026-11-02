@@ -134,15 +134,15 @@ export default function Receipt() {
             </View>
           </Row>
           {/*
-            The hash above is a real transaction, and it carries a different amount
-            from the figures on this receipt. Saying so here, rather than only in
-            the README, is the point: a receipt that implied a 500.00 settlement
-            over a 1.00 transaction would be the exact thing this project argues
-            against.
+            The hash above is a real transaction, but this app didn't sign it and
+            it carries a different amount from the figures on this receipt. Saying
+            so here, rather than only in the README, is the point: a receipt that
+            implied this transfer settled on chain would be the exact thing this
+            project argues against.
           */}
           <Text style={[type.label, { fontSize: 10, marginTop: 9, lineHeight: 15 }]}>
-            Figures above are demo values; the transaction is {PROOF_AMOUNT} USDC, faucet-capped,
-            same contract and signing path.
+            Figures above are demo values. The linked transaction is a separate {PROOF_AMOUNT} USDC
+            proof transfer signed by the repo's script, not by this app.
           </Text>
         </Card>
 

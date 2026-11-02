@@ -8,6 +8,7 @@ import { Amount, Card, Chip, CorridorStrip, ListRow, Pill, Row } from '../compon
 import { format } from '../domain/money';
 import { formatRate } from '../domain/rate';
 import { shortAddress, type Transfer } from '../domain/transfer';
+import { walletAddressNote } from '../providers/registry';
 import { currentRate, recipientById } from '../services/corridor';
 import { useCorridor } from '../state/useCorridor';
 import { color, space } from '../theme/tokens';
@@ -60,7 +61,7 @@ export default function Home() {
 
           <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm }}>
             <Chip value={shortAddress(session?.address ?? '0x0000')} muted />
-            <Text style={[type.label, { fontSize: 10.5 }]}>Base</Text>
+            <Text style={[type.label, { fontSize: 10.5, flexShrink: 1 }]}>{walletAddressNote()}</Text>
           </View>
         </Card>
 
