@@ -1,0 +1,72 @@
+appId: host.exp.Exponent
+name: Record the short portfolio walkthrough
+---
+- stopApp
+- openLink: ${METRO_URL}
+- extendedWaitUntil:
+    visible: Your dollars, still dollars, on the other side.
+    timeout: 10000
+- waitForAnimationToEnd:
+    timeout: 3000
+
+- tapOn: you@email.com
+- inputText: reviewer@corridor.dev
+- tapOn: Continue
+- extendedWaitUntil:
+    visible: Send to Türkiye
+    timeout: 5000
+- waitForAnimationToEnd:
+    timeout: 3000
+
+- tapOn: Send to Türkiye
+- extendedWaitUntil:
+    visible: New transfer
+    timeout: 5000
+- tapOn: Continue
+- extendedWaitUntil:
+    visible: Add USD
+    timeout: 5000
+- tapOn: Pay $503.75
+
+- extendedWaitUntil:
+    visible: One check before your first payout.
+    timeout: 5000
+- tapOn: Start verification
+- extendedWaitUntil:
+    visible: Front of your licence
+    timeout: 5000
+- tapOn: Capture
+- assertVisible: Back of your licence
+- tapOn: Capture
+- assertVisible: Now a selfie
+- tapOn: Capture and submit
+- extendedWaitUntil:
+    visible: Who's receiving the ₺26,420.00?
+    timeout: 5000
+- tapOn: Continue
+- extendedWaitUntil:
+    visible: Review
+    timeout: 5000
+- waitForAnimationToEnd:
+    timeout: 3000
+
+- openLink: ${METRO_URL}/--/demo/inflight
+- extendedWaitUntil:
+    visible: Sending on Base
+    timeout: 5000
+- waitForAnimationToEnd:
+    timeout: 3000
+
+- openLink: ${METRO_URL}/--/demo/receipt
+- extendedWaitUntil:
+    visible: delivered
+    timeout: 5000
+- waitForAnimationToEnd:
+    timeout: 3000
+
+- openLink: ${METRO_URL}/--/demo/returned
+- extendedWaitUntil:
+    visible: Garanti BBVA sent it back
+    timeout: 5000
+- waitForAnimationToEnd:
+    timeout: 3000
