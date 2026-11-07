@@ -21,7 +21,7 @@ A stablecoin remittance case study: **USD → USDC → TRY payout**, built to de
 
 <p align="center">
   <sub>Welcome · Amount · Add USD · KYC gate · Recipient, then Review · In flight · Receipt · Rate expired · Payout returned<br>
-  iPhone 16 Pro, Expo Go. Every figure on screen is computed by the domain layer, not mocked into the view.</sub>
+  iPhone 16, Expo Go. Every figure on screen is computed by the domain layer, not mocked into the view.</sub>
 </p>
 
 One corridor, one flow: on-ramp → KYC gate → USDC send → Turkish lira payout. Türkiye wasn't picked as a generic demo pair. It's a genuine high-inflation, high-stablecoin-adoption market, which is what makes the corridor worth designing.
@@ -30,6 +30,8 @@ One corridor, one flow: on-ramp → KYC gate → USDC send → Turkish lira payo
 
 **[Try it in your browser →](https://ihsanktmr.github.io/corridor/demo/)** The whole flow, every rail simulated and labelled as such.
 
+**[Watch the 36-second walkthrough →](docs/corridor-walkthrough.mp4)** Quote, identity, settlement, receipt, and returned-payout recovery.
+
 ---
 
 ## The documents
@@ -37,10 +39,12 @@ One corridor, one flow: on-ramp → KYC gate → USDC send → Turkish lira payo
 | | |
 |---|---|
 | [**Brand identity**](https://ihsanktmr.github.io/corridor/corridor-identity.html) | Palette, type, tokens, motion signature |
-| [**UI/UX screens**](https://ihsanktmr.github.io/corridor/corridor-screens.html) | 11 screens at 1:1, component library, per-screen design and architecture notes |
+| [**UI/UX screens**](https://ihsanktmr.github.io/corridor/corridor-screens.html) | 13 captured states, component library, per-screen design and architecture notes |
 | [**Integration architecture**](https://ihsanktmr.github.io/corridor/corridor-architecture.html) | Provider audit, trust boundary, contracts, transfer state machine |
 | [**Architecture diagram**](https://ihsanktmr.github.io/corridor/corridor-diagram.html) | System and settlement timeline, one page |
 | [**Failure modes**](https://ihsanktmr.github.io/corridor/corridor-failure-modes.html) | Full failure register, settlement-risk analysis, known gaps |
+| [**Market and product-pattern notes**](docs/market-notes.md) | Sourced comparison of rate, fee, tracking, and proof patterns |
+| [**Usability validation plan**](docs/usability-test-plan.md) | Five-session protocol, comprehension thresholds, observation log; no invented findings |
 
 If you only read one, read the failure modes.
 
@@ -52,7 +56,7 @@ Four of the five rails are simulated, and every one is disclosed **on-screen** a
 
 | Rail | Status | Why |
 |---|---|---|
-| Domain logic (money, rates, IBAN, state) | **Real** | `bigint` minor units, rational rates, ISO 7064 mod-97. 45 tests. |
+| Domain logic (money, rates, IBAN, state) | **Real** | `bigint` minor units, rational rates, ISO 7064 mod-97. 51 tests. |
 | Design system | **Real** | Ported from the identity spec, unchanged |
 | Settlement contract call | **Real, once, by script** | One 1.00 USDC transfer on Base Sepolia, signed by [`scripts/proof.mts`](scripts/proof.mts), not by the app. See [below](#the-proof-artifact) |
 | Wallet | Simulated | The app holds no key and can't sign: every transfer shows the proof script's hash. Privy is the production design, but `@privy-io/expo` needs native modules → a dev build → you couldn't `npx expo start` this |
@@ -111,9 +115,20 @@ corridor://demo/expired     corridor://demo/returned    corridor://demo/kyc-resu
 These build the same event log the real timeline produces. No screen special-cases them. They work on the hosted demo too, for example [`/demo/demo/receipt`](https://ihsanktmr.github.io/corridor/demo/demo/receipt) or [`/demo/demo/returned`](https://ihsanktmr.github.io/corridor/demo/demo/returned).
 
 ```bash
-npm test           # 49 tests: domain, plus the full flow end to end
+npm test           # 51 tests: domain, rail selection, plus the full flow end to end
 npm run typecheck  # strict + noUncheckedIndexedAccess + exactOptionalPropertyTypes
 ```
+
+**Regenerate the evidence.** With Metro running on an iPhone 16 simulator and
+[Maestro](https://maestro.mobile.dev/) installed, the checked-in flow walks the
+product and captures all thirteen states instead of relying on hand-picked images:
+
+```bash
+maestro test -e METRO_URL=exp://127.0.0.1:8081 \
+  --test-output-dir /tmp/corridor-screens .maestro/capture-screens.yaml
+```
+
+The shorter `.maestro/walkthrough.yaml` drives the checked-in 36-second portfolio video.
 
 **It also runs in a browser:** `npm run web`. The wallet is behind the provider seam, so the build has no native-only dependency; a real Privy adapter would change that, since Privy's Expo SDK has no web target.
 
@@ -144,11 +159,15 @@ app/          expo-router file routes, the 11 screens
 
 Phases 1-5 complete: identity → design system → integration architecture → build → packaging.
 
-Typecheck clean, 49/49 tests, iOS bundle succeeds.
+Typecheck clean, 51/51 tests, iOS bundle succeeds.
+
+Web export ships only the seven font faces the UI uses: 25 assets and 2.8 MB, down from 57 assets and 9.8 MB before deep imports.
+
+Reduced Motion disables decorative loops and native screen transitions. Large display figures and fixed-height controls use bounded Dynamic Type scaling while body copy remains free to reflow in scrollable content.
 
 Brand faces (Bricolage Grotesque, Inter, IBM Plex Mono) are bundled via `expo-font` and held behind the splash until loaded.
 
-**All eleven screens are verified on an iPhone 16 Pro simulator.** Every image above is that build, and the two not shown (ID capture, KYC resubmit) are in [`docs/screens/`](docs/screens).
+**All thirteen captured states are verified on an iPhone 16 simulator.** Every image above is that build; Home, ID capture, and KYC resubmit are also in [`docs/screens/`](docs/screens). The checked-in Maestro flow is the source of truth for regenerating them.
 
 ## Licence
 
