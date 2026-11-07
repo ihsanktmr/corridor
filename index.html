@@ -1,0 +1,621 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Corridor — stablecoin remittance case study</title>
+  <meta name="description" content="An end-to-end product design and integration architecture case study for a USD to TRY stablecoin remittance corridor.">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Corridor">
+  <meta property="og:title" content="Corridor — stablecoin remittance case study">
+  <meta property="og:description" content="A remittance product designed around the moment trust breaks.">
+  <meta property="og:url" content="https://ihsanktmr.github.io/corridor/">
+  <meta property="og:image" content="https://ihsanktmr.github.io/corridor/assets/brand/logo/corridor-og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..700&amp;family=Inter:wght@400;500;600&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --void: #14120f;
+      --concrete: #1e1b16;
+      --raised: #28241d;
+      --line: #332e24;
+      --paper: #f6f3ec;
+      --mist: #a39c8e;
+      --gold: #c9a35c;
+      --gold-bright: #e0bc7c;
+      --success: #8fa876;
+      --warning: #c98a4b;
+      --error: #b5695a;
+      --page: min(1180px, calc(100vw - 48px));
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--void);
+      color: var(--paper);
+      font-family: "Inter", system-ui, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+    a { color: inherit; }
+    img { display: block; max-width: 100%; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    :focus-visible { outline: 2px solid var(--gold-bright); outline-offset: 4px; }
+
+    .skip {
+      position: fixed;
+      top: 12px;
+      left: 12px;
+      z-index: 20;
+      transform: translateY(-160%);
+      background: var(--paper);
+      color: var(--void);
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-weight: 600;
+    }
+    .skip:focus { transform: none; }
+
+    .site-nav {
+      width: var(--page);
+      height: 76px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--line);
+    }
+    .site-nav img { width: 132px; height: auto; }
+    .nav-links { display: flex; align-items: center; gap: 24px; }
+    .nav-links a {
+      color: var(--mist);
+      font-size: 13px;
+      text-decoration: none;
+    }
+    .nav-links a:hover { color: var(--paper); }
+    .nav-links .demo { color: var(--gold-bright); }
+
+    .hero {
+      width: var(--page);
+      min-height: 760px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: minmax(0, 1.18fr) minmax(310px, .82fr);
+      gap: clamp(40px, 8vw, 112px);
+      align-items: center;
+      padding: 72px 0 96px;
+      overflow: hidden;
+    }
+    .hero-copy { position: relative; z-index: 2; }
+    .kicker {
+      margin: 0 0 22px;
+      color: var(--gold-bright);
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 12px;
+    }
+    h1, h2, h3 { font-family: "Bricolage Grotesque", sans-serif; }
+    h1 {
+      max-width: 750px;
+      margin: 0;
+      font-size: clamp(50px, 7.5vw, 96px);
+      line-height: .96;
+      letter-spacing: -.045em;
+      font-weight: 600;
+    }
+    .hero-lede {
+      max-width: 650px;
+      margin: 30px 0 0;
+      color: var(--mist);
+      font-size: clamp(17px, 2vw, 21px);
+      line-height: 1.55;
+    }
+    .hero-lede strong { color: var(--paper); font-weight: 500; }
+    .actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 34px; }
+    .button {
+      min-height: 48px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 20px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      color: var(--paper);
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .button.primary { background: var(--gold); border-color: var(--gold); color: var(--void); }
+    .button:hover { border-color: var(--gold); }
+    .button.primary:hover { background: var(--gold-bright); }
+
+    .role-line {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 18px;
+      margin-top: 32px;
+      color: var(--mist);
+      font-size: 12px;
+    }
+    .role-line span::before { content: ""; display: inline-block; width: 5px; height: 5px; margin-right: 8px; border-radius: 50%; background: var(--gold); vertical-align: 1px; }
+
+    .hero-visual { position: relative; min-height: 590px; display: grid; place-items: center; }
+    .phone {
+      position: relative;
+      width: min(340px, 86vw);
+      padding: 10px;
+      background: #0b0a08;
+      border: 1px solid var(--line);
+      border-radius: 48px;
+      box-shadow: 0 36px 90px rgba(0, 0, 0, .38);
+      transform: rotate(2deg);
+      z-index: 2;
+    }
+    .phone img { width: 100%; border-radius: 39px; }
+    .hero-route {
+      position: absolute;
+      left: -18%;
+      right: -14%;
+      top: 50%;
+      height: 1px;
+      background: var(--line);
+      transform: rotate(-17deg);
+      z-index: 1;
+    }
+    .hero-route::before, .hero-route::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      width: 12px;
+      height: 12px;
+      border: 2px solid var(--gold);
+      border-radius: 50%;
+      background: var(--void);
+      transform: translateY(-50%);
+    }
+    .hero-route::before { left: 0; }
+    .hero-route::after { right: 0; background: var(--gold); }
+    .traveller {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--gold-bright);
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 0 7px rgba(224, 188, 124, .11);
+    }
+    @media (prefers-reduced-motion: no-preference) {
+      .traveller { animation: travel 4.8s ease-in-out infinite; }
+    }
+    @keyframes travel { 0%, 10% { left: 0; } 80%, 100% { left: 100%; } }
+
+    .disclosure {
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      background: var(--concrete);
+    }
+    .disclosure-inner {
+      width: var(--page);
+      margin: 0 auto;
+      padding: 20px 0;
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      gap: 16px;
+      align-items: center;
+    }
+    .signal { width: 8px; height: 8px; border-radius: 50%; background: var(--warning); }
+    .disclosure p { margin: 0; color: var(--mist); font-size: 13px; line-height: 1.6; }
+    .disclosure strong { color: var(--paper); font-weight: 500; }
+    .disclosure a { color: var(--gold-bright); font-size: 12px; text-underline-offset: 4px; }
+
+    .walkthrough {
+      width: var(--page);
+      margin: 0 auto;
+      padding: 96px 0;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 300px;
+      gap: clamp(48px, 10vw, 140px);
+      align-items: center;
+      border-bottom: 1px solid var(--line);
+    }
+    .walkthrough-copy .section-index { display: block; margin-bottom: 24px; }
+    .walkthrough h2 { font-size: clamp(36px, 4.4vw, 58px); }
+    .walkthrough p { max-width: 590px; margin: 22px 0 0; color: var(--mist); font-size: 15px; line-height: 1.75; }
+    .video-frame {
+      padding: 8px;
+      background: #0b0a08;
+      border: 1px solid var(--line);
+      border-radius: 38px;
+      box-shadow: 0 28px 72px rgba(0, 0, 0, .3);
+    }
+    .video-frame video { display: block; width: 100%; border-radius: 31px; }
+
+    .section {
+      width: var(--page);
+      margin: 0 auto;
+      padding: 120px 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .section-head {
+      display: grid;
+      grid-template-columns: minmax(220px, .7fr) minmax(0, 1.3fr);
+      gap: clamp(32px, 8vw, 120px);
+      align-items: start;
+    }
+    .section-index { color: var(--mist); font-family: "IBM Plex Mono", monospace; font-size: 12px; }
+    h2 {
+      max-width: 810px;
+      margin: 0;
+      font-size: clamp(36px, 5.6vw, 70px);
+      line-height: 1.02;
+      letter-spacing: -.035em;
+      font-weight: 600;
+    }
+    .section-lede { max-width: 660px; margin: 26px 0 0; color: var(--mist); font-size: 17px; line-height: 1.75; }
+
+    .rail {
+      margin-top: 76px;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+    }
+    .rail-step { position: relative; padding: 32px 18px 0 0; border-top: 1px solid var(--line); }
+    .rail-step::before {
+      content: "";
+      position: absolute;
+      width: 11px;
+      height: 11px;
+      left: 0;
+      top: -6px;
+      border: 2px solid var(--gold);
+      background: var(--void);
+      border-radius: 50%;
+    }
+    .rail-step.live::before { background: var(--gold); }
+    .rail-step h3 { margin: 0 0 8px; font-size: 17px; font-weight: 500; }
+    .rail-step p { max-width: 165px; margin: 0; color: var(--mist); font-size: 12px; line-height: 1.55; }
+
+    .decisions { margin-top: 76px; border-top: 1px solid var(--line); }
+    .decision {
+      display: grid;
+      grid-template-columns: 72px minmax(220px, .7fr) minmax(0, 1.3fr);
+      gap: 28px;
+      padding: 30px 0;
+      border-bottom: 1px solid var(--line);
+      align-items: baseline;
+    }
+    .decision .number { color: var(--gold); font-family: "IBM Plex Mono", monospace; font-size: 12px; }
+    .decision h3 { margin: 0; font-size: 22px; font-weight: 500; }
+    .decision p { max-width: 630px; margin: 0; color: var(--mist); font-size: 14px; line-height: 1.7; }
+
+    .proof-grid {
+      margin-top: 76px;
+      display: grid;
+      grid-template-columns: .82fr 1.18fr;
+      gap: clamp(48px, 8vw, 112px);
+      align-items: start;
+    }
+    .evidence { margin: 0; border-top: 1px solid var(--line); }
+    .evidence div { display: grid; grid-template-columns: 100px 1fr; gap: 20px; padding: 22px 0; border-bottom: 1px solid var(--line); }
+    .evidence dt { color: var(--paper); font-family: "Bricolage Grotesque", sans-serif; font-size: 30px; font-weight: 600; }
+    .evidence dd { margin: 3px 0 0; color: var(--mist); font-size: 13px; line-height: 1.55; }
+    .proof-copy h3 { margin: 0 0 18px; font-size: 30px; font-weight: 500; }
+    .proof-copy p { max-width: 620px; margin: 0 0 16px; color: var(--mist); font-size: 15px; line-height: 1.75; }
+    .hash {
+      display: inline-block;
+      margin: 12px 0 24px;
+      color: var(--gold-bright);
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 12px;
+      text-decoration: none;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 6px;
+    }
+
+    .correction {
+      margin-top: 76px;
+      display: grid;
+      grid-template-columns: 14px 1fr;
+      gap: 28px;
+      padding: 34px 0;
+      border-top: 1px solid rgba(181, 105, 90, .46);
+      border-bottom: 1px solid rgba(181, 105, 90, .46);
+    }
+    .correction-mark { width: 8px; height: 8px; margin-top: 8px; border-radius: 50%; background: var(--error); }
+    .correction h3 { margin: 0 0 10px; font-size: 25px; font-weight: 500; }
+    .correction p { max-width: 800px; margin: 0; color: var(--mist); font-size: 15px; line-height: 1.75; }
+    .correction strong { color: var(--paper); font-weight: 500; }
+
+    .screen-story {
+      margin-top: 76px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 24px;
+      align-items: start;
+    }
+    .screen-story figure { margin: 0; }
+    .screen-story img { width: 100%; border: 1px solid var(--line); border-radius: 28px; }
+    .screen-story figure:nth-child(2) { margin-top: 72px; }
+    .screen-story figcaption { margin-top: 14px; color: var(--mist); font-size: 12px; line-height: 1.55; }
+    .state-links {
+      margin-top: 42px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px 24px;
+      color: var(--gold-bright);
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 12px;
+    }
+    .state-links a { text-underline-offset: 5px; }
+
+    .document-list { margin-top: 76px; border-top: 1px solid var(--line); }
+    .document-list a {
+      display: grid;
+      grid-template-columns: minmax(180px, .65fr) minmax(0, 1.35fr) auto;
+      gap: 28px;
+      padding: 24px 0;
+      border-bottom: 1px solid var(--line);
+      text-decoration: none;
+      align-items: baseline;
+    }
+    .document-list strong { font-family: "Bricolage Grotesque", sans-serif; font-size: 20px; font-weight: 500; }
+    .document-list span { color: var(--mist); font-size: 13px; line-height: 1.55; }
+    .document-list i { color: var(--gold); font-family: "IBM Plex Mono", monospace; font-size: 12px; font-style: normal; }
+    .document-list a:hover strong { color: var(--gold-bright); }
+
+    footer {
+      width: var(--page);
+      margin: 0 auto;
+      padding: 64px 0 88px;
+      display: flex;
+      justify-content: space-between;
+      gap: 32px;
+      color: var(--mist);
+      font-size: 12px;
+    }
+    footer strong { color: var(--paper); font-weight: 500; }
+    footer a { color: var(--gold-bright); text-underline-offset: 4px; }
+
+    @media (max-width: 820px) {
+      :root { --page: min(calc(100% - 32px), 680px); }
+      .nav-links a:not(.demo) { display: none; }
+      .hero { grid-template-columns: 1fr; padding-top: 54px; }
+      .hero-visual { min-height: auto; padding-top: 24px; }
+      .phone { width: min(330px, 82vw); }
+      .disclosure-inner { grid-template-columns: auto 1fr; }
+      .disclosure a { grid-column: 2; }
+      .section { padding: 88px 0; }
+      .walkthrough { grid-template-columns: 1fr; padding: 88px 0; }
+      .video-frame { width: min(320px, 82vw); margin: 0 auto; }
+      .section-head, .proof-grid { grid-template-columns: 1fr; gap: 24px; }
+      .rail { grid-template-columns: 1fr; margin-left: 5px; }
+      .rail-step { padding: 0 0 28px 28px; border-top: 0; border-left: 1px solid var(--line); }
+      .rail-step::before { left: -6px; top: 3px; }
+      .decision { grid-template-columns: 44px 1fr; }
+      .decision p { grid-column: 2; }
+      .screen-story { gap: 12px; overflow-x: auto; grid-template-columns: repeat(3, 72vw); padding-bottom: 12px; }
+      .screen-story figure:nth-child(2) { margin-top: 0; }
+      .document-list a { grid-template-columns: 1fr auto; }
+      .document-list span { grid-column: 1 / -1; grid-row: 2; }
+    }
+
+    @media (max-width: 520px) {
+      .site-nav img { width: 112px; }
+      .hero { min-height: auto; }
+      h1 { font-size: clamp(46px, 13.5vw, 56px); }
+      .actions { display: grid; }
+      .button { width: 100%; }
+      .role-line { display: grid; }
+      .screen-story { grid-template-columns: repeat(3, 82vw); }
+      footer { flex-direction: column; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to case study</a>
+
+  <nav class="site-nav" aria-label="Primary">
+    <a href="./" aria-label="Corridor home"><img src="assets/brand/logo/corridor-logo-on-dark.svg" alt="Corridor"></a>
+    <div class="nav-links">
+      <a href="#decisions">Decisions</a>
+      <a href="#evidence">Evidence</a>
+      <a href="#documents">Documents</a>
+      <a class="demo" href="demo/">Open demo</a>
+    </div>
+  </nav>
+
+  <main id="main">
+    <header class="hero">
+      <div class="hero-copy">
+        <p class="kicker">USD → USDC → TRY</p>
+        <h1>A remittance product designed around the moment trust breaks.</h1>
+        <p class="hero-lede">
+          Corridor is an independent case study spanning <strong>product design, React Native engineering, and integration architecture</strong>. It makes every fee, rail, wait, and failure visible before a user has to ask.
+        </p>
+        <div class="actions">
+          <a class="button primary" href="demo/">Walk the live flow</a>
+          <a class="button" href="#walkthrough">Watch the 36s walkthrough</a>
+        </div>
+        <div class="role-line" aria-label="Project scope">
+          <span>End-to-end product design</span>
+          <span>Mobile engineering</span>
+          <span>Provider architecture</span>
+        </div>
+      </div>
+
+      <div class="hero-visual" aria-label="Corridor transfer timeline">
+        <div class="hero-route" aria-hidden="true"><span class="traveller"></span></div>
+        <div class="phone"><img src="docs/screens/09-in-flight.png" alt="Corridor transfer progressing through five settlement rails"></div>
+      </div>
+    </header>
+
+    <aside class="disclosure" aria-label="Prototype disclosure">
+      <div class="disclosure-inner">
+        <span class="signal" aria-hidden="true"></span>
+        <p><strong>This is a portfolio build, not a money transmitter.</strong> Four of five rails are simulated and disclosed in the interface. One separate 1.00 USDC proof transaction is real and independently verifiable.</p>
+        <a href="#evidence">See what is real</a>
+      </div>
+    </aside>
+
+    <section class="walkthrough" id="walkthrough" aria-labelledby="walkthrough-title">
+      <div class="walkthrough-copy">
+        <span class="section-index">00 / walkthrough</span>
+        <h2 id="walkthrough-title">The complete trust arc in 36 seconds.</h2>
+        <p>From quote and identity checks to on-chain progress, delivery proof, and a returned payout. The final three states stay on screen long enough to inspect—not just flash past as a success montage.</p>
+      </div>
+      <div class="video-frame">
+        <video controls muted playsinline preload="metadata" poster="docs/screens/08-review.png" aria-label="Corridor product walkthrough">
+          <source src="docs/corridor-walkthrough.mp4" type="video/mp4">
+          <a href="docs/corridor-walkthrough.mp4">Download the walkthrough video</a>
+        </video>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="problem-title">
+      <div class="section-head">
+        <span class="section-index">01 / the problem</span>
+        <div>
+          <h2 id="problem-title">The hard part is not sending. It is explaining where value is while three providers disagree.</h2>
+          <p class="section-lede">A bank debit, a stablecoin transfer, and a local payout each run on a different clock. A generic progress bar invents certainty. Corridor instead exposes the five states a sender can actually verify.</p>
+        </div>
+      </div>
+
+      <div class="rail" aria-label="Transfer rails">
+        <div class="rail-step live"><h3>USD received</h3><p>ACH clears from the sender's bank.</p></div>
+        <div class="rail-step"><h3>USDC minted</h3><p>Dollars become exact minor units at par.</p></div>
+        <div class="rail-step"><h3>Sent on Base</h3><p>The hash appears before settlement finishes.</p></div>
+        <div class="rail-step"><h3>TRY payout</h3><p>A local partner binds value to the IBAN.</p></div>
+        <div class="rail-step"><h3>Delivered</h3><p>The recipient's bank owns the final word.</p></div>
+      </div>
+    </section>
+
+    <section class="section" id="decisions" aria-labelledby="decisions-title">
+      <div class="section-head">
+        <span class="section-index">02 / decisions</span>
+        <div>
+          <h2 id="decisions-title">Three decisions shaped the product and the code.</h2>
+          <p class="section-lede">The interface and architecture were designed together. Each visible promise has a corresponding invariant beneath it.</p>
+        </div>
+      </div>
+
+      <div class="decisions">
+        <article class="decision">
+          <span class="number">01</span>
+          <h3>Money is never a number.</h3>
+          <p>Minor units use <code>bigint</code>; exchange rates are rational values. USD to USDC crosses four decimal places without a float or silent truncation.</p>
+        </article>
+        <article class="decision">
+          <span class="number">02</span>
+          <h3>A quote is a signed commitment.</h3>
+          <p>The client renders an issued quote; it never authors the amount, fee, rail, or expiry. Changing from ACH to card or wire creates a fresh signed quote.</p>
+        </article>
+        <article class="decision">
+          <span class="number">03</span>
+          <h3>Failure stays in the timeline.</h3>
+          <p>A returned payout does not become a red toast and a dead end. The failed rail remains visible, the location of funds is named, and retry preserves the user's work.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="evidence" aria-labelledby="evidence-title">
+      <div class="section-head">
+        <span class="section-index">03 / evidence</span>
+        <div>
+          <h2 id="evidence-title">The prototype states exactly what it can prove.</h2>
+          <p class="section-lede">Honesty is enforced by construction: disclosure copy is read from the same provider registry that binds simulated or real adapters.</p>
+        </div>
+      </div>
+
+      <div class="proof-grid">
+        <dl class="evidence">
+          <div><dt>13</dt><dd>captured product and recovery states</dd></div>
+          <div><dt>51</dt><dd>domain, ordering, failure, and full-flow tests</dd></div>
+          <div><dt>5</dt><dd>named rails in one monotonic transfer timeline</dd></div>
+          <div><dt>1</dt><dd>real Base Sepolia USDC proof transaction</dd></div>
+        </dl>
+        <div class="proof-copy">
+          <h3>One claim leaves the repository.</h3>
+          <p>The app itself holds no signing key. A separate script broadcast 1.00 USDC against Circle's canonical Base Sepolia contract, producing a public artifact that can be checked without trusting this page.</p>
+          <a class="hash" href="https://sepolia.basescan.org/tx/0x551c67045ddfe8e8fb94fdad1ca0b5ffd078d3ca50f167531f0680722a55ba10">0x551c6704…a55ba10 ↗</a>
+          <p>The demo receipt deliberately says that its 500.00 USDC figure is not this transaction. A proof that implies more than it proves is just another mock.</p>
+        </div>
+      </div>
+
+      <div class="correction">
+        <span class="correction-mark" aria-hidden="true"></span>
+        <div>
+          <h3>Research invalidated the original provider choice.</h3>
+          <p>Early design phases assumed Bridge could complete the TRY payout. The provider audit found that <strong>Bridge has no TRY route in either direction</strong>. The build keeps the corridor as a disclosed integration study, moves payout behind a provider binding, and implements a supported MXN/SPEI binding to prove the seam is real.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="states-title">
+      <div class="section-head">
+        <span class="section-index">04 / product states</span>
+        <div>
+          <h2 id="states-title">Trust is designed before, during, and after the send.</h2>
+          <p class="section-lede">Review exposes the full commitment. In-flight names each clock. Recovery answers the user's first question before explaining the error.</p>
+        </div>
+      </div>
+
+      <div class="screen-story">
+        <figure>
+          <img src="docs/screens/08-review.png" alt="Review screen with amount, rate, fees, arrival estimate, and slide to send">
+          <figcaption>Before — every amount and rail is open at the last responsible moment.</figcaption>
+        </figure>
+        <figure>
+          <img src="docs/screens/09-in-flight.png" alt="Transfer timeline showing the Base transaction in progress">
+          <figcaption>During — a transaction hash appears as soon as it exists, not only after success.</figcaption>
+        </figure>
+        <figure>
+          <img src="docs/screens/11c-payout-returned.png" alt="Returned payout screen explaining that funds are safe">
+          <figcaption>After failure — the money's location comes before the reason and retry action.</figcaption>
+        </figure>
+      </div>
+      <nav class="state-links" aria-label="Explore key product states">
+        <span>Explore a key state:</span>
+        <a href="demo/demo/receipt">receipt</a>
+        <a href="demo/demo/returned">returned payout</a>
+        <a href="demo/demo/expired">expired quote</a>
+        <a href="demo/demo/kyc-resubmit">KYC resubmission</a>
+      </nav>
+    </section>
+
+    <section class="section" id="documents" aria-labelledby="documents-title">
+      <div class="section-head">
+        <span class="section-index">05 / read deeper</span>
+        <div>
+          <h2 id="documents-title">The case study is inspectable at every layer.</h2>
+          <p class="section-lede">The short story ends here. The decisions, provider constraints, failure register, and implementation remain open for review.</p>
+        </div>
+      </div>
+
+      <div class="document-list">
+        <a href="corridor-screens.html"><strong>Product and screens</strong><span>Thirteen states, component rules, copy decisions, and motion behavior.</span><i>open</i></a>
+        <a href="corridor-architecture.html"><strong>Integration architecture</strong><span>Provider contracts, trust boundary, quote signing, and transfer state machine.</span><i>open</i></a>
+        <a href="corridor-diagram.html"><strong>System diagram</strong><span>The service boundary and settlement timeline on one page.</span><i>open</i></a>
+        <a href="corridor-failure-modes.html"><strong>Failure register</strong><span>Settlement risk, residual exposure, and what the prototype does not solve.</span><i>open</i></a>
+        <a href="https://github.com/ihsanktmr/corridor/blob/main/docs/market-notes.md"><strong>Market and product patterns</strong><span>Official-source comparison of rate locks, fees, tracking, references, and proof boundaries.</span><i>read</i></a>
+        <a href="https://github.com/ihsanktmr/corridor/blob/main/docs/usability-test-plan.md"><strong>Usability validation plan</strong><span>A five-session comprehension protocol with explicit thresholds and no invented findings.</span><i>read</i></a>
+        <a href="corridor-identity.html"><strong>Visual identity</strong><span>The mark, palette, type, tokens, and restrained motion signature.</span><i>open</i></a>
+        <a href="https://github.com/ihsanktmr/corridor"><strong>Source repository</strong><span>React Native implementation, domain tests, provider seams, and proof script.</span><i>GitHub</i></a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <span><strong>Corridor</strong> — designed and built end to end by Ihsan.</span>
+    <span><a href="demo/">Live demo</a> · <a href="https://github.com/ihsanktmr/corridor">Source</a></span>
+  </footer>
+</body>
+</html>

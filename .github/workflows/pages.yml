@@ -2,11 +2,11 @@ name: pages
 
 # Publishes the case-study documents and the app's web build together.
 #
-#   /corridor/                 README index and the five corridor-*.html docs
+#   /corridor/                 case-study landing page and supporting documents
 #   /corridor/demo/            the app, exported with expo-router's base URL
 #
-# The docs go through the same Jekyll build the legacy branch deploy used, so
-# their URLs and the README index are unchanged.
+# Jekyll builds the landing page and deep dives before the Expo web app is
+# placed under its own base path.
 
 on:
   push:
