@@ -1,5 +1,5 @@
 import { router } from 'expo-router';
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { Text, View } from 'react-native';
 
 import { Button, Dock } from '../../components/Button';
@@ -10,6 +10,7 @@ import { format, parseAmount } from '../../domain/money';
 import type { FiatRail } from '../../domain/quote';
 import { onrampFor } from '../../providers/registry';
 import { ACTIVE_CORRIDOR } from '../../providers/registry';
+import { createQuote, selectFundingRail } from '../../services/corridor';
 import { useCorridor } from '../../state/useCorridor';
 import { color, space } from '../../theme/tokens';
 import { face, tabular, type } from '../../theme/type';
@@ -25,10 +26,17 @@ import { face, tabular, type } from '../../theme/type';
  */
 export default function Fund() {
   const { quote } = useCorridor();
-  const [rail, setRail] = useState<FiatRail>('ach');
+  const rail = quote?.rail ?? 'ach';
 
   const onramp = onrampFor(ACTIVE_CORRIDOR);
   const charged = quote?.totalCharged ?? parseAmount('USD', '503.75');
+
+  const chooseRail = (next: FiatRail) => {
+    // A direct link can reach this screen without screen 03. Seed the same demo
+    // amount rather than leaving a control that appears to work but has no quote.
+    if (quote) selectFundingRail(next);
+    else createQuote('500.00', next);
+  };
 
   const arrival = useMemo(() => {
     const date = onramp.estimateSettlement(rail, new Date());
@@ -55,7 +63,7 @@ export default function Fund() {
         <View style={{ gap: 10 }}>
           <Option
             selected={rail === 'ach'}
-            onPress={() => setRail('ach')}
+            onPress={() => chooseRail('ach')}
             title={
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: 7, marginBottom: 3 }}>
                 <Text style={type.bodyStrong}>Bank transfer</Text>
@@ -64,15 +72,17 @@ export default function Fund() {
             }
             subtitle={`Chase ···4417 · ${rail === 'ach' ? arrival : 'arrives in 2 business days'}`}
             trailing={
-              <Text style={[type.label, { fontSize: 12.5, fontFamily: face.semibold, color: color.success }]}>
-                Free
+              <Text
+                style={[type.label, { fontSize: 12.5, fontFamily: face.semibold, color: color.paper }]}
+              >
+                $1.25
               </Text>
             }
           />
 
           <Option
             selected={rail === 'card'}
-            onPress={() => setRail('card')}
+            onPress={() => chooseRail('card')}
             title="Debit card"
             subtitle="Instant · arrives today"
             trailing={
@@ -82,7 +92,7 @@ export default function Fund() {
 
           <Option
             selected={rail === 'wire'}
-            onPress={() => setRail('wire')}
+            onPress={() => chooseRail('wire')}
             title="Wire"
             subtitle="Same business day if sent before 15:00 ET"
             trailing={
@@ -98,7 +108,14 @@ export default function Fund() {
           </Row>
           {/* The choice only affects the first hop; the chain and payout legs are
               identical either way. */}
-          <RouteMini labels={['Chase', 'USDC · Base', 'Garanti']} filled={2} />
+          <RouteMini
+            labels={[
+              rail === 'ach' ? 'Chase' : rail === 'card' ? 'Debit card' : 'Wire',
+              'USDC · Base',
+              'Garanti',
+            ]}
+            filled={2}
+          />
         </Card>
 
         {/* The simulation notice sits in the flow, at the moment of the lie. Text

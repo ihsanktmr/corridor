@@ -274,6 +274,18 @@ export function createQuote(sendDecimal: string, rail: FiatRail = 'ach'): QuoteR
 }
 
 /**
+ * Replace the active quote when the user changes the funding rail on screen 04.
+ *
+ * A rail is part of the signed quote because it changes both price and settlement
+ * time. Keeping this transition in the service prevents the screen from showing a
+ * card or wire selection while the transfer still carries an ACH quote.
+ */
+export function selectFundingRail(rail: FiatRail): QuoteResult | null {
+  const active = state.quote;
+  return active ? quoteFor(active.send, rail) : null;
+}
+
+/**
  * Re-quote an expired quote's amount and rail at the current rate: screen 11a's
  * "Accept new rate". Takes the amount as `Money`, so it never round-trips through
  * a decimal string or a float.

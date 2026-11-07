@@ -64,6 +64,23 @@ describe('quote: the locked demo numbers', () => {
     assert.equal(format(QUOTE.totalCharged), '$503.75');
   });
 
+  test('each funding rail carries its own fee into the signed total', () => {
+    const quoteFor = (rail: 'ach' | 'card' | 'wire') =>
+      buildQuote({
+        corridor: 'USD:TRY',
+        send: parseAmount('USD', '500.00'),
+        rail,
+        rate: QUOTE.rate,
+        now: NOW,
+        id: `q_${rail}`,
+        sign: () => 'sig_stub',
+      });
+
+    assert.equal(format(quoteFor('ach').totalCharged), '$503.75');
+    assert.equal(format(quoteFor('card').totalCharged), '$510.06');
+    assert.equal(format(quoteFor('wire').totalCharged), '$517.50');
+  });
+
   test('expiry is 15 minutes out and counts down in the open', () => {
     assert.equal(quoteStatus(QUOTE, NOW), 'live');
     assert.equal(quoteStatus(QUOTE, new Date(NOW.getTime() + 14.5 * 60_000)), 'expiring');

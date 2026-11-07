@@ -14,6 +14,7 @@ import {
   requote,
   reset,
   seedDemo,
+  selectFundingRail,
   startKyc,
   submitKycDocuments,
   submitTransfer,
@@ -52,6 +53,28 @@ function waitFor(predicate: () => boolean, label: string, timeoutMs = 30_000): P
 
 after(() => {
   reset();
+});
+
+describe('funding rail selection', () => {
+  test('re-quotes the same transfer amount with the selected rail and its fee', () => {
+    reset();
+    const initial = createQuote('500.00');
+    assert.ok(initial.ok);
+    assert.equal(initial.quote.rail, 'ach');
+    assert.equal(format(initial.quote.totalCharged), '$503.75');
+
+    const card = selectFundingRail('card');
+    assert.ok(card && card.ok);
+    assert.equal(card.quote.rail, 'card');
+    assert.equal(format(card.quote.send), '$500.00');
+    assert.equal(format(card.quote.totalCharged), '$510.06');
+    assert.notEqual(card.quote.id, initial.quote.id, 'a changed rail must issue a fresh signed quote');
+
+    const wire = selectFundingRail('wire');
+    assert.ok(wire && wire.ok);
+    assert.equal(wire.quote.rail, 'wire');
+    assert.equal(format(wire.quote.totalCharged), '$517.50');
+  });
 });
 
 describe('the full path: welcome to receipt', () => {
