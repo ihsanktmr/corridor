@@ -3,7 +3,8 @@ import { Animated, Easing, Pressable, Text, View, type ViewStyle } from 'react-n
 
 import { format, formatBare, type Money } from '../domain/money';
 import { color, motion, radius, space } from '../theme/tokens';
-import { face, tabular, type } from '../theme/type';
+import { face, fontScaleCap, tabular, type } from '../theme/type';
+import { useReducedMotion } from '../theme/reducedMotion';
 import { Mark } from './Mark';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -220,7 +221,11 @@ export function Amount({
   caret?: boolean;
 }) {
   if (size === 'row') {
-    return <Text style={[type.bodyStrong, tabular, { fontFamily: face.semibold }]}>{format(value)}</Text>;
+    return (
+      <Text maxFontSizeMultiplier={fontScaleCap.data} style={[type.bodyStrong, tabular, { fontFamily: face.semibold }]}>
+        {format(value)}
+      </Text>
+    );
   }
 
   const style = size === 'hero' ? type.displayXL : type.displayL;
@@ -231,7 +236,7 @@ export function Amount({
 
   return (
     <View style={{ flexDirection: 'row', alignItems: 'baseline', gap: space.sm }}>
-      <Text style={style}>
+      <Text maxFontSizeMultiplier={fontScaleCap.display} style={style}>
         {whole}
         {/* Weight/colour break on the decimals, not just a smaller size: the
             move that reads as "designed" rather than the OS default at scale. */}
@@ -241,7 +246,10 @@ export function Amount({
       </Text>
       {caret ? <Caret /> : null}
       {showCurrency ? (
-        <Text style={[type.label, { fontSize: size === 'hero' ? 15 : 14, fontFamily: face.medium }]}>
+        <Text
+          maxFontSizeMultiplier={fontScaleCap.control}
+          style={[type.label, { fontSize: size === 'hero' ? 15 : 14, fontFamily: face.medium }]}
+        >
           {value.currency}
         </Text>
       ) : null}
@@ -251,8 +259,15 @@ export function Amount({
 
 function Caret() {
   const opacity = useRef(new Animated.Value(1)).current;
+  const reducedMotion = useReducedMotion();
 
   useEffect(() => {
+    if (reducedMotion) {
+      opacity.stopAnimation();
+      opacity.setValue(1);
+      return;
+    }
+
     const loop = Animated.loop(
       Animated.sequence([
         Animated.timing(opacity, { toValue: 0, duration: 520, useNativeDriver: true }),
@@ -261,7 +276,7 @@ function Caret() {
     );
     loop.start();
     return () => loop.stop();
-  }, [opacity]);
+  }, [opacity, reducedMotion]);
 
   return <Animated.View style={{ width: 2, height: 40, backgroundColor: color.gold, opacity }} />;
 }
@@ -288,10 +303,14 @@ export function FeeLineRow({
           : {}),
       }}
     >
-      <Text style={[type.label, total ? { color: color.paper, fontSize: 14, fontFamily: face.medium } : null]}>
+      <Text
+        maxFontSizeMultiplier={fontScaleCap.data}
+        style={[type.label, total ? { color: color.paper, fontSize: 14, fontFamily: face.medium } : null]}
+      >
         {label}
       </Text>
       <Text
+        maxFontSizeMultiplier={fontScaleCap.data}
         style={[
           type.label,
           tabular,
@@ -335,8 +354,15 @@ export function CountryToken({ code, active = true }: { code: string; active?: b
 /** The gold dot travelling the route: the identity's motion signature. */
 export function CorridorStrip({ right }: { right?: React.ReactNode }) {
   const travel = useRef(new Animated.Value(0)).current;
+  const reducedMotion = useReducedMotion();
 
   useEffect(() => {
+    if (reducedMotion) {
+      travel.stopAnimation();
+      travel.setValue(0.5);
+      return;
+    }
+
     const loop = Animated.loop(
       Animated.sequence([
         Animated.timing(travel, {
@@ -355,7 +381,7 @@ export function CorridorStrip({ right }: { right?: React.ReactNode }) {
     );
     loop.start();
     return () => loop.stop();
-  }, [travel]);
+  }, [reducedMotion, travel]);
 
   return (
     <View

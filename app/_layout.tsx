@@ -1,16 +1,10 @@
-import {
-  BricolageGrotesque_400Regular,
-  BricolageGrotesque_600SemiBold,
-} from '@expo-google-fonts/bricolage-grotesque';
-import {
-  IBMPlexMono_400Regular,
-  IBMPlexMono_500Medium,
-} from '@expo-google-fonts/ibm-plex-mono';
-import {
-  Inter_400Regular,
-  Inter_500Medium,
-  Inter_600SemiBold,
-} from '@expo-google-fonts/inter';
+import { BricolageGrotesque_400Regular } from '@expo-google-fonts/bricolage-grotesque/400Regular';
+import { BricolageGrotesque_600SemiBold } from '@expo-google-fonts/bricolage-grotesque/600SemiBold';
+import { IBMPlexMono_400Regular } from '@expo-google-fonts/ibm-plex-mono/400Regular';
+import { IBMPlexMono_500Medium } from '@expo-google-fonts/ibm-plex-mono/500Medium';
+import { Inter_400Regular } from '@expo-google-fonts/inter/400Regular';
+import { Inter_500Medium } from '@expo-google-fonts/inter/500Medium';
+import { Inter_600SemiBold } from '@expo-google-fonts/inter/600SemiBold';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
@@ -20,6 +14,7 @@ import { Platform, View, useWindowDimensions } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { color } from '../theme/tokens';
+import { useReducedMotion } from '../theme/reducedMotion';
 
 /**
  * Hold the splash until the brand faces are ready.
@@ -31,6 +26,7 @@ import { color } from '../theme/tokens';
 void SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+  const reducedMotion = useReducedMotion();
   const [fontsLoaded, fontError] = useFonts({
     BricolageGrotesque_400Regular,
     BricolageGrotesque_600SemiBold,
@@ -58,12 +54,15 @@ export default function RootLayout() {
             headerShown: false,
             contentStyle: { backgroundColor: color.void },
             // Horizontal push, native stack defaults: 250ms ease-out.
-            animation: 'slide_from_right',
+            animation: reducedMotion ? 'none' : 'slide_from_right',
           }}
         >
-          <Stack.Screen name="index" options={{ animation: 'fade' }} />
+          <Stack.Screen name="index" options={{ animation: reducedMotion ? 'none' : 'fade' }} />
           <Stack.Screen name="transfer/status" options={{ gestureEnabled: false }} />
-          <Stack.Screen name="transfer/receipt" options={{ animation: 'slide_from_bottom' }} />
+          <Stack.Screen
+            name="transfer/receipt"
+            options={{ animation: reducedMotion ? 'none' : 'slide_from_bottom' }}
+          />
         </Stack>
       </PhoneColumn>
     </SafeAreaProvider>

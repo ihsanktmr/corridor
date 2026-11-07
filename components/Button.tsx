@@ -1,7 +1,7 @@
 import { ActivityIndicator, Pressable, Text, View, type ViewStyle } from 'react-native';
 
 import { color, radius, space } from '../theme/tokens';
-import { face, type } from '../theme/type';
+import { face, fontScaleCap, type } from '../theme/type';
 
 type Variant = 'primary' | 'secondary' | 'ghost' | 'danger';
 
@@ -71,6 +71,7 @@ export function Button({
         <ActivityIndicator size="small" color={variant === 'primary' ? color.void : color.gold} />
       ) : (
         <Text
+          maxFontSizeMultiplier={fontScaleCap.control}
           style={[
             type.bodyStrong,
             { fontSize: 15, fontFamily: variant === 'ghost' ? face.medium : face.semibold, color: label_[variant] },

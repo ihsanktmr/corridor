@@ -36,6 +36,17 @@ export const face = {
   monoMedium: 'IBMPlexMono_500Medium',
 } as const;
 
+/**
+ * Large display figures and fixed-height controls need bounded scaling so a
+ * currency value or action remains operable at accessibility sizes. Body copy
+ * is intentionally uncapped and can reflow inside scrollable content.
+ */
+export const fontScaleCap = {
+  display: 1.15,
+  control: 1.3,
+  data: 1.4,
+} as const;
+
 /** Applied to every numeric value that shares a column with another number. */
 export const tabular: TextStyle = { fontVariant: ['tabular-nums'] };
 

@@ -4,6 +4,7 @@ import { Animated, Text, View } from 'react-native';
 import type { Step, StepStatus } from '../domain/transfer';
 import { color, radius, space } from '../theme/tokens';
 import { face, type } from '../theme/type';
+import { useReducedMotion } from '../theme/reducedMotion';
 import { Close } from './icons';
 import { Pill } from './primitives';
 
@@ -78,9 +79,14 @@ function RouteStepView({ item, last }: { item: RouteStep; last: boolean }) {
 
 function Node({ status }: { status: StepStatus }) {
   const pulse = useRef(new Animated.Value(1)).current;
+  const reducedMotion = useReducedMotion();
 
   useEffect(() => {
-    if (status !== 'live') return;
+    if (status !== 'live' || reducedMotion) {
+      pulse.stopAnimation();
+      pulse.setValue(1);
+      return;
+    }
     const loop = Animated.loop(
       Animated.sequence([
         Animated.timing(pulse, { toValue: 0.62, duration: 900, useNativeDriver: true }),
@@ -89,7 +95,7 @@ function Node({ status }: { status: StepStatus }) {
     );
     loop.start();
     return () => loop.stop();
-  }, [status, pulse]);
+  }, [status, pulse, reducedMotion]);
 
   const border =
     status === 'done' ? color.gold : status === 'live' ? color.goldBright : status === 'failed' ? color.error : color.line;

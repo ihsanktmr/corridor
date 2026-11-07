@@ -11,7 +11,8 @@ import {
 
 import { ChevronRight } from './icons';
 import { color, radius, space } from '../theme/tokens';
-import { face, tabular, type } from '../theme/type';
+import { face, fontScaleCap, tabular, type } from '../theme/type';
+import { useReducedMotion } from '../theme/reducedMotion';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Text field
@@ -205,6 +206,9 @@ export function ConfirmSlider({
   const x = useRef(new Animated.Value(0)).current;
   const width = useRef(0);
   const armed = useRef(false);
+  const reducedMotion = useReducedMotion();
+  const reducedMotionRef = useRef(reducedMotion);
+  reducedMotionRef.current = reducedMotion;
 
   const responder = useRef(
     PanResponder.create({
@@ -219,12 +223,18 @@ export function ConfirmSlider({
       onPanResponderRelease: () => {
         const max = Math.max(0, width.current - KNOB_WIDTH - TRACK_INSET * 2);
         if (armed.current) {
-          Animated.timing(x, { toValue: max, duration: 120, useNativeDriver: false }).start(() => {
+          if (reducedMotionRef.current) {
+            x.setValue(max);
             onConfirm();
-          });
+          } else {
+            Animated.timing(x, { toValue: max, duration: 120, useNativeDriver: false }).start(() => {
+              onConfirm();
+            });
+          }
         } else {
           // Below 80%, snap back. A half-hearted swipe is not a confirmation.
-          Animated.spring(x, { toValue: 0, useNativeDriver: false, bounciness: 4 }).start();
+          if (reducedMotionRef.current) x.setValue(0);
+          else Animated.spring(x, { toValue: 0, useNativeDriver: false, bounciness: 4 }).start();
         }
       },
     }),
@@ -258,7 +268,13 @@ export function ConfirmSlider({
         style ?? null,
       ]}
     >
-      <Text style={[type.label, { textAlign: 'center', fontSize: 13.5, fontFamily: face.medium }]}>{label}</Text>
+      <Text
+        maxFontSizeMultiplier={fontScaleCap.control}
+        numberOfLines={1}
+        style={[type.label, { textAlign: 'center', fontSize: 13.5, fontFamily: face.medium }]}
+      >
+        {label}
+      </Text>
 
       <Animated.View
         {...responder.panHandlers}

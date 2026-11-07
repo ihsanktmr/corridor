@@ -5,7 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { formatCountdown, type QuoteStatus } from '../domain/quote';
 import { demoStripLabel } from '../providers/registry';
 import { color, radius, space } from '../theme/tokens';
-import { face, type } from '../theme/type';
+import { face, fontScaleCap, type } from '../theme/type';
 import { ChevronLeft, Close, Lock as LockIcon } from './icons';
 import { Mark } from './Mark';
 
@@ -100,13 +100,20 @@ export function Nav({
       </Pressable>
 
       {title ? (
-        <Text style={[type.bodyStrong, { flex: 1, textAlign: 'center' }]}>{title}</Text>
+        <Text
+          maxFontSizeMultiplier={fontScaleCap.control}
+          style={[type.bodyStrong, { flex: 1, textAlign: 'center' }]}
+        >
+          {title}
+        </Text>
       ) : (
         <View style={{ flex: 1 }} />
       )}
 
       {step ? (
-        <Text style={[type.mono, { fontSize: 11, color: color.mist }]}>{step}</Text>
+        <Text maxFontSizeMultiplier={fontScaleCap.control} style={[type.mono, { fontSize: 11, color: color.mist }]}>
+          {step}
+        </Text>
       ) : (
         (right ?? <View style={{ width: 34 }} />)
       )}
@@ -136,7 +143,9 @@ export function DemoStrip() {
       }}
     >
       <View style={{ width: 5, height: 5, borderRadius: 3, backgroundColor: color.warning }} />
-      <Text style={{ fontSize: 10, color: color.mist, letterSpacing: 0.4 }}>{demoStripLabel()}</Text>
+      <Text maxFontSizeMultiplier={fontScaleCap.control} style={{ fontSize: 10, color: color.mist, letterSpacing: 0.4 }}>
+        {demoStripLabel()}
+      </Text>
     </View>
   );
 }
@@ -176,14 +185,17 @@ export function RateStrip({
         paddingVertical: 12,
       }}
     >
-      <Text style={[type.label, { fontSize: 12.5, color: color.paper }]}>
+      <Text maxFontSizeMultiplier={fontScaleCap.data} style={[type.label, { fontSize: 12.5, color: color.paper }]}>
         1 USD = <Text style={{ fontFamily: face.semibold }}>{rate} ₺</Text>
         {showSource ? <Text style={{ color: color.mist }}> · mid-market</Text> : null}
       </Text>
 
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 5 }}>
         <LockIcon color={warn ? color.warning : color.goldBright} />
-        <Text style={[type.mono, { fontSize: 11, color: warn ? color.warning : color.goldBright }]}>
+        <Text
+          maxFontSizeMultiplier={fontScaleCap.control}
+          style={[type.mono, { fontSize: 11, color: warn ? color.warning : color.goldBright }]}
+        >
           {status === 'expired' ? 'expired' : formatCountdown(remainingMs)}
         </Text>
       </View>
